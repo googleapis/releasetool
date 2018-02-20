@@ -1,0 +1,18 @@
+[build-system]
+requires = ["flit"]
+build-backend = "flit.buildapi"
+
+[tool.flit.metadata]
+module = "releasetool"
+author = "Jon Wayne Parrott"
+author-email = "jonwayne@google.com"
+home-page = "http://g/cdpe-libraries"
+classifiers = ["License :: OSI Approved :: Apache Software License"]
+requires = [
+    "requests",
+    "attrs"
+]
+
+
+[tool.flit.scripts]
+releasetool = "releasetool.main:main"
