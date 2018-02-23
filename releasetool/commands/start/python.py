@@ -156,7 +156,9 @@ def update_setup_py(ctx: Context) -> None:
     click.secho(
         "> Updating setup.py.", fg='cyan')
     releasetool.filehelpers.replace(
-        'setup.py', r"version='(.+?)',", f"version='{ctx.release_version}',")
+        'setup.py',
+        r"version = '(.+?)',",
+        f"version = '{ctx.release_version}',")
 
 
 def create_release_commit(ctx: Context) -> None:
