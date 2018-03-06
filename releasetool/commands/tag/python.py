@@ -35,7 +35,7 @@ def determine_release_pr(ctx: Context) -> None:
         fg='cyan')
 
     pulls = ctx.github.list_pull_requests(ctx.github_repo, state='closed')
-    pulls = [pull for pull in pulls if 'release' in pull['title'].lower()][:10]
+    pulls = [pull for pull in pulls if 'release' in pull['title'].lower()][:30]
 
     click.secho('> Please pick one of the following PRs:\n')
     for n, pull in enumerate(pulls, 1):

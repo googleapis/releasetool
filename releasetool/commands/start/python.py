@@ -54,9 +54,11 @@ def determine_package_name(ctx: Context) -> None:
 def determine_last_release(ctx: Context) -> None:
     click.secho('> Figuring out what the last release was.', fg='cyan')
     tags = releasetool.git.list_tags()
-    candidates = [tag for tag in tags if tag.startswith(ctx.package_name)]
+    candidates = [
+        tag for tag in tags
+        if tag.startswith(ctx.package_name.replace('_', '-'))]
 
-    if candidates is not None:
+    if candidates:
         ctx.last_release_committish = candidates[0]
         ctx.last_release_version = candidates[0].rsplit('-').pop()
 
@@ -157,8 +159,8 @@ def update_setup_py(ctx: Context) -> None:
         "> Updating setup.py.", fg='cyan')
     releasetool.filehelpers.replace(
         'setup.py',
-        r"version = '(.+?)',",
-        f"version = '{ctx.release_version}',")
+        r"version = '(.+?)'",
+        f"version = '{ctx.release_version}'")
 
 
 def create_release_commit(ctx: Context) -> None:
