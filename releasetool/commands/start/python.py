@@ -56,7 +56,8 @@ def determine_last_release(ctx: Context) -> None:
     tags = releasetool.git.list_tags()
     candidates = [
         tag for tag in tags
-        if tag.startswith(ctx.package_name.replace('_', '-'))]
+        if (tag.startswith(ctx.package_name) or
+            tag.startswith(ctx.package_name.replace('_', '-')))]
 
     if candidates:
         ctx.last_release_committish = candidates[0]
