@@ -23,7 +23,10 @@ class Context:
 
 def setup_context(ctx: Context) -> None:
     click.secho('> Determining basic context.', fg='cyan')
-    github_token = releasetool.secrets.get_password('github')
+    github_token = releasetool.secrets.ensure_password(
+        'github',
+        'Please provide your GitHub API token '
+        '(https://github.com/settings/tokens)')
     ctx.github = releasetool.github.GitHub(github_token)
     ctx.github_repo = releasetool.git.get_github_repo_name()
     click.secho(f'GitHub Repo: {ctx.github_repo}')
@@ -76,7 +79,7 @@ def determine_package_name_and_version(ctx: Context) -> None:
     ctx.release_version = match.group('version')
     click.secho(
         f"Package name: {ctx.package_name}, "
-        "package version: {ctx.release_version}.")
+        f"package version: {ctx.release_version}.")
 
 
 def get_release_notes(ctx: Context) -> None:

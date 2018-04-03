@@ -38,7 +38,10 @@ class Context:
 
 def setup_context(ctx: Context) -> None:
     click.secho('> Determining basic context.', fg='cyan')
-    github_token = releasetool.secrets.get_password('github')
+    github_token = releasetool.secrets.ensure_password(
+        'github',
+        'Please provide your GitHub API token '
+        '(https://github.com/settings/tokens)')
     ctx.github = releasetool.github.GitHub(github_token)
     ctx.github_repo = releasetool.git.get_github_repo_name()
     click.secho(f'GitHub Repo: {ctx.github_repo}')
