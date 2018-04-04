@@ -42,7 +42,7 @@ def determine_release_pr(ctx: Context) -> None:
 
     click.secho('> Please pick one of the following PRs:\n')
     for n, pull in enumerate(pulls, 1):
-        print(f"\t{n}: {pull['title']}")
+        print(f"\t{n}: {pull['title']} ({pull['number']})")
 
     pull_idx = click.prompt(
         '\nWhich one do you want to tag and release?', type=int)
@@ -109,9 +109,12 @@ def create_release(ctx: Context) -> None:
         name=f'google-cloud-{ctx.package_name} {ctx.release_version}',
         body=ctx.release_notes)
 
-    click.secho(f"Release is at {ctx.github_release['html_url']}.")
+    release_location_string = f"Release is at {ctx.github_release['html_url']}."
+    click.secho(release_location_string)
     click.secho("CI will handle publishing the package to PyPI.")
 
+    ctx.github.create_pull_request_comment(
+        self, ctx.github_repo, ctx.pull_request_number, release_location_string)
 
 def tag() -> None:
     ctx = Context()

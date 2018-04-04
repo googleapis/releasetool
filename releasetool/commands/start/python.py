@@ -90,6 +90,9 @@ def edit_release_notes(ctx: Context) -> None:
     click.secho(
         f'> Opening your editor to finalize release notes.', fg='cyan')
     release_notes = '\n'.join(f'- {change}' for change in ctx.changes)
+    release_notes += '\n\n### '.join([
+        '', 'Implementation Changes', 'New Features', 'Dependencies',
+        'Documentation', 'Internal / Testing Changes'])
     ctx.release_notes = releasetool.filehelpers.open_editor_with_tempfile(
         release_notes,
         'release-notes.md').strip()
