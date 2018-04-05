@@ -69,13 +69,12 @@ class GitHub:
     def create_pull_request_comment(
             self,
             repository: str,
-            pull_request_number:int,
+            pull_request_number: int,
             comment: str) -> Dict:
         repo_url = f'{_GITHUB_ROOT}/repos/{repository}'
-        url =  f'{repo_url}/pulls/{pull_request_number}/comments'
+        url = f'{repo_url}/issues/{pull_request_number}/comments'
         response = self.session.post(url, json={
             'body': comment
         })
         response.raise_for_status()
         return response.json()
-

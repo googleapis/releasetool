@@ -4,6 +4,7 @@ import re
 import attr
 import click
 
+import releasetool.circleci
 import releasetool.git
 import releasetool.github
 import releasetool.secrets
@@ -109,12 +110,29 @@ def create_release(ctx: Context) -> None:
         name=f'google-cloud-{ctx.package_name} {ctx.release_version}',
         body=ctx.release_notes)
 
-    release_location_string = f"Release is at {ctx.github_release['html_url']}."
+    release_location_string = f"Release is at {ctx.github_release['html_url']}"
     click.secho(release_location_string)
     click.secho("CI will handle publishing the package to PyPI.")
 
     ctx.github.create_pull_request_comment(
-        self, ctx.github_repo, ctx.pull_request_number, release_location_string)
+        ctx.github_repo, ctx.release_pr['number'], release_location_string)
+
+
+def wait_on_circle(ctx: Context) -> None:
+    circle = releasetool.circleci.CircleCI(repository=ctx.github_repo)
+    click.secho("> Waiting for CircleCI to queue a release build")
+    tag_name = f'{ctx.package_name}-{ctx.release_version}'
+    fresh_build = circle.get_latest_build_by_tag(tag_name)
+    if fresh_build:
+        click.secho(f"CircleCI Build: {fresh_build['build_url']}")
+        click.secho("> Monitoring CircleCI for completion of release")
+        click.secho("")
+        for state in circle.get_build_status_generator(
+                fresh_build['build_num']):
+            click.secho(f"CircleCI Build State: {state}\r", nl=False)
+    else:
+        click.secho(f"CircleCI Build not found for tag {tag_name}...")
+
 
 def tag() -> None:
     ctx = Context()
@@ -131,5 +149,6 @@ def tag() -> None:
     get_release_notes(ctx)
 
     create_release(ctx)
+    wait_on_circle(ctx)
 
     click.secho(f"\o/ All done!", fg='magenta')
