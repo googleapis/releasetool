@@ -29,9 +29,9 @@ import releasetool.secrets
 _CHANGELOG_TEMPLATE = """\
 # Changelog
 
-[PyPI History][1]
+[npm][1]
 
-[1]: https://pypi.org/project/DISTRIBUTION NAME/#history
+[1]: https://www.npmjs.com/package/@google-cloud/vision
 
 """
 
@@ -72,13 +72,12 @@ def determine_last_release(ctx: Context) -> None:
     click.secho('> Figuring out what the last release was.', fg='cyan')
     tags = releasetool.git.list_tags()
     candidates = [
-        tag for tag in tags
-        if (tag.startswith(ctx.package_name) or
-            tag.startswith(ctx.package_name.replace('_', '-')))]
+        tag for tag in tags if tag.startswith('v')]
 
     if candidates:
         ctx.last_release_committish = candidates[0]
-        ctx.last_release_version = candidates[0].rsplit('-').pop()
+        # strip the leading 'v'
+        ctx.last_release_version = candidates[0].lstrip('v')
 
     else:
         click.secho(
@@ -147,7 +146,7 @@ def determine_release_version(ctx: Context) -> None:
 
 
 def create_release_branch(ctx) -> None:
-    ctx.release_branch = f'release-{ctx.package_name}-{ctx.release_version}'
+    ctx.release_branch = f'release-{ctx.package_name}-v{ctx.release_version}'
     click.secho(
         f"> Creating branch {ctx.release_branch}", fg='cyan')
     return releasetool.git.checkout_create_branch(ctx.release_branch)
@@ -167,7 +166,7 @@ def update_changelog(ctx: Context) -> None:
             changelog_filename, _CHANGELOG_TEMPLATE)
 
     changelog_entry = (
-        f'## {ctx.release_version}'
+        f'## v{ctx.release_version}'
         f'\n\n'
         f'{ctx.release_notes}'
         f'\n\n')
@@ -175,22 +174,22 @@ def update_changelog(ctx: Context) -> None:
         changelog_filename, changelog_entry, '^## (.+)$|\Z')
 
 
-def update_setup_py(ctx: Context) -> None:
+def update_package_json(ctx: Context) -> None:
     click.secho(
-        "> Updating setup.py.", fg='cyan')
+        "> Updating package.json.", fg='cyan')
     releasetool.filehelpers.replace(
-        'setup.py',
-        r"version = '(.+?)'",
-        f"version = '{ctx.release_version}'")
+        'package.json',
+        r'"version": "(.+?)"',
+        f'"version": "{ctx.release_version}"')
 
 
 def create_release_commit(ctx: Context) -> None:
     """Create a release commit."""
     click.secho(
-        "> Comitting changes", fg='cyan')
+        "> Committing changes", fg='cyan')
     releasetool.git.commit(
-        ['CHANGELOG.md', 'setup.py'],
-        f'Release {ctx.release_version}')
+        ['CHANGELOG.md', 'package.json'],
+        f'Release v{ctx.release_version}')
 
 
 def push_release_branch(ctx: Context) -> None:
@@ -205,7 +204,7 @@ def create_release_pr(ctx: Context) -> None:
     ctx.pull_request = ctx.github.create_pull_request(
         ctx.github_repo,
         branch=ctx.release_branch,
-        title=f'Release {ctx.package_name} {ctx.release_version}',
+        title=f'Release {ctx.package_name} v{ctx.release_version}',
         body='This pull request was generated using releasetool.')
     click.secho(f"Pull request is at {ctx.pull_request['html_url']}.")
 
@@ -225,7 +224,7 @@ def start() -> None:
     determine_release_version(ctx)
     create_release_branch(ctx)
     update_changelog(ctx)
-    update_setup_py(ctx)
+    update_package_json(ctx)
     create_release_commit(ctx)
     push_release_branch(ctx)
     # TODO: Confirm?
