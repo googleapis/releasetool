@@ -14,14 +14,14 @@
 
 import os
 import re
-import subprocess
 import tempfile
 from typing import Optional
 
+import click
+
 
 def open_editor(filename: str, return_contents: bool = False) -> Optional[str]:
-    editor = os.environ.get('EDITOR', 'nano')
-    subprocess.check_call([editor, filename])
+    click.edit(filename=filename)
 
     if return_contents:
         with open(filename, 'r') as fh:
