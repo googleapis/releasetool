@@ -29,9 +29,9 @@ import releasetool.secrets
 _CHANGELOG_TEMPLATE = """\
 # Changelog
 
-[npm][1]
+[npm history][1]
 
-[1]: https://www.npmjs.com/package/@google-cloud/vision
+[1]: https://www.npmjs.com/package/PACKAGE NAME?activeTab=versions
 
 """
 
