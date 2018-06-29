@@ -16,8 +16,10 @@ import click
 
 import releasetool.commands.start.python
 import releasetool.commands.start.python_tool
+import releasetool.commands.start.nodejs
 import releasetool.commands.tag.python
 import releasetool.commands.tag.python_tool
+import releasetool.commands.tag.nodejs
 
 
 @click.group(invoke_without_command=True)
@@ -27,7 +29,7 @@ def main(ctx):
         return ctx.invoke(start)
 
 
-_language_choices = ['python', 'python-tool']
+_language_choices = ['python', 'python-tool', 'nodejs']
 _language_option = click.option(
     '--language',
     prompt=f"Which language ({', '.join(_language_choices)})?",
@@ -41,6 +43,8 @@ def start(language):
         return releasetool.commands.start.python.start()
     if language == 'python-tool':
         return releasetool.commands.start.python_tool.start()
+    if language == 'nodejs':
+        return releasetool.commands.start.nodejs.start()
 
 
 @main.command()
@@ -50,3 +54,5 @@ def tag(language):
         return releasetool.commands.tag.python.tag()
     if language == 'python-tool':
         return releasetool.commands.tag.python_tool.tag()
+    if language == 'nodejs':
+        return releasetool.commands.tag.nodejs.tag()
