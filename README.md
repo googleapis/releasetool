@@ -5,18 +5,16 @@ This tool helps create releases for cloud client libraries.
 Presently, this only works for Python but it's designed in such a way that it
 could easily be used for other languages.
 
+
 ## Installation
 
 This tool requires Python 3.6. Either install it from python.org or use
 pyenv to get 3.6.
 
-Until pip 10 is released, you'll need to use flit to install this package:
+Install using pip:
 
 ```
-git clone sso://devrel/cloud/libraries/tools/releasetool
-cd releasetool
-pip install flit
-flit install
+python3 -m pip install --upgrade gcp-releasetool
 ```
 
 ## Usage
