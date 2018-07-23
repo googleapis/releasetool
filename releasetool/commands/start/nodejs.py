@@ -31,7 +31,7 @@ _CHANGELOG_TEMPLATE = """\
 
 [npm history][1]
 
-[1]: https://www.npmjs.com/package/PACKAGE NAME?activeTab=versions
+[1]: https://www.npmjs.com/package/{package_name}?activeTab=versions
 
 """
 
@@ -163,7 +163,7 @@ def update_changelog(ctx: Context) -> None:
             'creation.')
 
         releasetool.filehelpers.open_editor_with_content(
-            changelog_filename, _CHANGELOG_TEMPLATE)
+            changelog_filename, _CHANGELOG_TEMPLATE.format(package_name=ctx.package_name))
 
     changelog_entry = (
         f'## v{ctx.release_version}'
