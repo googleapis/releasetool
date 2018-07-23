@@ -89,7 +89,7 @@ def determine_package_name_and_version(ctx: Context) -> None:
         "> Determining the package name and version.",
         fg='cyan')
     match = re.match(
-        '(?P<name>.+?)-(?P<version>\d+?\.\d+?\.\d+?)', ctx.release_tag)
+        '(?P<name>.+?)-(?P<version>v?\d+?\.\d+?\.\d+?)', ctx.release_tag)
     ctx.package_name = match.group('name')
     ctx.release_version = match.group('version')
     click.secho(
@@ -101,7 +101,7 @@ def get_release_notes(ctx: Context) -> None:
     click.secho("> Grabbing the release notes.")
     changelog = ctx.github.get_contents(
         ctx.github_repo,
-        f'{ctx.package_name}/CHANGELOG.md',
+        'CHANGELOG.md',
         ref=ctx.release_pr['merge_commit_sha'])
     changelog = changelog.decode('utf-8')
 
@@ -119,9 +119,9 @@ def create_release(ctx: Context) -> None:
 
     ctx.github_release = ctx.github.create_release(
         repository=ctx.github_repo,
-        tag_name=ctx.release_tag,
+        tag_name=ctx.release_version,
         target_committish=ctx.release_pr['merge_commit_sha'],
-        name=f'google-cloud-{ctx.package_name} {ctx.release_version}',
+        name=f'{ctx.release_version}',
         body=ctx.release_notes)
 
     release_location_string = f"Release is at {ctx.github_release['html_url']}"
