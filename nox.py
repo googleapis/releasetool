@@ -15,9 +15,8 @@
 import nox
 
 
-@nox.session
+@nox.session(python='3.6')
 def lint(session):
-    session.interpreter = 'python3.6'
     session.install('flit', 'mypy', 'flake8')
     session.run('flit', 'install')
     session.run('flake8', 'releasetool', 'tests')
