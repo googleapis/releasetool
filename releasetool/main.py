@@ -12,8 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import functools
+
 import click
 
+import releasetool.update_check
 import releasetool.commands.start.python
 import releasetool.commands.start.python_tool
 import releasetool.commands.start.nodejs
@@ -40,6 +43,10 @@ _language_option = click.option(
 @main.command()
 @_language_option
 def start(language):
+    releasetool.update_check.check_for_updates(
+        "gcp-releasetool", print=functools.partial(click.secho, fg="magenta")
+    )
+
     if language == "python":
         return releasetool.commands.start.python.start()
     if language == "python-tool":
