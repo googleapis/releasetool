@@ -22,12 +22,11 @@ import releasetool.circleci
 import releasetool.git
 import releasetool.github
 import releasetool.secrets
+import releasetool.commands.common
 
 
 @attr.s(auto_attribs=True, slots=True)
-class Context:
-    github: releasetool.github.GitHub = None
-    github_repo: str = None
+class Context(releasetool.commands.common.GitHubContext):
     package_name: str = None
     release_pr: dict = None
     release_tag: str = None
@@ -36,23 +35,12 @@ class Context:
     github_release: dict = None
 
 
-def setup_context(ctx: Context) -> None:
-    click.secho('> Determining basic context.', fg='cyan')
-    github_token = releasetool.secrets.ensure_password(
-        'github',
-        'Please provide your GitHub API token '
-        '(https://github.com/settings/tokens)')
-    ctx.github = releasetool.github.GitHub(github_token)
-    ctx.github_repo = releasetool.git.get_github_repo_name()
-    click.secho(f'GitHub Repo: {ctx.github_repo}')
-
-
 def determine_release_pr(ctx: Context) -> None:
     click.secho(
         "> Let's figure out which pull request corresponds to your release.",
         fg='cyan')
 
-    pulls = ctx.github.list_pull_requests(ctx.github_repo, state='closed')
+    pulls = ctx.github.list_pull_requests(ctx.upstream_repo, state='closed')
     pulls = [pull for pull in pulls if 'release' in pull['title'].lower()][:30]
 
     click.secho('> Please pick one of the following PRs:\n')
@@ -100,7 +88,7 @@ def determine_package_name_and_version(ctx: Context) -> None:
 def get_release_notes(ctx: Context) -> None:
     click.secho("> Grabbing the release notes.")
     changelog = ctx.github.get_contents(
-        ctx.github_repo,
+        ctx.upstream_repo,
         f'{ctx.package_name}/CHANGELOG.md',
         ref=ctx.release_pr['merge_commit_sha'])
     changelog = changelog.decode('utf-8')
@@ -118,7 +106,7 @@ def create_release(ctx: Context) -> None:
     click.secho("> Creating the release.")
 
     ctx.github_release = ctx.github.create_release(
-        repository=ctx.github_repo,
+        repository=ctx.upstream_repo,
         tag_name=ctx.release_tag,
         target_committish=ctx.release_pr['merge_commit_sha'],
         name=f'google-cloud-{ctx.package_name} {ctx.release_version}',
@@ -129,11 +117,11 @@ def create_release(ctx: Context) -> None:
     click.secho("CI will handle publishing the package to PyPI.")
 
     ctx.github.create_pull_request_comment(
-        ctx.github_repo, ctx.release_pr['number'], release_location_string)
+        ctx.upstream_repo, ctx.release_pr['number'], release_location_string)
 
 
 def wait_on_circle(ctx: Context) -> None:
-    circle = releasetool.circleci.CircleCI(repository=ctx.github_repo)
+    circle = releasetool.circleci.CircleCI(repository=ctx.upstream_repo)
     click.secho("> Waiting for CircleCI to queue a release build")
     tag_name = f'{ctx.package_name}-{ctx.release_version}'
     fresh_build = circle.get_latest_build_by_tag(tag_name)
@@ -155,7 +143,7 @@ def tag() -> None:
         f"o/ Hey, {getpass.getuser()}, let's tag a release!",
         fg='magenta')
 
-    setup_context(ctx)
+    releasetool.commands.common.setup_github_context(ctx)
 
     determine_release_pr(ctx)
     determine_release_tag(ctx)

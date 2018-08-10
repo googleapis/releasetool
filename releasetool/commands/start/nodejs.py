@@ -24,6 +24,7 @@ import releasetool.filehelpers
 import releasetool.git
 import releasetool.github
 import releasetool.secrets
+import releasetool.commands.common
 
 
 _CHANGELOG_TEMPLATE = """\
@@ -37,9 +38,7 @@ _CHANGELOG_TEMPLATE = """\
 
 
 @attr.s(auto_attribs=True, slots=True)
-class Context:
-    github: releasetool.github.GitHub = None
-    github_repo: str = None
+class Context(releasetool.commands.common.GitHubContext):
     package_name: str = None
     last_release_version: str = None
     last_release_committish: str = None
@@ -48,17 +47,6 @@ class Context:
     release_version: str = None
     release_branch: str = None
     pull_request: dict = None
-
-
-def setup_context(ctx: Context) -> None:
-    click.secho('> Determining basic context.', fg='cyan')
-    github_token = releasetool.secrets.ensure_password(
-        'github',
-        'Please provide your GitHub API token with write:repo_hook and '
-        'public_repo (https://github.com/settings/tokens)')
-    ctx.github = releasetool.github.GitHub(github_token)
-    ctx.github_repo = releasetool.git.get_github_repo_name()
-    click.secho(f'GitHub Repo: {ctx.github_repo}')
 
 
 def determine_package_name(ctx: Context) -> None:
@@ -201,9 +189,15 @@ def push_release_branch(ctx: Context) -> None:
 def create_release_pr(ctx: Context) -> None:
     click.secho(
         f"> Creating release pull request.", fg='cyan')
+
+    if ctx.upstream_repo == ctx.origin_repo:
+        head = ctx.release_branch
+    else:
+        head = f'{ctx.origin_user}:{ctx.release_branch}'
+
     ctx.pull_request = ctx.github.create_pull_request(
-        ctx.github_repo,
-        branch=ctx.release_branch,
+        ctx.upstream_repo,
+        head=head,
         title=f'Release {ctx.package_name} v{ctx.release_version}',
         body='This pull request was generated using releasetool.')
     click.secho(f"Pull request is at {ctx.pull_request['html_url']}.")
@@ -216,7 +210,7 @@ def start() -> None:
         f"o/ Hey, {getpass.getuser()}, let's release some stuff!",
         fg='magenta')
 
-    setup_context(ctx)
+    releasetool.commands.common.setup_github_context(ctx)
     determine_package_name(ctx)
     determine_last_release(ctx)
     gather_changes(ctx)

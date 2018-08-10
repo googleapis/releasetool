@@ -14,7 +14,7 @@
 
 import re
 import subprocess
-from typing import Sequence
+from typing import Dict, Sequence
 
 
 def list_tags() -> Sequence[str]:
@@ -57,8 +57,55 @@ def push(branch: str, remote: str = 'origin') -> None:
         'git', 'push', '-u', remote, branch])
 
 
-def get_github_repo_name(remote='origin') -> str:
-    output = subprocess.check_output(
-        ['git', 'remote', 'get-url', remote]).decode('utf-8')
-    # TODO: Deal with not matching.
-    return re.match(r'(.+)@(.+):(?P<name>.+)\.git', output).group('name')
+def get_config() -> Dict[str, str]:
+    output = subprocess.check_output([
+        'git', 'config', '--list']).decode('utf-8')
+
+    lines = [line for line in output.split('\n') if line]
+    pairs = [line.split('=', 1) for line in lines]
+    config = {
+        key: value for key, value in pairs}
+
+    return config
+
+
+def get_remotes() -> Dict[str, str]:
+    config = get_config()
+
+    remote_names = []
+
+    for key in config.keys():
+        match = re.match(r'remote\.(?P<name>.+?)\.url', key)
+        if match:
+            remote_names.append(match.group('name'))
+
+    remotes = {
+        name: config[f'remote.{name}.url']
+        for name
+        in remote_names
+    }
+    return remotes
+
+
+def get_github_remotes() -> Dict[str, str]:
+    """Returns a dictionary mapping remote names to the appropriate github
+    owner/repo string."""
+    remotes = get_remotes()
+
+    github_repos = {}
+
+    for name, url in remotes.items():
+        # Match SSH or HTTP URLs, like:
+        # git@github.com:GoogleCloudPlatform/google-cloud-python.git
+        # https://github.com/GoogleCloudPlatform/google-cloud-python.git
+        match = re.match(r'^git@github.com:(?P<name>.+)\.git$', url)
+        if match:
+            github_repos[name] = match.group('name')
+            continue
+
+        match = re.match(r'^https://(.+?)?github.com/(?P<name>.+)\.git$', url)
+        if match:
+            github_repos[name] = match.group('name')
+            continue
+
+    return github_repos

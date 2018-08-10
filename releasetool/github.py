@@ -40,14 +40,14 @@ class GitHub:
     def create_pull_request(
             self,
             repository: str,
-            branch: str,
+            head: str,
             title: str,
             body: str = None) -> str:
         url = f'{_GITHUB_ROOT}/repos/{repository}/pulls'
         response = self.session.post(url, json={
             'title': title,
             'body': body,
-            'head': branch,
+            'head': head,
             'base': 'master',
             'maintainer_can_modify': True
         })
