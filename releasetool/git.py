@@ -18,53 +18,46 @@ from typing import Dict, Sequence
 
 
 def list_tags() -> Sequence[str]:
-    subprocess.check_output(
-        ['git', 'fetch', '--tags'])
+    subprocess.check_output(["git", "fetch", "--tags"])
     output = subprocess.check_output(
-        ['git', 'tag', '--list', '--sort=-creatordate']).decode('utf-8')
-    tags = output.split('\n')
+        ["git", "tag", "--list", "--sort=-creatordate"]
+    ).decode("utf-8")
+    tags = output.split("\n")
 
     return tags
 
 
 def summary_log(
-        from_: str, to: str='origin/master', where: str='.') -> Sequence[str]:
-    output = subprocess.check_output([
-        'git', 'log', '--format=%s', f'{from_}..{to}', where]
-    ).decode('utf-8')
-    commits = output.strip().split('\n')
+    from_: str, to: str = "origin/master", where: str = "."
+) -> Sequence[str]:
+    output = subprocess.check_output(
+        ["git", "log", "--format=%s", f"{from_}..{to}", where]
+    ).decode("utf-8")
+    commits = output.strip().split("\n")
     return commits
 
 
-def checkout_create_branch(
-        branch_name: str,
-        base: str = 'origin/master') -> None:
-    subprocess.check_output([
-        'git', 'checkout', '-b', branch_name, base])
+def checkout_create_branch(branch_name: str, base: str = "origin/master") -> None:
+    subprocess.check_output(["git", "checkout", "-b", branch_name, base])
 
 
 def commit(files: Sequence[str], message: str) -> None:
     """Create a release commit."""
-    subprocess.check_output([
-        'git', 'add'] + list(files))
-    subprocess.check_output([
-        'git', 'commit', '-m', message])
+    subprocess.check_output(["git", "add"] + list(files))
+    subprocess.check_output(["git", "commit", "-m", message])
 
 
-def push(branch: str, remote: str = 'origin') -> None:
+def push(branch: str, remote: str = "origin") -> None:
     """Push the release branch to the remote."""
-    subprocess.check_output([
-        'git', 'push', '-u', remote, branch])
+    subprocess.check_output(["git", "push", "-u", remote, branch])
 
 
 def get_config() -> Dict[str, str]:
-    output = subprocess.check_output([
-        'git', 'config', '--list']).decode('utf-8')
+    output = subprocess.check_output(["git", "config", "--list"]).decode("utf-8")
 
-    lines = [line for line in output.split('\n') if line]
-    pairs = [line.split('=', 1) for line in lines]
-    config = {
-        key: value for key, value in pairs}
+    lines = [line for line in output.split("\n") if line]
+    pairs = [line.split("=", 1) for line in lines]
+    config = {key: value for key, value in pairs}
 
     return config
 
@@ -75,15 +68,11 @@ def get_remotes() -> Dict[str, str]:
     remote_names = []
 
     for key in config.keys():
-        match = re.match(r'remote\.(?P<name>.+?)\.url', key)
+        match = re.match(r"remote\.(?P<name>.+?)\.url", key)
         if match:
-            remote_names.append(match.group('name'))
+            remote_names.append(match.group("name"))
 
-    remotes = {
-        name: config[f'remote.{name}.url']
-        for name
-        in remote_names
-    }
+    remotes = {name: config[f"remote.{name}.url"] for name in remote_names}
     return remotes
 
 
@@ -98,14 +87,14 @@ def get_github_remotes() -> Dict[str, str]:
         # Match SSH or HTTP URLs, like:
         # git@github.com:GoogleCloudPlatform/google-cloud-python.git
         # https://github.com/GoogleCloudPlatform/google-cloud-python.git
-        match = re.match(r'^git@github.com:(?P<name>.+)\.git$', url)
+        match = re.match(r"^git@github.com:(?P<name>.+)\.git$", url)
         if match:
-            github_repos[name] = match.group('name')
+            github_repos[name] = match.group("name")
             continue
 
-        match = re.match(r'^https://(.+?)?github.com/(?P<name>.+)\.git$', url)
+        match = re.match(r"^https://(.+?)?github.com/(?P<name>.+)\.git$", url)
         if match:
-            github_repos[name] = match.group('name')
+            github_repos[name] = match.group("name")
             continue
 
     return github_repos

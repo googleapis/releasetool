@@ -24,29 +24,27 @@ def open_editor(filename: str, return_contents: bool = False) -> Optional[str]:
     click.edit(filename=filename)
 
     if return_contents:
-        with open(filename, 'r') as fh:
+        with open(filename, "r") as fh:
             return fh.read()
     else:
         return None
 
 
 def open_editor_with_content(
-        filename: str,
-        contents: str,
-        return_contents: bool = False) -> Optional[str]:
+    filename: str, contents: str, return_contents: bool = False
+) -> Optional[str]:
 
-    with open(filename, 'w') as fh:
+    with open(filename, "w") as fh:
         fh.write(contents)
 
     return open_editor(filename, return_contents=return_contents)
 
 
-def open_editor_with_tempfile(contents: str, suffix: str = '.txt') -> str:
+def open_editor_with_tempfile(contents: str, suffix: str = ".txt") -> Optional[str]:
     handle, filename = tempfile.mkstemp(suffix)
     os.close(handle)
 
-    content = open_editor_with_content(
-        filename, contents, return_contents=True)
+    content = open_editor_with_content(filename, contents, return_contents=True)
 
     os.remove(filename)
 
@@ -54,16 +52,18 @@ def open_editor_with_tempfile(contents: str, suffix: str = '.txt') -> str:
 
 
 def insert_before(
-        filename: str,
-        new_content: str,
-        expr: str,
-        separator: str = '\n') -> None:
-    with open(filename, 'r+') as fh:
+    filename: str, new_content: str, expr: str, separator: str = "\n"
+) -> None:
+    with open(filename, "r+") as fh:
         if not new_content.endswith(separator):
             new_content += separator
 
         content = fh.read()
         match = re.search(expr, content, re.MULTILINE)
+
+        if not match:
+            return
+
         position = match.start()
 
         output = content[:position] + new_content + content[position:]
@@ -73,7 +73,7 @@ def insert_before(
 
 
 def replace(filename: str, expr: str, replacement: str) -> None:
-    with open(filename, 'r+') as fh:
+    with open(filename, "r+") as fh:
         content = fh.read()
 
         content = re.sub(expr, replacement, content)

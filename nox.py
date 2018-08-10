@@ -16,8 +16,26 @@ import nox
 
 
 @nox.session(python='3.6')
+def blacken(session):
+    session.install('black')
+    session.run('black', 'releasetool', 'tests')
+
+
+@nox.session(python='3.6')
 def lint(session):
-    session.install('mypy', 'flake8', '.')
+    session.install('mypy', 'flake8', 'black')
+    session.run('pip', 'install', '-e', '.')
+    session.run('black', '--check', 'releasetool', 'tests')
     session.run('flake8', 'releasetool', 'tests')
-    # TODO: run mypy on the tests when there are tests. :)
-    session.run('mypy', '--ignore-missing-imports', 'releasetool')
+    session.run(
+        'mypy',
+        '--no-strict-optional',
+        '--ignore-missing-imports',
+        'releasetool')
+
+
+@nox.session(python='3.6')
+def test(session):
+    session.install('pytest')
+    session.run('pip', 'install', '-e', '.')
+    session.run('pytest', 'tests', *session.posargs)
