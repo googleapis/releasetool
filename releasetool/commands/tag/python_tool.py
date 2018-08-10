@@ -20,13 +20,14 @@ import subprocess
 
 import click
 
+import releasetool.commands.common
 from releasetool.commands.tag import python
 
 
 def get_release_notes(ctx: python.Context) -> None:
     click.secho("> Grabbing the release notes.")
     changelog = ctx.github.get_contents(
-        ctx.github_repo,
+        ctx.upstream_repo,
         f'CHANGELOG.md',
         ref=ctx.release_pr['merge_commit_sha'])
     changelog = changelog.decode('utf-8')
@@ -44,7 +45,7 @@ def create_release(ctx: python.Context) -> None:
     click.secho("> Creating the release.")
 
     ctx.github_release = ctx.github.create_release(
-        repository=ctx.github_repo,
+        repository=ctx.upstream_repo,
         tag_name=ctx.release_tag,
         target_committish=ctx.release_pr['merge_commit_sha'],
         name=f'{ctx.package_name} {ctx.release_version}',
@@ -54,7 +55,7 @@ def create_release(ctx: python.Context) -> None:
     click.secho(release_location_string)
 
     ctx.github.create_pull_request_comment(
-        ctx.github_repo, ctx.release_pr['number'], release_location_string)
+        ctx.upstream_repo, ctx.release_pr['number'], release_location_string)
 
 
 def publish_to_pypi(ctx: python.Context) -> None:
@@ -76,7 +77,7 @@ def tag() -> None:
         f"o/ Hey, {getpass.getuser()}, let's tag a release!",
         fg='magenta')
 
-    python.setup_context(ctx)
+    releasetool.commands.common.setup_github_context(ctx)
 
     python.determine_release_pr(ctx)
     python.determine_release_tag(ctx)
