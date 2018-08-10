@@ -27,18 +27,18 @@ from releasetool.commands.tag import python
 def get_release_notes(ctx: python.Context) -> None:
     click.secho("> Grabbing the release notes.")
     changelog = ctx.github.get_contents(
-        ctx.upstream_repo,
-        f'CHANGELOG.md',
-        ref=ctx.release_pr['merge_commit_sha'])
-    changelog = changelog.decode('utf-8')
+        ctx.upstream_repo, f"CHANGELOG.md", ref=ctx.release_pr["merge_commit_sha"]
+    ).decode("utf-8")
 
     match = re.search(
-        rf'## {ctx.release_version}\n(?P<notes>.+?)(\n##\s|\Z)',
-        changelog, re.DOTALL | re.MULTILINE)
+        rf"## {ctx.release_version}\n(?P<notes>.+?)(\n##\s|\Z)",
+        changelog,
+        re.DOTALL | re.MULTILINE,
+    )
     if match is not None:
-        ctx.release_notes = match.group('notes').strip()
+        ctx.release_notes = match.group("notes").strip()
     else:
-        ctx.release_notes = ''
+        ctx.release_notes = ""
 
 
 def create_release(ctx: python.Context) -> None:
@@ -47,35 +47,35 @@ def create_release(ctx: python.Context) -> None:
     ctx.github_release = ctx.github.create_release(
         repository=ctx.upstream_repo,
         tag_name=ctx.release_tag,
-        target_committish=ctx.release_pr['merge_commit_sha'],
-        name=f'{ctx.package_name} {ctx.release_version}',
-        body=ctx.release_notes)
+        target_committish=ctx.release_pr["merge_commit_sha"],
+        name=f"{ctx.package_name} {ctx.release_version}",
+        body=ctx.release_notes,
+    )
 
     release_location_string = f"Release is at {ctx.github_release['html_url']}"
     click.secho(release_location_string)
 
     ctx.github.create_pull_request_comment(
-        ctx.upstream_repo, ctx.release_pr['number'], release_location_string)
+        ctx.upstream_repo, ctx.release_pr["number"], release_location_string
+    )
 
 
 def publish_to_pypi(ctx: python.Context) -> None:
     # TODO: Replace this with Kokoro!
     click.secho("> Publishing to PyPI.")
-    shutil.rmtree('build', ignore_errors=True)
-    shutil.rmtree('dist', ignore_errors=True)
-    for path in glob.glob('*.egg-info'):
-        shutil.rmtree('path', ignore_errors=True)
-    subprocess.check_output(['python3', 'setup.py', 'sdist', 'bdist_wheel'])
-    dists = glob.glob('dist/*')
-    subprocess.check_call(['twine', 'upload'] + dists)
+    shutil.rmtree("build", ignore_errors=True)
+    shutil.rmtree("dist", ignore_errors=True)
+    for path in glob.glob("*.egg-info"):
+        shutil.rmtree("path", ignore_errors=True)
+    subprocess.check_output(["python3", "setup.py", "sdist", "bdist_wheel"])
+    dists = glob.glob("dist/*")
+    subprocess.check_call(["twine", "upload"] + dists)
 
 
 def tag() -> None:
     ctx = python.Context()
 
-    click.secho(
-        f"o/ Hey, {getpass.getuser()}, let's tag a release!",
-        fg='magenta')
+    click.secho(f"o/ Hey, {getpass.getuser()}, let's tag a release!", fg="magenta")
 
     releasetool.commands.common.setup_github_context(ctx)
 
@@ -88,4 +88,4 @@ def tag() -> None:
 
     publish_to_pypi(ctx)
 
-    click.secho(f"\o/ All done!", fg='magenta')
+    click.secho(f"\o/ All done!", fg="magenta")
