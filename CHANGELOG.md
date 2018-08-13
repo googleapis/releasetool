@@ -4,6 +4,18 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+## 0.3.0
+
+### New Features
+
+- Check for updates (#24)
+- Add support for multiple GitHub remotes and releasing across forks (#22)
+
+### Internal / Testing Changes
+
+- Use new Nox
+- Blacken and fixup type issues (#23)
+
 ## 0.2.1
 
 ### Implementation Changes
