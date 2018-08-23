@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import functools
+import os
 
 import click
 
@@ -25,6 +26,28 @@ import releasetool.commands.tag.python_tool
 import releasetool.commands.tag.nodejs
 
 
+class _OptionPromptIfNone(click.Option):
+    """A custom option that only prompts if the default value can't be
+    determined."""
+
+    _value_key = "_default_val"
+
+    def get_default(self, ctx):
+        if not hasattr(self, self._value_key):
+            default = super(_OptionPromptIfNone, self).get_default(ctx)
+            setattr(self, self._value_key, default)
+        return getattr(self, self._value_key)
+
+    def prompt_for_value(self, ctx):
+        default = self.get_default(ctx)
+
+        # only prompt if the default value is None
+        if default is None:
+            return super(_OptionPromptIfNone, self).prompt_for_value(ctx)
+
+        return default
+
+
 @click.group(invoke_without_command=True)
 @click.pass_context
 def main(ctx):
@@ -32,11 +55,24 @@ def main(ctx):
         return ctx.invoke(start)
 
 
+def _detect_language():
+    if os.path.exists("package.json"):
+        return "nodejs"
+    elif os.path.exists("setup.py"):
+        if os.path.exists("google"):
+            return "python"
+        else:
+            return "python-tool"
+    return None
+
+
 _language_choices = ["python", "python-tool", "nodejs"]
 _language_option = click.option(
     "--language",
     prompt=f"Which language ({', '.join(_language_choices)})?",
     type=click.Choice(_language_choices),
+    default=_detect_language,
+    cls=_OptionPromptIfNone,
 )
 
 
