@@ -27,6 +27,7 @@ class GitHubContext:
     github: Optional[releasetool.github.GitHub] = None
     origin_user: Optional[str] = None
     origin_repo: Optional[str] = None
+    upstream_name: Optional[str] = None
     upstream_repo: Optional[str] = None
     package_name: Optional[str] = None
 
@@ -40,14 +41,32 @@ def _determine_origin(ctx: GitHubContext) -> None:
 
 def _determine_upstream(ctx: GitHubContext, owners: Tuple[str, ...]) -> None:
     remotes = releasetool.git.get_github_remotes()
-    repos = [
-        name for remote, name in remotes.items() if name.lower().startswith(owners)
-    ]
+    repos = {
+        name: repo for name, repo in remotes.items() if repo.lower().startswith(owners)
+    }
 
     if not repos:
         raise ValueError("Unable to determine the upstream GitHub repo. :(")
 
-    ctx.upstream_repo = repos.pop()
+    if len(repos) > 1:
+        options = "\n".join(f"  * {name}: {repo}" for name, repo in repos.items())
+        choice = click.prompt(
+            click.style(
+                f"More than one possible upstream remote was found."
+                f"\n\n{options}\n\n"
+                f"Please enter the *name* of one you want to use",
+                fg="yellow",
+            )
+        )
+        try:
+            upstream = choice, repos[choice]
+        except KeyError:
+            click.secho(f"No remote named {choice}!", fg="red")
+            raise click.Abort()
+    else:
+        upstream = repos.popitem()
+
+    ctx.upstream_name, ctx.upstream_repo = upstream
 
 
 def setup_github_context(
