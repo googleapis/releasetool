@@ -4,6 +4,12 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+## 0.5.0
+
+### New Features
+
+- Add java start and tag commands (#29)
+
 ## 0.4.0
 
 ### Implementation Changes
