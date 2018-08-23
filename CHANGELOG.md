@@ -4,6 +4,16 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+## 0.4.0
+
+### Implementation Changes
+
+- Correctly handle multiple possible upstreams and correctly compute the upstream change summary (#30)
+
+### New Features
+
+- Automatically detect the language. (#31)
+
 ## 0.3.0
 
 ### New Features
