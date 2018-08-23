@@ -80,7 +80,9 @@ def determine_last_release(ctx: Context) -> None:
 
 def gather_changes(ctx: Context) -> None:
     click.secho(f"> Gathering changes since {ctx.last_release_version}", fg="cyan")
-    ctx.changes = releasetool.git.summary_log(ctx.last_release_committish)
+    ctx.changes = releasetool.git.summary_log(
+        from_=ctx.last_release_committish, to=f"{ctx.upstream_name}/master"
+    )
     click.secho(f"Cool, {len(ctx.changes)} changes found.")
 
 
