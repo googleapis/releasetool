@@ -61,9 +61,10 @@ def determine_release_tag(ctx: Context) -> None:
     if match is not None:
         ctx.release_tag = match.group(1)
     else:
-        print(
+        click.secho(
             "I couldn't determine what the release tag should be from the PR's"
-            f"head ref {head_ref}."
+            f"head ref {head_ref}.",
+            fg="red"
         )
         ctx.release_tag = click.prompt(
             "What should the release tag be (for example, storage-1.2.3)?"

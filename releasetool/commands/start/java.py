@@ -92,7 +92,9 @@ def determine_snapshot_version(ctx: Context) -> None:
 
 def gather_changes(ctx: Context) -> None:
     click.secho(f"> Gathering changes since {ctx.last_release_version}", fg="cyan")
-    ctx.changes = releasetool.git.summary_log(ctx.last_release_committish)
+    ctx.changes = releasetool.git.summary_log(
+        from_=ctx.last_release_committish, to=f"{ctx.upstream_name}/master"
+    )
     click.secho(f"Cool, {len(ctx.changes)} changes found.")
 
 
@@ -154,12 +156,10 @@ def create_release_branch(ctx) -> None:
 
 def gather_pom_xml_files(ctx: Context) -> None:
     ctx.pom_files = glob('**/pom.xml', recursive=True)
-    print(ctx.pom_files)
 
 
 def update_pom_xml(ctx: Context) -> None:
     click.secho("> Updating snapshot versions in pom.xml files.", fg="cyan")
-    print(ctx.snapshot_version)
     for file in ctx.pom_files:
         click.secho(f"> Updating {file}.", fg="cyan")
         releasetool.filehelpers.replace(
