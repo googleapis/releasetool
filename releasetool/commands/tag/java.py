@@ -56,7 +56,7 @@ def determine_release_pr(ctx: Context) -> None:
 def determine_release_tag(ctx: Context) -> None:
     click.secho("> Determining what the release tag should be.", fg="cyan")
     head_ref = ctx.release_pr["head"]["ref"]
-    match = re.match("release-(.+)", head_ref)
+    match = re.match("release-.+-(v\d+\.\d+\.\d+)", head_ref)
 
     if match is not None:
         ctx.release_tag = match.group(1)
@@ -74,30 +74,28 @@ def determine_release_tag(ctx: Context) -> None:
 
 
 def determine_package_name_and_version(ctx: Context) -> None:
-    click.secho("> Determining the package name and version.", fg="cyan")
-    match = re.match("(?P<name>.+?)-(?P<version>v?\d+?\.\d+?\.\d+?)", ctx.release_tag)
-    ctx.package_name = match.group("name")
-    ctx.release_version = match.group("version")
+    click.secho("> Determining the release version.", fg="cyan")
+    match = re.match("v(\d+\.\d+\.\d+)", ctx.release_tag)
+    ctx.release_version = match.group(1)
     click.secho(
-        f"Package name: {ctx.package_name}, " f"package version: {ctx.release_version}."
+        f"Package version: {ctx.release_version}."
     )
 
 
 def get_release_notes(ctx: Context) -> None:
-    click.secho("> Grabbing the release notes.")
-    changelog = ctx.github.get_contents(
-        ctx.upstream_repo, "CHANGELOG.md", ref=ctx.release_pr["merge_commit_sha"]
-    ).decode("utf-8")
+    click.secho("> Grabbing the release notes.", fg="cyan")
 
     match = re.search(
-        rf"## {ctx.release_version}\n(?P<notes>.+?)(\n##\s|\Z)",
-        changelog,
+        r"This pull request was generated using releasetool\.\n\n(.*)",
+        ctx.release_pr["body"],
         re.DOTALL | re.MULTILINE,
     )
     if match is not None:
-        ctx.release_notes = match.group("notes").strip()
+        ctx.release_notes = match.group(1).strip()
     else:
         ctx.release_notes = ""
+
+    click.secho(f"Release notes:\n{ctx.release_notes}")
 
 
 def create_release(ctx: Context) -> None:
@@ -113,26 +111,10 @@ def create_release(ctx: Context) -> None:
 
     release_location_string = f"Release is at {ctx.github_release['html_url']}"
     click.secho(release_location_string)
-    click.secho("CI will handle publishing the package to PyPI.")
 
     ctx.github.create_pull_request_comment(
         ctx.upstream_repo, ctx.release_pr["number"], release_location_string
     )
-
-
-def wait_on_circle(ctx: Context) -> None:
-    circle = releasetool.circleci.CircleCI(repository=ctx.upstream_repo)
-    click.secho("> Waiting for CircleCI to queue a release build")
-    tag_name = f"{ctx.package_name}-{ctx.release_version}"
-    fresh_build = circle.get_latest_build_by_tag(tag_name)
-    if fresh_build:
-        click.secho(f"CircleCI Build: {fresh_build['build_url']}")
-        click.secho("> Monitoring CircleCI for completion of release")
-        click.secho("")
-        for state in circle.get_build_status_generator(fresh_build["build_num"]):
-            click.secho(f"CircleCI Build State: {state}\r", nl=False)
-    else:
-        click.secho(f"CircleCI Build not found for tag {tag_name}...")
 
 
 def tag() -> None:
@@ -148,6 +130,5 @@ def tag() -> None:
     get_release_notes(ctx)
 
     create_release(ctx)
-    wait_on_circle(ctx)
 
     click.secho(f"\o/ All done!", fg="magenta")

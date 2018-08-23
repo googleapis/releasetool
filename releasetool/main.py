@@ -21,9 +21,11 @@ import releasetool.update_check
 import releasetool.commands.start.python
 import releasetool.commands.start.python_tool
 import releasetool.commands.start.nodejs
+import releasetool.commands.start.java
 import releasetool.commands.tag.python
 import releasetool.commands.tag.python_tool
 import releasetool.commands.tag.nodejs
+import releasetool.commands.tag.java
 
 
 class _OptionPromptIfNone(click.Option):
@@ -66,7 +68,7 @@ def _detect_language():
     return None
 
 
-_language_choices = ["python", "python-tool", "nodejs"]
+_language_choices = ["python", "python-tool", "nodejs", "java"]
 _language_option = click.option(
     "--language",
     prompt=f"Which language ({', '.join(_language_choices)})?",
@@ -89,6 +91,8 @@ def start(language):
         return releasetool.commands.start.python_tool.start()
     if language == "nodejs":
         return releasetool.commands.start.nodejs.start()
+    if language == "java":
+        return releasetool.commands.start.java.start()
 
 
 @main.command()
@@ -100,3 +104,5 @@ def tag(language):
         return releasetool.commands.tag.python_tool.tag()
     if language == "nodejs":
         return releasetool.commands.tag.nodejs.tag()
+    if language == "java":
+        return releasetool.commands.tag.java.tag()
