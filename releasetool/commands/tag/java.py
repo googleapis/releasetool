@@ -84,7 +84,7 @@ def get_release_notes(ctx: Context) -> None:
     click.secho("> Grabbing the release notes.", fg="cyan")
 
     match = re.search(
-        r"This pull request was generated using releasetool\.\n\n(.*)",
+        r"This pull request was generated using releasetool\.\s+(.*)",
         ctx.release_pr["body"],
         re.DOTALL | re.MULTILINE,
     )
@@ -101,9 +101,9 @@ def create_release(ctx: Context) -> None:
 
     ctx.github_release = ctx.github.create_release(
         repository=ctx.upstream_repo,
-        tag_name=ctx.release_version,
+        tag_name=ctx.release_tag,
         target_committish=ctx.release_pr["merge_commit_sha"],
-        name=f"{ctx.release_version}",
+        name=ctx.release_tag,
         body=ctx.release_notes,
     )
 
