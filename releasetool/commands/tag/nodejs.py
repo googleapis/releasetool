@@ -64,7 +64,7 @@ def determine_release_tag(ctx: Context) -> None:
         click.secho(
             "I couldn't determine what the release tag should be from the PR's"
             f"head ref {head_ref}.",
-            fg="red"
+            fg="red",
         )
         ctx.release_tag = click.prompt(
             "What should the release tag be (for example, storage-1.2.3)?"

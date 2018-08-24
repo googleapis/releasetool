@@ -70,7 +70,8 @@ def _determine_upstream(ctx: GitHubContext, owners: Tuple[str, ...]) -> None:
 
 
 def setup_github_context(
-    ctx: GitHubContext, owners: Tuple[str, ...] = ("googlecloudplatform", "googleapis", "google")
+    ctx: GitHubContext,
+    owners: Tuple[str, ...] = ("googlecloudplatform", "googleapis", "google"),
 ) -> None:
     click.secho("> Determining GitHub context.", fg="cyan")
     github_token = releasetool.secrets.ensure_password(

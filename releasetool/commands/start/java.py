@@ -78,14 +78,13 @@ def determine_snapshot_version(ctx: Context) -> None:
 
     with open("pom.xml", "r") as fh:
         content = fh.read()
-        m = re.search(r'<version>(\d+\.\d+\.\d+)-SNAPSHOT</version>', content)
+        m = re.search(r"<version>(\d+\.\d+\.\d+)-SNAPSHOT</version>", content)
         if m:
             ctx.snapshot_version = m.group(1)
 
     if ctx.snapshot_version is None:
         click.secho(
-            "I couldn't figure out the current snapshot version from pom.xml.",
-            fg="red",
+            "I couldn't figure out the current snapshot version from pom.xml.", fg="red"
         )
         click.exit(1)
 
@@ -155,7 +154,7 @@ def create_release_branch(ctx) -> None:
 
 
 def gather_pom_xml_files(ctx: Context) -> None:
-    ctx.pom_files = glob('**/pom.xml', recursive=True)
+    ctx.pom_files = glob("**/pom.xml", recursive=True)
 
 
 def update_pom_xml(ctx: Context) -> None:
@@ -164,15 +163,17 @@ def update_pom_xml(ctx: Context) -> None:
         click.secho(f"> Updating {file}.", fg="cyan")
         releasetool.filehelpers.replace(
             file,
-            f'<version>{ctx.snapshot_version}-SNAPSHOT</version>',
-            f'<version>{ctx.release_version}</version>'
+            f"<version>{ctx.snapshot_version}-SNAPSHOT</version>",
+            f"<version>{ctx.release_version}</version>",
         )
+
 
 def update_readme(ctx: Context) -> None:
     click.secho("> Updating README.md file.", fg="cyan")
     releasetool.filehelpers.replace(
         "README.md", ctx.last_release_version, ctx.release_version
     )
+
 
 def create_release_commit(ctx: Context) -> None:
     """Create a release commit."""
