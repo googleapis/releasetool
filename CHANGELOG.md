@@ -4,6 +4,21 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+## 0.5.1
+
+- Fix release name, tag, and release notes (#34)
+- Blacken
+
+### Implementation Changes
+
+### New Features
+
+### Dependencies
+
+### Documentation
+
+### Internal / Testing Changes
+
 ## 0.5.0
 
 ### New Features
