@@ -89,6 +89,9 @@ def gather_changes(ctx: Context) -> None:
     ctx.changes = releasetool.git.summary_log(
         from_=ctx.last_release_committish, to=f"{ctx.upstream_name}/master"
     )
+    ctx.changes = [
+        ctx.github.link_pull_request(c, ctx.upstream_repo) for c in ctx.changes
+    ]
     click.secho(f"Cool, {len(ctx.changes)} changes found.")
 
 

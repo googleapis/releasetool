@@ -13,12 +13,14 @@
 # limitations under the License.
 
 import base64
+import re
 from typing import Sequence
 
 import requests
 
 
 _GITHUB_ROOT: str = "https://api.github.com"
+_GITHUB_UI_ROOT: str = "https://github.com"
 
 
 class GitHub:
@@ -53,6 +55,12 @@ class GitHub:
         )
         response.raise_for_status()
         return response.json()
+
+    def link_pull_request(self, text: str, repository: str) -> str:
+        match = "#(?P<pull_request>\d+)"
+        url = f"{_GITHUB_UI_ROOT}/{repository}/pull/\\g<pull_request>"
+        replacement = f"[#\\g<pull_request>]({url})"
+        return re.sub(match, replacement, text)
 
     def get_contents(self, repository: str, path: str, ref: str = None) -> bytes:
         url = f"{_GITHUB_ROOT}/repos/{repository}/contents/{path}"
