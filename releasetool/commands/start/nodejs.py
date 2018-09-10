@@ -51,7 +51,9 @@ class Context(releasetool.commands.common.GitHubContext):
 
 def determine_package_name(ctx: Context) -> None:
     click.secho("> Figuring out the package name.", fg="cyan")
-    ctx.package_name = os.path.basename(os.getcwd())
+    ctx.package_name = releasetool.filehelpers.extract(
+        "package.json", r'"name": "(.*?)"'
+    )
     click.secho(f"Looks like we're releasing {ctx.package_name}.")
 
 
@@ -140,7 +142,7 @@ def determine_release_version(ctx: Context) -> None:
 
 
 def create_release_branch(ctx) -> None:
-    ctx.release_branch = f"release-{ctx.package_name}-v{ctx.release_version}"
+    ctx.release_branch = f"release-v{ctx.release_version}"
     click.secho(f"> Creating branch {ctx.release_branch}", fg="cyan")
     return releasetool.git.checkout_create_branch(ctx.release_branch)
 
@@ -172,11 +174,28 @@ def update_package_json(ctx: Context) -> None:
     )
 
 
+def update_samples_package_json(ctx: Context) -> None:
+    click.secho("> Updating samples/package.json.", fg="cyan")
+    try:
+        releasetool.filehelpers.replace(
+            "samples/package.json",
+            f'"{ctx.package_name}": "(.+?)"',
+            f'"{ctx.package_name}": "^{ctx.release_version}"',
+        )
+    except FileNotFoundError:
+        pass
+
+
 def create_release_commit(ctx: Context) -> None:
     """Create a release commit."""
     click.secho("> Committing changes", fg="cyan")
     releasetool.git.commit(
-        ["CHANGELOG.md", "package.json"], f"Release v{ctx.release_version}"
+        [
+            "CHANGELOG.md",
+            "package.json",
+            "samples/package.json"
+        ],
+        f"Release v{ctx.release_version}",
     )
 
 
@@ -216,6 +235,7 @@ def start() -> None:
     create_release_branch(ctx)
     update_changelog(ctx)
     update_package_json(ctx)
+    update_samples_package_json(ctx)
     create_release_commit(ctx)
     push_release_branch(ctx)
     # TODO: Confirm?

@@ -81,3 +81,11 @@ def replace(filename: str, expr: str, replacement: str) -> None:
         fh.seek(0)
         fh.write(content)
         fh.truncate()
+
+
+def extract(filename: str, expr: str) -> str:
+    with open(filename, 'r') as fh:
+        content = fh.read()
+
+        matches = re.search(expr, content)
+        return matches.group(1)
