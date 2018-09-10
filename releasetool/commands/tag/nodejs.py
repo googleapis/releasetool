@@ -73,13 +73,12 @@ def determine_release_tag(ctx: Context) -> None:
     click.secho(f"Release tag is {ctx.release_tag}.")
 
 
-def determine_package_name_and_version(ctx: Context) -> None:
-    click.secho("> Determining the package name and version.", fg="cyan")
-    match = re.match("(?P<name>.+?)-(?P<version>v?\d+?\.\d+?\.\d+?)", ctx.release_tag)
-    ctx.package_name = match.group("name")
+def determine_package_version(ctx: Context) -> None:
+    click.secho("> Determining the package version.", fg="cyan")
+    match = re.match("(?P<version>v?\d+?\.\d+?\.\d+?)", ctx.release_tag)
     ctx.release_version = match.group("version")
     click.secho(
-        f"Package name: {ctx.package_name}, " f"package version: {ctx.release_version}."
+        f"package version: {ctx.release_version}."
     )
 
 
