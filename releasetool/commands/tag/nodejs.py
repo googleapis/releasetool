@@ -123,7 +123,7 @@ def create_release(ctx: Context) -> None:
 def wait_on_circle(ctx: Context) -> None:
     circle = releasetool.circleci.CircleCI(repository=ctx.upstream_repo)
     click.secho("> Waiting for CircleCI to queue a release build")
-    tag_name = f"{ctx.package_name}-{ctx.release_version}"
+    tag_name = ctx.release_version
     fresh_build = circle.get_latest_build_by_tag(tag_name)
     if fresh_build:
         click.secho(f"CircleCI Build: {fresh_build['build_url']}")
