@@ -73,17 +73,20 @@ def _detect_language():
 
 
 _language_choices = ["python", "python-tool", "nodejs", "java", "ruby"]
-_language_option = click.option(
-    "--language",
-    prompt=f"Which language ({', '.join(_language_choices)})?",
-    type=click.Choice(_language_choices),
-    default=_detect_language,
-    cls=_OptionPromptIfNone,
-)
+
+
+def _language_option():
+    return click.option(
+        "--language",
+        prompt=f"Which language ({', '.join(_language_choices)})?",
+        type=click.Choice(_language_choices),
+        default=_detect_language,
+        cls=_OptionPromptIfNone,
+    )
 
 
 @main.command()
-@_language_option
+@_language_option()
 def start(language):
     releasetool.update_check.check_for_updates(
         "gcp-releasetool", print=functools.partial(click.secho, fg="magenta")
@@ -102,7 +105,7 @@ def start(language):
 
 
 @main.command()
-@_language_option
+@_language_option()
 def tag(language):
     if language == "python":
         return releasetool.commands.tag.python.tag()
