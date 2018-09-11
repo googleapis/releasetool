@@ -4,6 +4,24 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+## 0.6.0
+
+### Implementation Changes
+- Fix error on missing ~/.cache
+- fix(nodejs): tag name is just the version for Node.js ([#42](https://github.com/GoogleCloudPlatform/releasetool/pull/42))
+- Fix release name, tag, and release notes ([#34](https://github.com/GoogleCloudPlatform/releasetool/pull/34))
+
+### New Features
+- feat(nodejs): bump package version in samples/package.json as well ([#41](https://github.com/GoogleCloudPlatform/releasetool/pull/41))
+- Add support for google-cloud-ruby libraries ([#37](https://github.com/GoogleCloudPlatform/releasetool/pull/37))
+- Add links to pull requests ([#39](https://github.com/GoogleCloudPlatform/releasetool/pull/39))
+
+### Dependencies
+- Fix missing packaging dependency
+
+### Internal / Testing Changes
+- Blacken
+
 ## 0.5.0
 
 ### New Features
