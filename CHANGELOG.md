@@ -19,8 +19,6 @@
 ### Dependencies
 - Fix missing packaging dependency
 
-### Documentation
-
 ### Internal / Testing Changes
 - Blacken
 
