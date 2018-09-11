@@ -73,13 +73,12 @@ def determine_release_tag(ctx: Context) -> None:
     click.secho(f"Release tag is {ctx.release_tag}.")
 
 
-def determine_package_name_and_version(ctx: Context) -> None:
-    click.secho("> Determining the package name and version.", fg="cyan")
-    match = re.match("(?P<name>.+?)-(?P<version>v?\d+?\.\d+?\.\d+?)", ctx.release_tag)
-    ctx.package_name = match.group("name")
+def determine_package_version(ctx: Context) -> None:
+    click.secho("> Determining the package version.", fg="cyan")
+    match = re.match("(?P<version>v?\d+?\.\d+?\.\d+?)", ctx.release_tag)
     ctx.release_version = match.group("version")
     click.secho(
-        f"Package name: {ctx.package_name}, " f"package version: {ctx.release_version}."
+        f"package version: {ctx.release_version}."
     )
 
 
@@ -123,7 +122,7 @@ def create_release(ctx: Context) -> None:
 def wait_on_circle(ctx: Context) -> None:
     circle = releasetool.circleci.CircleCI(repository=ctx.upstream_repo)
     click.secho("> Waiting for CircleCI to queue a release build")
-    tag_name = f"{ctx.package_name}-{ctx.release_version}"
+    tag_name = ctx.release_version
     fresh_build = circle.get_latest_build_by_tag(tag_name)
     if fresh_build:
         click.secho(f"CircleCI Build: {fresh_build['build_url']}")
