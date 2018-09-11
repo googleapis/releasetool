@@ -22,7 +22,8 @@ dependencies = [
     "requests",
     "attrs",
     "click",
-    "keyring"
+    "keyring",
+    "packaging"
 ]
 
 packages = setuptools.find_packages()
@@ -54,6 +55,6 @@ setuptools.setup(
     include_package_data=True,
     zip_safe=False,
     entry_points={
-        'console_scripts':  scripts,
+        'console_scripts': scripts,
     },
 )
