@@ -143,7 +143,7 @@ def tag() -> None:
 
     determine_release_pr(ctx)
     determine_release_tag(ctx)
-    determine_package_name_and_version(ctx)
+    determine_package_version(ctx)
     get_release_notes(ctx)
 
     create_release(ctx)
