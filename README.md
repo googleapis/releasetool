@@ -2,8 +2,8 @@
 
 This tool helps create releases for cloud client libraries.
 
-Presently, this only works for Python but it's designed in such a way that it
-could easily be used for other languages.
+Presently, this works for Python, Node.js, and Ruby.  However, it's designed
+in such a way that it could easily be used for other languages.
 
 
 ## Installation
@@ -19,9 +19,7 @@ python3 -m pip install --upgrade gcp-releasetool
 
 ## Usage
 
-### Python
-
-Python packages are published in two phases. First, a PR is created to update
+Packages are published in two phases. First, a PR is created to update
 `CHANGELOG.md` and the version number. Second, once the PR is merged the
 merge commit is tagged and CI publishes the package.
 
@@ -37,22 +35,3 @@ releasetool start
 
 Once the PR has been approved and merged, you can run `releasetool tag` from
 anywhere in the repository to tag the commit and start CI.
-
-### Ruby
-
-Ruby gems are published in two phases. First, a PR is created to update
-`CHANGELOG.md` and the version number. Second, once the PR is merged the
-merge commit is tagged and CI publishes the package.
-
-To start the process of releasing use `releasetool start` from the directory of
-the library you want to publish, for example:
-
-```
-git clone git@github.com:GoogleCloudPlatform/google-cloud-ruby.git
-cd google-cloud-ruby
-cd google-cloud-bigquery
-releasetool start
-```
-
-Once the PR has been approved and merged, run `releasetool tag` in the same
-directory to create a GitHub release and start CI.
