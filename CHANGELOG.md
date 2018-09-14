@@ -4,6 +4,18 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+## 0.7.0
+
+### Implementation Changes
+- fix: `tag` detects default language ([#45](https://github.com/GoogleCloudPlatform/releasetool/pull/45))
+- fix: nodejs tag ([#44](https://github.com/GoogleCloudPlatform/releasetool/pull/44))
+
+### New Features
+- Add --version flag ([#47](https://github.com/GoogleCloudPlatform/releasetool/pull/47))
+
+### Internal / Testing Changes
+- add .kokoro release job ([#48](https://github.com/GoogleCloudPlatform/releasetool/pull/48))
+
 ## 0.6.0
 
 ### Implementation Changes
