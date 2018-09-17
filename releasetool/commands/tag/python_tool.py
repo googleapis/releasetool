@@ -17,6 +17,7 @@ import glob
 import re
 import shutil
 import subprocess
+from urllib import parse
 
 import click
 
@@ -61,15 +62,21 @@ def create_release(ctx: python.Context) -> None:
 
 
 def publish_to_pypi(ctx: python.Context) -> None:
-    # TODO: Replace this with Kokoro!
-    click.secho("> Publishing to PyPI.")
-    shutil.rmtree("build", ignore_errors=True)
-    shutil.rmtree("dist", ignore_errors=True)
-    for path in glob.glob("*.egg-info"):
-        shutil.rmtree("path", ignore_errors=True)
-    subprocess.check_output(["python3", "setup.py", "sdist", "bdist_wheel"])
-    dists = glob.glob("dist/*")
-    subprocess.check_call(["twine", "upload"] + dists)
+    kokoro_url = "https://fusion.corp.google.com/projectanalysis/current/KOKORO/"
+    project = f"prod:cloud-devrel/client-libraries/{ctx.package_name}/release"
+    project_url = parse.urljoin(kokoro_url, parse.quote_plus(project))
+
+    commitish = ctx.release_pr["merge_commit_sha"]
+
+    click.secho(
+        f"> Trigger the Kokoro build with the commitish below to publish to PyPI.",
+        fg="cyan",
+    )
+    click.secho(f"Build:\t\t{click.style(project_url, underline=True)}")
+    click.secho(f"Commitish:\t{click.style(commitish, bold=True)}")
+
+    if click.confirm("Would you like to go the Kokoro build page?"):
+        click.launch(project_url)
 
 
 def tag() -> None:
