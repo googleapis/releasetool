@@ -4,6 +4,17 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+## 0.8.0
+
+### Implementation Changes
+- make release.sh executable ([#50](https://github.com/GoogleCloudPlatform/releasetool/pull/50))
+
+### New Features
+- Add link to Kokoro release job for python tools ([#55](https://github.com/GoogleCloudPlatform/releasetool/pull/55))
+
+### Documentation
+- Update instructions to be more clear ([#51](https://github.com/GoogleCloudPlatform/releasetool/pull/51))
+
 ## 0.7.0
 
 ### Implementation Changes
