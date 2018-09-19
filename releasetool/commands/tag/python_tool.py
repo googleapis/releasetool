@@ -66,14 +66,12 @@ def publish_to_pypi(ctx: python.Context) -> None:
     project = f"prod:cloud-devrel/client-libraries/{ctx.package_name}/release"
     project_url = parse.urljoin(kokoro_url, parse.quote_plus(project))
 
-    commitish = ctx.release_pr["merge_commit_sha"]
-
     click.secho(
         f"> Trigger the Kokoro build with the commitish below to publish to PyPI.",
         fg="cyan",
     )
     click.secho(f"Build:\t\t{click.style(project_url, underline=True)}")
-    click.secho(f"Commitish:\t{click.style(commitish, bold=True)}")
+    click.secho(f"Commitish:\t{click.style(ctx.release_tag, bold=True)}")
 
     if click.confirm("Would you like to go the Kokoro build page?"):
         click.launch(project_url)
