@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import datetime
 import getpass
 import os
 import textwrap
@@ -22,7 +21,6 @@ from glob import glob
 import attr
 import click
 import re
-from pytz import timezone
 
 import releasetool.filehelpers
 import releasetool.git
@@ -99,29 +97,6 @@ def gather_changes(ctx: Context) -> None:
         ctx.github.link_pull_request(c, ctx.upstream_repo) for c in ctx.changes
     ]
     click.secho(f"Cool, {len(ctx.changes)} changes found.")
-
-
-def edit_release_notes(ctx: Context) -> None:
-    click.secho(f"> Opening your editor to finalize release notes.", fg="cyan")
-    release_notes = (
-        datetime.datetime.now(datetime.timezone.utc)
-        .astimezone(timezone("US/Pacific"))
-        .strftime("%m-%d-%Y %H:%M %Z\n\n")
-    )
-    release_notes += "\n".join(f"- {change}" for change in ctx.changes)
-    release_notes += "\n\n### ".join(
-        [
-            "",
-            "Implementation Changes",
-            "New Features",
-            "Dependencies",
-            "Documentation",
-            "Internal / Testing Changes",
-        ]
-    )
-    ctx.release_notes = releasetool.filehelpers.open_editor_with_tempfile(
-        release_notes, "release-notes.md"
-    ).strip()
 
 
 def determine_release_version(ctx: Context) -> None:
@@ -226,7 +201,7 @@ def start() -> None:
     determine_last_release(ctx)
     determine_snapshot_version(ctx)
     gather_changes(ctx)
-    edit_release_notes(ctx)
+    releasetool.commands.common.edit_release_notes(ctx)
     determine_release_version(ctx)
     create_release_branch(ctx)
     gather_pom_xml_files(ctx)
