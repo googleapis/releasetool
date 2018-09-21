@@ -12,10 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import datetime
 from typing import Optional, Tuple
 
 import attr
 import click
+from pytz import timezone
 
 import releasetool.git
 import releasetool.github
@@ -85,3 +87,27 @@ def setup_github_context(
     _determine_upstream(ctx, owners)
 
     click.secho(f"Origin: {ctx.origin_repo}, Upstream: {ctx.upstream_repo}")
+
+def edit_release_notes(ctx: GitHubContext) -> None:
+    click.secho(f"> Opening your editor to finalize release notes.", fg="cyan")
+    release_notes = (
+        datetime.datetime.now(datetime.timezone.utc)
+        .astimezone(timezone("US/Pacific"))
+        .strftime("%m-%d-%Y %H:%M %Z\n\n")
+    )
+    release_notes += "\n".join(f"- {change}" for change in ctx.changes)
+    release_notes += "\n\n### ".join(
+        [
+            "",
+            "Implementation Changes",
+            "New Features",
+            "Dependencies",
+            "Documentation",
+            "Internal / Testing Changes",
+        ]
+    )
+    ctx.release_notes = releasetool.filehelpers.open_editor_with_tempfile(
+        release_notes, "release-notes.md"
+    ).strip()
+
+
