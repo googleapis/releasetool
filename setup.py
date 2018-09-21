@@ -23,7 +23,8 @@ dependencies = [
     "attrs",
     "click",
     "keyring",
-    "packaging"
+    "packaging",
+    "pytz",
 ]
 
 packages = setuptools.find_packages()

@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
+import datetime
 import getpass
 import os
 import textwrap
@@ -19,8 +21,8 @@ from typing import Optional, Sequence
 
 import attr
 import click
-import datetime
 import glob
+from pytz import timezone
 
 import releasetool.filehelpers
 import releasetool.git
@@ -90,7 +92,12 @@ def gather_changes(ctx: Context) -> None:
 
 def edit_release_notes(ctx: Context) -> None:
     click.secho(f"> Opening your editor to finalize release notes.", fg="cyan")
-    release_notes = "\n".join(f"* {change}" for change in ctx.changes)
+    release_notes = (
+        datetime.datetime.now(datetime.timezone.utc)
+        .astimezone(timezone("US/Pacific"))
+        .strftime("%m-%d-%Y %H:%M %Z\n\n")
+    )
+    release_notes += "\n".join(f"* {change}" for change in ctx.changes)
     ctx.release_notes = releasetool.filehelpers.open_editor_with_tempfile(
         release_notes, "release-notes.md"
     ).strip()
@@ -167,7 +174,8 @@ def create_release_commit(ctx: Context) -> None:
     """Create a release commit."""
     click.secho("> Committing changes to CHANGELOG.md, {ctx.version_file}", fg="cyan")
     releasetool.git.commit(
-        ["CHANGELOG.md", ctx.version_file], f"Release {ctx.package_name} {ctx.release_version}\n\n{ctx.release_notes}"
+        ["CHANGELOG.md", ctx.version_file],
+        f"Release {ctx.package_name} {ctx.release_version}\n\n{ctx.release_notes}",
     )
 
 
@@ -188,7 +196,7 @@ def create_release_pr(ctx: Context) -> None:
         ctx.upstream_repo,
         head=head,
         title=f"Release {ctx.package_name} {ctx.release_version}",
-        body=f"{ctx.release_notes}\n\nThis pull request was generated using releasetool."
+        body=f"{ctx.release_notes}\n\nThis pull request was generated using releasetool.",
     )
     click.secho(f"Pull request is at {ctx.pull_request['html_url']}.")
 
