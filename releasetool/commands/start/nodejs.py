@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import datetime
 import getpass
 import os
 import textwrap
@@ -19,6 +20,7 @@ from typing import Optional, Sequence
 
 import attr
 import click
+from pytz import timezone
 
 import releasetool.filehelpers
 import releasetool.git
@@ -93,7 +95,13 @@ def gather_changes(ctx: Context) -> None:
 
 def edit_release_notes(ctx: Context) -> None:
     click.secho(f"> Opening your editor to finalize release notes.", fg="cyan")
-    release_notes = "\n".join(f"- {change}" for change in ctx.changes)
+    release_notes = (
+        datetime.datetime.now(datetime.timezone.utc)
+        .astimezone(timezone("US/Pacific"))
+        .strftime("%m-%d-%Y %H:%M %Z\n\n")
+    )
+
+    release_notes += "\n".join(f"- {change}" for change in ctx.changes)
     release_notes += "\n\n### ".join(
         [
             "",
@@ -190,11 +198,7 @@ def create_release_commit(ctx: Context) -> None:
     """Create a release commit."""
     click.secho("> Committing changes", fg="cyan")
     releasetool.git.commit(
-        [
-            "CHANGELOG.md",
-            "package.json",
-            "samples/package.json"
-        ],
+        ["CHANGELOG.md", "package.json", "samples/package.json"],
         f"Release v{ctx.release_version}",
     )
 
