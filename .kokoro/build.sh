@@ -21,6 +21,9 @@ cd github/releasetool
 # Disable buffering, so that the logs stream through.
 export PYTHONUNBUFFERED=1
 
+# Remove old nox.
+python3 -m pip uninstall --yes --quiet nox-automation
+
 # Install nox.
 python3 -m pip install --upgrade --quiet nox
 python3 -m nox --version
@@ -30,4 +33,3 @@ python3 -m nox -s lint test
 
 # remove all files, preventing kokoro from trying to sync them.
 rm -rf *
-
