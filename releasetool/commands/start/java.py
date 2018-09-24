@@ -14,8 +14,9 @@
 
 import getpass
 import os
+import sys
 import textwrap
-from typing import Collection, Optional, Sequence
+from typing import List, Optional
 from glob import glob
 
 import attr
@@ -31,13 +32,10 @@ import releasetool.commands.common
 
 @attr.s(auto_attribs=True, slots=True)
 class Context(releasetool.commands.common.GitHubContext):
-    package_name: Optional[str] = None
     last_release_version: Optional[str] = None
     last_release_committish: Optional[str] = None
-    changes: Sequence[str] = ()
-    pom_files: Collection[str] = []
+    pom_files: List[str] = []
     snapshot_version: Optional[str] = None
-    release_notes: Optional[str] = None
     release_version: Optional[str] = None
     release_branch: Optional[str] = None
     pull_request: Optional[dict] = None
@@ -85,7 +83,7 @@ def determine_snapshot_version(ctx: Context) -> None:
         click.secho(
             "I couldn't figure out the current snapshot version from pom.xml.", fg="red"
         )
-        click.exit(1)
+        sys.exit(1)
 
 
 def gather_changes(ctx: Context) -> None:

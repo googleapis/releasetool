@@ -15,7 +15,7 @@
 import getpass
 import os
 import textwrap
-from typing import Optional, Sequence
+from typing import Optional
 
 import attr
 import click
@@ -39,11 +39,8 @@ _CHANGELOG_TEMPLATE = """\
 
 @attr.s(auto_attribs=True, slots=True)
 class Context(releasetool.commands.common.GitHubContext):
-    package_name: Optional[str] = None
     last_release_version: Optional[str] = None
     last_release_committish: Optional[str] = None
-    changes: Sequence[str] = ()
-    release_notes: Optional[str] = None
     release_version: Optional[str] = None
     release_branch: Optional[str] = None
     pull_request: Optional[dict] = None

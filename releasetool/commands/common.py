@@ -13,12 +13,13 @@
 # limitations under the License.
 
 import datetime
-from typing import Optional, Tuple
+from typing import Optional, Sequence, Tuple
 
 import attr
 import click
 from pytz import timezone
 
+import releasetool.filehelpers
 import releasetool.git
 import releasetool.github
 import releasetool.secrets
@@ -32,6 +33,8 @@ class GitHubContext:
     upstream_name: Optional[str] = None
     upstream_repo: Optional[str] = None
     package_name: Optional[str] = None
+    changes: Sequence[str] = ()
+    release_notes: Optional[str] = None
 
 
 def _determine_origin(ctx: GitHubContext) -> None:
