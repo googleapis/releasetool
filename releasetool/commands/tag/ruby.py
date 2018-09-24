@@ -80,7 +80,9 @@ def determine_release_tag(ctx: Context) -> None:
 
 
 def determine_package_name_and_version(ctx: Context) -> None:
-    click.secho("> Determining the package name and version from your release tag.", fg="cyan")
+    click.secho(
+        "> Determining the package name and version from your release tag.", fg="cyan"
+    )
     match = re.match("^([a-z-]+)\/v(\d.\d.\d)$", ctx.release_tag)
     ctx.package_name = match.group(1)
     ctx.release_version = match.group(2)
@@ -89,7 +91,9 @@ def determine_package_name_and_version(ctx: Context) -> None:
 def get_release_notes(ctx: Context) -> None:
     click.secho("> Grabbing the release notes.", fg="cyan")
     changelog = ctx.github.get_contents(
-        ctx.upstream_repo, f"{ctx.package_name}/CHANGELOG.md", ref=ctx.release_pr["merge_commit_sha"]
+        ctx.upstream_repo,
+        f"{ctx.package_name}/CHANGELOG.md",
+        ref=ctx.release_pr["merge_commit_sha"],
     ).decode("utf-8")
 
     match = re.search(

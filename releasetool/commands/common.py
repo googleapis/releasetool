@@ -88,6 +88,7 @@ def setup_github_context(
 
     click.secho(f"Origin: {ctx.origin_repo}, Upstream: {ctx.upstream_repo}")
 
+
 def edit_release_notes(ctx: GitHubContext) -> None:
     click.secho(f"> Opening your editor to finalize release notes.", fg="cyan")
     release_notes = (
@@ -109,5 +110,3 @@ def edit_release_notes(ctx: GitHubContext) -> None:
     ctx.release_notes = releasetool.filehelpers.open_editor_with_tempfile(
         release_notes, "release-notes.md"
     ).strip()
-
-

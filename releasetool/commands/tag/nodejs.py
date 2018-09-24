@@ -77,9 +77,7 @@ def determine_package_version(ctx: Context) -> None:
     click.secho("> Determining the package version.", fg="cyan")
     match = re.match("(?P<version>v?\d+?\.\d+?\.\d+?)", ctx.release_tag)
     ctx.release_version = match.group("version")
-    click.secho(
-        f"package version: {ctx.release_version}."
-    )
+    click.secho(f"package version: {ctx.release_version}.")
 
 
 def get_release_notes(ctx: Context) -> None:
