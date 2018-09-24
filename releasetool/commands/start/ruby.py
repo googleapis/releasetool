@@ -16,10 +16,11 @@
 import getpass
 import os
 import textwrap
-from typing import Optional, Sequence
+from typing import Optional
 
 import attr
 import click
+import datetime
 import glob
 
 import releasetool.filehelpers
@@ -41,11 +42,8 @@ _CHANGELOG_TEMPLATE = """\
 
 @attr.s(auto_attribs=True, slots=True)
 class Context(releasetool.commands.common.GitHubContext):
-    package_name: Optional[str] = None
     last_release_version: Optional[str] = None
     last_release_committish: Optional[str] = None
-    changes: Sequence[str] = ()
-    release_notes: Optional[str] = None
     release_version: Optional[str] = None
     release_branch: Optional[str] = None
     pull_request: Optional[dict] = None
@@ -195,7 +193,7 @@ def start() -> None:
     determine_package_name(ctx)
     determine_last_release(ctx)
     gather_changes(ctx)
-    releasetool.commands.common.edit_release_notes(ctx)
+    update_changelog(ctx)
     determine_release_version(ctx)
     create_release_branch(ctx)
     update_changelog(ctx)

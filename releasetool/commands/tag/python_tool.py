@@ -13,10 +13,7 @@
 # limitations under the License.
 
 import getpass
-import glob
 import re
-import shutil
-import subprocess
 from urllib import parse
 
 import click

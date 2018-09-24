@@ -84,7 +84,7 @@ def replace(filename: str, expr: str, replacement: str) -> None:
 
 
 def extract(filename: str, expr: str) -> str:
-    with open(filename, 'r') as fh:
+    with open(filename, "r") as fh:
         content = fh.read()
 
         matches = re.search(expr, content)
