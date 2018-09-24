@@ -193,7 +193,7 @@ def start() -> None:
     determine_package_name(ctx)
     determine_last_release(ctx)
     gather_changes(ctx)
-    releasetool.commands.common.edit_release_notes(ctx)
+    update_changelog(ctx)
     determine_release_version(ctx)
     create_release_branch(ctx)
     update_changelog(ctx)
