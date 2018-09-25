@@ -86,6 +86,14 @@ def gather_changes(ctx: Context) -> None:
     click.secho(f"Cool, {len(ctx.changes)} changes found.")
 
 
+def edit_release_notes(ctx: Context) -> None:
+    click.secho(f"> Opening your editor to finalize release notes.", fg="cyan")
+    release_notes = "\n".join(f"- {change}" for change in ctx.changes)
+    ctx.release_notes = releasetool.filehelpers.open_editor_with_tempfile(
+        release_notes, "release-notes.md"
+    ).strip()
+
+
 def determine_release_version(ctx: Context) -> None:
     click.secho(f"> Now it's time to pick a release version!", fg="cyan")
     release_notes = textwrap.indent(ctx.release_notes, "\t")
@@ -193,7 +201,7 @@ def start() -> None:
     determine_package_name(ctx)
     determine_last_release(ctx)
     gather_changes(ctx)
-    update_changelog(ctx)
+    edit_release_notes(ctx)
     determine_release_version(ctx)
     create_release_branch(ctx)
     update_changelog(ctx)
