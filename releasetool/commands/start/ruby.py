@@ -87,15 +87,15 @@ def gather_changes(ctx: Context) -> None:
 
 
 def edit_release_notes(ctx: Context) -> None:
-    click.secho(f"> Opening your editor to finalize release notes.", fg="cyan")
-    release_notes = "\n".join(f"- {change}" for change in ctx.changes)
+    click.secho("> Opening your editor to finalize release notes.", fg="cyan")
+    release_notes = "\n".join(f"* {change}" for change in ctx.changes)
     ctx.release_notes = releasetool.filehelpers.open_editor_with_tempfile(
         release_notes, "release-notes.md"
     ).strip()
 
 
 def determine_release_version(ctx: Context) -> None:
-    click.secho(f"> Now it's time to pick a release version!", fg="cyan")
+    click.secho("> Now it's time to pick a release version!", fg="cyan")
     release_notes = textwrap.indent(ctx.release_notes, "\t")
     click.secho(f"Here's the release notes you wrote:\n\n{release_notes}\n")
 
@@ -137,7 +137,9 @@ def update_changelog(ctx: Context) -> None:
     click.secho(f"> Updating {changelog_filename}.", fg="cyan")
 
     if not os.path.exists(changelog_filename):
-        print(f"{changelog_filename} does not yet exist. Opening it for " "creation.")
+        click.secho(
+            f"{changelog_filename} does not yet exist. Opening it for " "creation."
+        )
 
         releasetool.filehelpers.open_editor_with_content(
             changelog_filename,
@@ -154,11 +156,22 @@ def update_changelog(ctx: Context) -> None:
 
 
 def update_version(ctx: Context) -> None:
-    click.secho("> Updating version.rb.", fg="cyan")
-    ctx.version_file = glob.glob("lib/**/version.rb", recursive=True)[0]
-    releasetool.filehelpers.replace(
-        ctx.version_file, r'VERSION = "(.+?)"', f'VERSION = "{ctx.release_version}"'
-    )
+    version_rb = glob.glob("lib/**/version.rb", recursive=True)
+    if version_rb:
+        ctx.version_file = glob.glob("lib/**/version.rb", recursive=True)[0]
+        releasetool.filehelpers.replace(
+            ctx.version_file, r'VERSION = "(.+?)"', f'VERSION = "{ctx.release_version}"'
+        )
+    else:
+        ctx.version_file = f"{ctx.package_name}.gemspec"
+        releasetool.filehelpers.replace(
+            ctx.version_file,
+            r'gem.version(\s+)= "(.+?)"',
+            # TODO: Use regex group above to fill # of spaces before the = sign.
+            f'gem.version       = "{ctx.release_version}"',
+        )
+
+    click.secho(f"> Updating {ctx.version_file} to {ctx.release_version}", fg="cyan")
 
 
 def create_release_commit(ctx: Context) -> None:
@@ -176,7 +189,7 @@ def push_release_branch(ctx: Context) -> None:
 
 
 def create_release_pr(ctx: Context) -> None:
-    click.secho(f"> Creating release pull request.", fg="cyan")
+    click.secho("> Creating release pull request.", fg="cyan")
 
     if ctx.upstream_repo == ctx.origin_repo:
         head = ctx.release_branch
@@ -211,4 +224,4 @@ def start() -> None:
     # TODO: Confirm?
     create_release_pr(ctx)
 
-    click.secho(f"\o/ All done!", fg="magenta")
+    click.secho("\o/ All done!", fg="magenta")
