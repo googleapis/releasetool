@@ -24,6 +24,7 @@ dependencies = [
     "click",
     "keyring",
     "packaging",
+    "pyperclip",
     "pytz",
 ]
 
