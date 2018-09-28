@@ -30,6 +30,8 @@ import releasetool.commands.common
 class Context(releasetool.commands.common.GitHubContext):
     package_name: Optional[str] = None
     release_pr: Optional[dict] = None
+    release_commit: Optional[dict] = None
+    release_commit_message: Optional[str] = None
     release_tag: Optional[str] = None
     release_version: Optional[str] = None
     release_notes: Optional[str] = None
@@ -48,16 +50,36 @@ def determine_release_pr(ctx: Context) -> None:
     for n, pull in enumerate(pulls, 1):
         print(f"\t{n}: {pull['title']} ({pull['number']})")
 
-    pull_idx = click.prompt("\nWhich one do you want to tag and release?", type=int)
+    pull_idx = click.prompt("\nWhich PR do you want to release?", type=int)
 
     ctx.release_pr = pulls[pull_idx - 1]
 
 
+def determine_release_commit(ctx: Context) -> None:
+    click.secho("> Let's figure out which commits belong in your release.", fg="cyan")
+
+    release_commits = ctx.github.list_pull_request_commits(
+        ctx.upstream_repo, ctx.release_pr["number"]
+    )
+
+    click.secho("> Please pick one of the following commits to release:\n")
+    for n, commit in enumerate(release_commits, 1):
+        title = commit["commit"]["message"].split("\n")[0]
+        print(f"\t{n}: {title} ({commit['sha']})")
+
+    commit_idx = click.prompt(
+        "\nWhich commit do you want to tag and release?", type=int
+    )
+
+    ctx.release_commit = release_commits[commit_idx - 1]
+    ctx.release_commit_message = ctx.release_commit["commit"]["message"]
+
+
 def determine_release_tag(ctx: Context) -> None:
     click.secho("> Determining the release tag.", fg="cyan")
-    head_ref = ctx.release_pr["head"]["ref"]
-    click.secho(f"PR head ref is {head_ref}")
-    match = re.match("^release-([a-z-]+)-v(\d\.\d.\d)$", head_ref)
+    click.secho(f"The commit message is: {ctx.release_commit_message}")
+
+    match = re.match("^Release ([a-z-]+) (\d\.\d.\d)", ctx.release_commit_message)
 
     if match is not None:
         ctx.package_name = match.group(1)
@@ -65,8 +87,7 @@ def determine_release_tag(ctx: Context) -> None:
         ctx.release_tag = f"{ctx.package_name}/v{ctx.release_version}"
     else:
         click.secho(
-            "I couldn't determine what the release tag should be from the PR's"
-            f"head ref {head_ref}.",
+            "I couldn't determine what the release tag should be from the commit message.",
             fg="red",
         )
         ctx.release_tag = click.prompt(
@@ -114,8 +135,8 @@ def create_release(ctx: Context) -> None:
 
     ctx.github_release = ctx.github.create_release(
         repository=ctx.upstream_repo,
-        tag_name=ctx.release_version,
-        target_committish=ctx.release_pr["merge_commit_sha"],
+        tag_name=ctx.release_tag,
+        target_committish=ctx.release_commit["sha"],
         name=f"Release {ctx.package_name} {ctx.release_version}",
         body=ctx.release_notes,
     )
@@ -132,8 +153,7 @@ def create_release(ctx: Context) -> None:
 def wait_on_circle(ctx: Context) -> None:
     circle = releasetool.circleci.CircleCI(repository=ctx.upstream_repo)
     click.secho("> Waiting for CircleCI to queue a release build")
-    tag_name = f"{ctx.package_name}/v{ctx.release_version}"
-    fresh_build = circle.get_latest_build_by_tag(tag_name)
+    fresh_build = circle.get_latest_build_by_tag(ctx.release_tag)
     if fresh_build:
         click.secho(f"CircleCI Build: {fresh_build['build_url']}")
         click.secho("> Monitoring CircleCI for completion of release")
@@ -141,7 +161,7 @@ def wait_on_circle(ctx: Context) -> None:
         for state in circle.get_build_status_generator(fresh_build["build_num"]):
             click.secho(f"CircleCI Build State: {state}\r", nl=False)
     else:
-        click.secho(f"CircleCI Build not found for tag {tag_name}...")
+        click.secho(f"CircleCI Build not found for tag {ctx.release_tag}...")
 
 
 def tag() -> None:
@@ -152,6 +172,7 @@ def tag() -> None:
     releasetool.commands.common.setup_github_context(ctx)
 
     determine_release_pr(ctx)
+    determine_release_commit(ctx)
     determine_release_tag(ctx)
     get_release_notes(ctx)
 

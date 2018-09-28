@@ -39,6 +39,12 @@ class GitHub:
         response.raise_for_status()
         return response.json()
 
+    def list_pull_request_commits(self, repository: str, number: str) -> Sequence[dict]:
+        url = f"{_GITHUB_ROOT}/repos/{repository}/pulls/{number}/commits"
+        response = self.session.get(url)
+        response.raise_for_status()
+        return response.json()
+
     def create_pull_request(
         self, repository: str, head: str, title: str, body: str = None
     ) -> dict:
