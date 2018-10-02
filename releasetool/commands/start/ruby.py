@@ -82,14 +82,17 @@ def determine_last_release(ctx: Context) -> None:
 def gather_changes(ctx: Context) -> None:
     click.secho(f"> Gathering changes since {ctx.last_release_version}", fg="cyan")
     ctx.changes = releasetool.git.summary_log(
-        from_=ctx.last_release_committish, to=f"{ctx.upstream_name}/master"
+        from_=ctx.last_release_committish,
+        to=f"{ctx.upstream_name}/master",
+        format="%b%n%n%n%n",
+        split="\n\n\n\n",
     )
     click.secho(f"Cool, {len(ctx.changes)} changes found.")
 
 
 def edit_release_notes(ctx: Context) -> None:
     click.secho("> Opening your editor to finalize release notes.", fg="cyan")
-    release_notes = "\n".join(f"* {change}" for change in ctx.changes)
+    release_notes = "".join(ctx.changes)
     ctx.release_notes = releasetool.filehelpers.open_editor_with_tempfile(
         release_notes, "release-notes.md"
     ).strip()

@@ -28,12 +28,18 @@ def list_tags() -> Sequence[str]:
 
 
 def summary_log(
-    from_: str, to: str = "origin/master", where: str = ".", format: str = "%s"
+    from_: str,
+    to: str = "origin/master",
+    where: str = ".",
+    format: str = "%s",
+    split: str = "\n",
 ) -> Sequence[str]:
     output = subprocess.check_output(
         ["git", "log", f"--format={format}", f"{from_}..{to}", where]
     ).decode("utf-8")
-    commits = output.strip().split("\n")
+    commits = output.strip()
+    if split:
+        commits = commits.split(split)
     return commits
 
 
