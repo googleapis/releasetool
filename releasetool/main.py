@@ -23,6 +23,7 @@ import releasetool.commands.start.python_tool
 import releasetool.commands.start.nodejs
 import releasetool.commands.start.java
 import releasetool.commands.start.ruby
+import releasetool.commands.start.go
 import releasetool.commands.tag.python
 import releasetool.commands.tag.python_tool
 import releasetool.commands.tag.nodejs
@@ -56,6 +57,7 @@ class _OptionPromptIfNone(click.Option):
 @click.pass_context
 @click.version_option(message="%(version)s")
 def main(ctx):
+    print("################ DEV VERSION ################")
     if ctx.invoked_subcommand is None:
         return ctx.invoke(start)
 
@@ -73,7 +75,7 @@ def _detect_language():
     return None
 
 
-_language_choices = ["python", "python-tool", "nodejs", "java", "ruby"]
+_language_choices = ["python", "python-tool", "nodejs", "java", "ruby", "go"]
 
 
 def _language_option():
@@ -103,6 +105,8 @@ def start(language):
         return releasetool.commands.start.java.start()
     if language == "ruby":
         return releasetool.commands.start.ruby.start()
+    if language == "go":
+        return releasetool.commands.start.go.start()
 
 
 @main.command()
