@@ -57,7 +57,6 @@ class _OptionPromptIfNone(click.Option):
 @click.pass_context
 @click.version_option(message="%(version)s")
 def main(ctx):
-    print("################ DEV VERSION ################")
     if ctx.invoked_subcommand is None:
         return ctx.invoke(start)
 
