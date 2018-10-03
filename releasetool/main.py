@@ -29,6 +29,7 @@ import releasetool.commands.tag.python_tool
 import releasetool.commands.tag.nodejs
 import releasetool.commands.tag.java
 import releasetool.commands.tag.ruby
+import releasetool.commands.tag.go
 
 
 class _OptionPromptIfNone(click.Option):
@@ -121,3 +122,5 @@ def tag(language):
         return releasetool.commands.tag.java.tag()
     if language == "ruby":
         return releasetool.commands.tag.ruby.tag()
+    if language == "go":
+        return releasetool.commands.tag.go.tag()

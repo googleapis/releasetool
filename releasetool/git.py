@@ -98,3 +98,14 @@ def get_github_remotes() -> Dict[str, str]:
             continue
 
     return github_repos
+
+def get_commit_title(commit: str) -> str:
+    return subprocess.check_output(["git", "show", "-s", "--format=%s", commit]).decode("utf-8")
+
+def tag(name: str, commit: str) -> None:
+    "Tag the commit with the given name."
+    subprocess.check_output(["git", "tag", name, commit])
+
+def push_tag(tag_name: str, remote: str = "origin") -> None:
+    "Push a tag to the remote."
+    subprocess.check_output(["git", "push", remote, tag_name])
