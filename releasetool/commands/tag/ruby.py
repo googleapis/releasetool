@@ -65,7 +65,7 @@ def determine_release_commit(ctx: Context) -> None:
     click.secho("> Please pick one of the following commits to release:\n")
     for n, commit in enumerate(release_commits, 1):
         title = commit["commit"]["message"].split("\n")[0]
-        print(f"\t{n}: {title} ({commit['sha']})")
+        print(f"\t{n}: {title}")
 
     commit_idx = click.prompt(
         "\nWhich commit do you want to tag and release?", type=int
@@ -79,7 +79,7 @@ def determine_release_tag(ctx: Context) -> None:
     click.secho("> Determining the release tag.", fg="cyan")
     click.secho(f"The commit message is: {ctx.release_commit_message}")
 
-    match = re.match("^Release ([a-z-]+) (\d\.\d.\d)", ctx.release_commit_message)
+    match = re.match("^Release ([a-z-]+) (\d+\.\d+.\d+)", ctx.release_commit_message)
 
     if match is not None:
         ctx.package_name = match.group(1)
@@ -98,13 +98,14 @@ def determine_release_tag(ctx: Context) -> None:
     click.secho(f"Package name is {ctx.package_name}")
     click.secho(f"Package version is {ctx.release_version}")
     click.secho(f"Release tag is {ctx.release_tag}")
+    click.secho(f"Release target commit is {ctx.release_pr['merge_commit_sha']}")
 
 
 def determine_package_name_and_version(ctx: Context) -> None:
     click.secho(
         "> Determining the package name and version from your release tag.", fg="cyan"
     )
-    match = re.match("^([a-z-]+)\/v(\d.\d.\d)$", ctx.release_tag)
+    match = re.match("^([a-z-]+)\/v(\d+.\d+.\d+)$", ctx.release_tag)
     ctx.package_name = match.group(1)
     ctx.release_version = match.group(2)
 
@@ -136,7 +137,7 @@ def create_release(ctx: Context) -> None:
     ctx.github_release = ctx.github.create_release(
         repository=ctx.upstream_repo,
         tag_name=ctx.release_tag,
-        target_committish=ctx.release_commit["sha"],
+        target_committish=ctx.release_pr["merge_commit_sha"],
         name=f"Release {ctx.package_name} {ctx.release_version}",
         body=ctx.release_notes,
     )
