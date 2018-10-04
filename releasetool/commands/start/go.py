@@ -47,6 +47,8 @@ class Context:
     last_release_committish: Optional[str] = None
     release_version: Optional[str] = None
     release_branch: Optional[str] = None
+
+
 #    pull_request: Optional[dict] = None
 
 
@@ -59,7 +61,10 @@ def determine_module_name(ctx: Context) -> None:
     else:
         ctx.module_name = info["Module"]["Path"]
         ctx.relative_module_name = relative_module_name(ctx.module_name)
-        click.secho(f"Looks like we're releasing {ctx.module_name} (relative path {ctx.relative_module_name}).")
+        click.secho(
+            f"Looks like we're releasing {ctx.module_name} (relative path {ctx.relative_module_name})."
+        )
+
 
 def read_gomod() -> Optional[Dict[str, str]]:
     if os.path.isfile("go.mod"):
@@ -69,17 +74,21 @@ def read_gomod() -> Optional[Dict[str, str]]:
         # No go.mod; must release from repo root.
         return None
 
-# Returns modname relative to the repo root, assuming modname's go.mod file is
-# in the current directory.
-def relative_module_name(modname) -> int:
+
+def relative_module_name(modname) -> str:
+    """Returns modname relative to the repo root.
+
+    Assumes modname's go.mod file is in the current directory.
+    """
     dir = os.getcwd()
     components = []
     while dir != "/":
         if os.path.isdir(os.path.join(dir, ".git")):
-            return '/'.join(reversed(components))
+            return "/".join(reversed(components))
         dir, c = os.path.split(dir)
         components.append(c)
     raise ValueError("not inside a git repo")
+
 
 def determine_last_release(ctx: Context) -> None:
     click.secho("> Figuring out what the last release was.", fg="cyan")
@@ -88,11 +97,7 @@ def determine_last_release(ctx: Context) -> None:
     else:
         prefix = ctx.relative_module_name + "/v"
     tags = releasetool.git.list_tags()
-    candidates = [
-        tag
-        for tag in tags
-        if tag.startswith(prefix)
-    ]
+    candidates = [tag for tag in tags if tag.startswith(prefix)]
 
     if candidates:
         ctx.last_release_committish = candidates[0]
@@ -164,23 +169,25 @@ def update_changelog(ctx: Context) -> None:
     click.secho(f"> Updating {_CHANGELOG_FILENAME}.", fg="cyan")
 
     if not os.path.exists(_CHANGELOG_FILENAME):
-        print(f"{_CHANGELOG_FILENAME} does not yet exist. Opening it for " "creation.")
+        print(f"{_CHANGELOG_FILENAME} does not yet exist. Opening it for creation.")
 
         releasetool.filehelpers.open_editor_with_content(
             _CHANGELOG_FILENAME, _CHANGELOG_TEMPLATE
         )
 
-    changelog_entry = f"## v{ctx.release_version}" f"\n\n" f"{ctx.release_notes}" f"\n\n"
+    changelog_entry = (
+        f"## v{ctx.release_version}" f"\n\n" f"{ctx.release_notes}" f"\n\n"
+    )
     releasetool.filehelpers.insert_before(
         _CHANGELOG_FILENAME, changelog_entry, "^## (.+)$|\Z"
     )
 
+
 def create_release_commit(ctx: Context) -> None:
     """Create a release commit."""
     click.secho("> Comitting changes", fg="cyan")
-    releasetool.git.commit(
-        [_CHANGELOG_FILENAME], f"Release {ctx.release_version}"
-    )
+    releasetool.git.commit([_CHANGELOG_FILENAME], f"Release {ctx.release_version}")
+
 
 def create_release_cl(ctx: Context) -> None:
     click.secho(f"> Creating release CL.", fg="cyan")
