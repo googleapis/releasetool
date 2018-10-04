@@ -53,6 +53,7 @@ setuptools.setup(
     ],
     platforms='Posix; MacOS X; Windows',
     packages=packages,
+    python_requires='>=3.6',
     install_requires=dependencies,
     include_package_data=True,
     zip_safe=False,
