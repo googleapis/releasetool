@@ -130,6 +130,7 @@ class Context(releasetool.commands.common.GitHubContext):
     updated_files: List[str] = []
     versions: List[ArtifactVersions] = None
 
+
 def determine_release_type(ctx: Context) -> None:
     ctx.release_type = click.prompt(
         "What type of release is this? (minor|patch|snapshot)",
