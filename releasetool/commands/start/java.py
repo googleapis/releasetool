@@ -29,6 +29,59 @@ import releasetool.github
 import releasetool.secrets
 import releasetool.commands.common
 
+VERSION_REGEX = re.compile(r'(\d+)\.(\d+)\.(\d+)(-\w+)?(-\w+)?')
+
+class Version:
+    major: str = None
+    minor: str = None
+    patch: str = None
+    variant: str = None
+    snapshot: bool = False
+
+    def __init__(self, version_str):
+        match = VERSION_REGEX.match(version_str)
+        self.major = int(match.group(1))
+        self.minor = int(match.group(2))
+        self.patch = int(match.group(3))
+        qualifier1 = match.group(4)
+        qualifier2 = match.group(5)
+        if qualifier1 and qualifier2:
+            if qualifier2 == '-SNAPSHOT':
+                self.variant = qualifier1
+                self.snapshot = True
+            else:
+                self.variant = qualifier1 + qualifier2
+        elif qualifier1:
+            if qualifier1 == '-SNAPSHOT':
+                self.snapshot = True
+            else:
+                self.variant = qualifier1
+
+    def bump(self, bump_type):
+        if bump_type == 'minor':
+            self.bump_minor()
+        elif bump_type == 'patch':
+            self.bump_patch()
+        else:
+            raise ValueError('invalid bump_type: {}'.format(bump_type))
+
+    def bump_minor(self):
+        self.minor += 1
+        self.patch = 0
+
+    def bump_patch(self):
+        self.patch += 1
+
+    def set_snapshot(self, snapshot):
+        self.snapshot = snapshot
+
+    def __str__(self):
+        mmp = '{}.{}.{}'.format(self.major, self.minor, self.patch)
+        postfix = self.variant
+        if self.snapshot:
+            postfix += '-SNAPSHOT'
+        return mmp + postfix
+
 
 @attr.s(auto_attribs=True, slots=True)
 class Context(releasetool.commands.common.GitHubContext):
@@ -192,21 +245,24 @@ def create_release_pr(ctx: Context) -> None:
 def start() -> None:
     ctx = Context()
 
-    click.secho(f"o/ Hey, {getpass.getuser()}, let's release some stuff!", fg="magenta")
+    version = Version("1.2.3-alpha-SNAPSHOT")
+    print(version)
 
-    releasetool.commands.common.setup_github_context(ctx)
-    determine_package_name(ctx)
-    determine_last_release(ctx)
-    determine_snapshot_version(ctx)
-    gather_changes(ctx)
-    releasetool.commands.common.edit_release_notes(ctx)
-    determine_release_version(ctx)
-    create_release_branch(ctx)
-    gather_pom_xml_files(ctx)
-    update_pom_xml(ctx)
-    create_release_commit(ctx)
-    push_release_branch(ctx)
-    # TODO: Confirm?
-    create_release_pr(ctx)
+    # click.secho(f"o/ Hey, {getpass.getuser()}, let's release some stuff!", fg="magenta")
 
-    click.secho(f"\o/ All done!", fg="magenta")
+    # releasetool.commands.common.setup_github_context(ctx)
+    # determine_package_name(ctx)
+    # determine_last_release(ctx)
+    # determine_snapshot_version(ctx)
+    # gather_changes(ctx)
+    # releasetool.commands.common.edit_release_notes(ctx)
+    # determine_release_version(ctx)
+    # create_release_branch(ctx)
+    # gather_pom_xml_files(ctx)
+    # update_pom_xml(ctx)
+    # create_release_commit(ctx)
+    # push_release_branch(ctx)
+    # # TODO: Confirm?
+    # create_release_pr(ctx)
+
+    # click.secho(f"\o/ All done!", fg="magenta")
