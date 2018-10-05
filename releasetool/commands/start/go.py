@@ -12,21 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import datetime
 import getpass
 import json
 import os
 import subprocess
 import textwrap
-from typing import Optional, Dict, Sequence
+from typing import Optional, Sequence
 
 import attr
 import click
+from pytz import timezone
 
 import releasetool.filehelpers
 import releasetool.git
-import releasetool.github
-import releasetool.secrets
-import releasetool.commands.common
 
 
 _CHANGELOG_FILENAME = "CHANGES.md"
@@ -49,9 +48,6 @@ class Context:
     release_branch: Optional[str] = None
 
 
-#    pull_request: Optional[dict] = None
-
-
 def determine_module_name(ctx: Context) -> None:
     # Get the module name from the go.mod file in the current directory.
     click.secho("> Figuring out the module name.", fg="cyan")
@@ -66,13 +62,14 @@ def determine_module_name(ctx: Context) -> None:
         )
 
 
-def read_gomod() -> Optional[Dict[str, str]]:
+def read_gomod() -> Optional[dict]:
     if os.path.isfile("go.mod"):
         output = subprocess.check_output(["go", "mod", "edit", "-json"]).decode("utf-8")
         return json.loads(output)
     elif os.path.isdir(".git"):
-        # No go.mod; must release from repo root.
         return None
+    else:
+        raise ValueError("no go.mod; must release from repo root")
 
 
 def relative_module_name(modname) -> str:
@@ -81,7 +78,7 @@ def relative_module_name(modname) -> str:
     Assumes modname's go.mod file is in the current directory.
     """
     dir = os.getcwd()
-    components = []
+    components: Sequence[str] = []
     while dir != "/":
         if os.path.isdir(os.path.join(dir, ".git")):
             return "/".join(reversed(components))
@@ -195,6 +192,19 @@ def create_release_cl(ctx: Context) -> None:
     subprocess.check_output(["git", "codereview", "mail", "-r", revs, "HEAD"])
 
 
+def edit_release_notes(ctx: Context) -> None:
+    click.secho(f"> Opening your editor to finalize release notes.", fg="cyan")
+    release_notes = (
+        datetime.datetime.now(datetime.timezone.utc)
+        .astimezone(timezone("US/Pacific"))
+        .strftime("%m-%d-%Y %H:%M %Z\n\n")
+    )
+    release_notes += "\n".join(f"- {change}" for change in ctx.changes)
+    ctx.release_notes = releasetool.filehelpers.open_editor_with_tempfile(
+        release_notes, "release-notes.md"
+    ).strip()
+
+
 def start() -> None:
     ctx = Context()
 
@@ -203,7 +213,7 @@ def start() -> None:
     determine_module_name(ctx)
     determine_last_release(ctx)
     gather_changes(ctx)
-    releasetool.commands.common.edit_release_notes(ctx)
+    edit_release_notes(ctx)
     determine_release_version(ctx)
     create_release_branch(ctx)
     update_changelog(ctx)
