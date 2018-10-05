@@ -18,7 +18,7 @@ import json
 import os
 import subprocess
 import textwrap
-from typing import Optional, Sequence
+from typing import List, Optional, Sequence
 
 import attr
 import click
@@ -78,7 +78,7 @@ def relative_module_name(modname) -> str:
     Assumes modname's go.mod file is in the current directory.
     """
     dir = os.getcwd()
-    components: Sequence[str] = []
+    components: List[str] = []
     while dir != "/":
         if os.path.isdir(os.path.join(dir, ".git")):
             return "/".join(reversed(components))
