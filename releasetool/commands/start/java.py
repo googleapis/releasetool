@@ -118,11 +118,10 @@ class ArtifactVersions:
 class Context(releasetool.commands.common.GitHubContext):
     last_release_version: Optional[str] = None
     last_release_committish: Optional[str] = None
-    pom_files: List[str] = []
-    snapshot_version: Optional[str] = None
     release_version: Optional[str] = None
     release_branch: Optional[str] = None
     pull_request: Optional[dict] = None
+    updated_files: List[str] = []
     versions: List[ArtifactVersions] = None
 
 def read_versions(ctx: Context) -> None:
@@ -163,11 +162,14 @@ def update_versions(ctx: Context) -> None:
 
 def replace_versions(ctx: Context) -> None:
     if click.confirm("Update versions in pom.xml files?", default=True):
+        updated_files = []
         for root, _, files in os.walk("."):
             for filename in files:
                 filepath = root + os.sep + filename
                 if filename == "README.md" or filename == "pom.xml":
                     replace_version_in_file(ctx.versions, filepath)
+                    updated_files.append(filepath)
+        ctx.updated_files = updated_files
 
 VERSION_UPDATE_MARKER = re.compile(r'\{x-version-update:([^:]+):([^}]+)\}')
 VERSION_UPDATE_START_MARKER = re.compile(r'\{x-version-update-start:([^:]+):([^}]+)\}')
@@ -252,23 +254,6 @@ def determine_last_release(ctx: Context) -> None:
 
     click.secho(f"The last release was {ctx.last_release_version}.")
 
-
-def determine_snapshot_version(ctx: Context) -> None:
-    click.secho("> Figuring out the current snapshot version.", fg="cyan")
-
-    with open("pom.xml", "r") as fh:
-        content = fh.read()
-        m = re.search(r"<version>(\d+\.\d+\.\d+)-SNAPSHOT</version>", content)
-        if m:
-            ctx.snapshot_version = m.group(1)
-
-    if ctx.snapshot_version is None:
-        click.secho(
-            "I couldn't figure out the current snapshot version from pom.xml.", fg="red"
-        )
-        sys.exit(1)
-
-
 def gather_changes(ctx: Context) -> None:
     click.secho(f"> Gathering changes since {ctx.last_release_version}", fg="cyan")
     ctx.changes = releasetool.git.summary_log(
@@ -318,33 +303,11 @@ def create_release_branch(ctx) -> None:
     return releasetool.git.checkout_create_branch(ctx.release_branch)
 
 
-def gather_pom_xml_files(ctx: Context) -> None:
-    ctx.pom_files = glob("**/pom.xml", recursive=True)
-
-
-def update_pom_xml(ctx: Context) -> None:
-    click.secho("> Updating snapshot versions in pom.xml files.", fg="cyan")
-    for file in ctx.pom_files:
-        click.secho(f"> Updating {file}.", fg="cyan")
-        releasetool.filehelpers.replace(
-            file,
-            f"<version>{ctx.snapshot_version}-SNAPSHOT</version>",
-            f"<version>{ctx.release_version}</version>",
-        )
-
-
-def update_readme(ctx: Context) -> None:
-    click.secho("> Updating README.md file.", fg="cyan")
-    releasetool.filehelpers.replace(
-        "README.md", ctx.last_release_version, ctx.release_version
-    )
-
-
 def create_release_commit(ctx: Context) -> None:
     """Create a release commit."""
     click.secho("> Committing changes", fg="cyan")
     releasetool.git.commit(
-        ["README.md"] + ctx.pom_files, f"Release v{ctx.release_version}"
+        ["README.md", "versions.txt"] + ctx.updated_files, f"Release v{ctx.release_version}"
     )
 
 
@@ -354,46 +317,44 @@ def push_release_branch(ctx: Context) -> None:
 
 
 def create_release_pr(ctx: Context) -> None:
-    click.secho(f"> Creating release pull request.", fg="cyan")
+    if click.confirm("Create PR?", default=True):
+        click.secho(f"> Creating release pull request.", fg="cyan")
 
-    if ctx.upstream_repo == ctx.origin_repo:
-        head = ctx.release_branch
-    else:
-        head = f"{ctx.origin_user}:{ctx.release_branch}"
+        if ctx.upstream_repo == ctx.origin_repo:
+            head = ctx.release_branch
+        else:
+            head = f"{ctx.origin_user}:{ctx.release_branch}"
 
-    body = "This pull request was generated using releasetool.\n\n" + ctx.release_notes
+        body = "This pull request was generated using releasetool.\n\n" + ctx.release_notes
 
-    ctx.pull_request = ctx.github.create_pull_request(
-        ctx.upstream_repo,
-        head=head,
-        title=f"Release {ctx.package_name} v{ctx.release_version}",
-        body=body,
-    )
-    click.secho(f"Pull request is at {ctx.pull_request['html_url']}.")
+        ctx.pull_request = ctx.github.create_pull_request(
+            ctx.upstream_repo,
+            head=head,
+            title=f"Release {ctx.package_name} v{ctx.release_version}",
+            body=body,
+        )
+        click.secho(f"Pull request is at {ctx.pull_request['html_url']}.")
 
 
 def start() -> None:
     ctx = Context()
 
+    click.secho(f"o/ Hey, {getpass.getuser()}, let's release some stuff!", fg="magenta")
+    releasetool.commands.common.setup_github_context(ctx)
+    determine_package_name(ctx)
+
+    # release versioning
     read_versions(ctx)
     bump_and_update_versions(ctx)
     replace_versions(ctx)
 
-    # click.secho(f"o/ Hey, {getpass.getuser()}, let's release some stuff!", fg="magenta")
+    determine_last_release(ctx)
+    gather_changes(ctx)
+    releasetool.commands.common.edit_release_notes(ctx)
+    determine_release_version(ctx)
+    create_release_branch(ctx)
+    create_release_commit(ctx)
+    push_release_branch(ctx)
+    create_release_pr(ctx)
 
-    # releasetool.commands.common.setup_github_context(ctx)
-    # determine_package_name(ctx)
-    # determine_last_release(ctx)
-    # determine_snapshot_version(ctx)
-    # gather_changes(ctx)
-    # releasetool.commands.common.edit_release_notes(ctx)
-    # determine_release_version(ctx)
-    # create_release_branch(ctx)
-    # gather_pom_xml_files(ctx)
-    # update_pom_xml(ctx)
-    # create_release_commit(ctx)
-    # push_release_branch(ctx)
-    # # TODO: Confirm?
-    # create_release_pr(ctx)
-
-    # click.secho(f"\o/ All done!", fg="magenta")
+    click.secho(f"\o/ All done!", fg="magenta")
