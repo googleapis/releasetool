@@ -28,13 +28,24 @@ def list_tags() -> Sequence[str]:
 
 
 def summary_log(
-    from_: str, to: str = "origin/master", where: str = "."
+    from_: str,
+    to: str = "origin/master",
+    where: str = ".",
+    format: str = "%s",
+    split: str = "\n",
 ) -> Sequence[str]:
     output = subprocess.check_output(
-        ["git", "log", "--format=%s", f"{from_}..{to}", where]
+        ["git", "log", f"--format={format}", f"{from_}..{to}", where]
     ).decode("utf-8")
-    commits = output.strip().split("\n")
+    commits = output.strip()
+    if split:
+        commits = commits.split(split)
     return commits
+
+
+def get_current_branch() -> str:
+    output = subprocess.check_output(["git", "rev-parse", "--abbrev-ref", "HEAD"])
+    return output.decode("utf-8").strip()
 
 
 def checkout_create_branch(branch_name: str, base: str = "origin/master") -> None:

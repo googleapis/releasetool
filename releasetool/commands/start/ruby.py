@@ -48,6 +48,7 @@ class Context(releasetool.commands.common.GitHubContext):
     release_branch: Optional[str] = None
     pull_request: Optional[dict] = None
     version_file: Optional[str] = None
+    today: str = datetime.date.today().__str__()
 
 
 def determine_package_name(ctx: Context) -> None:
@@ -81,21 +82,24 @@ def determine_last_release(ctx: Context) -> None:
 def gather_changes(ctx: Context) -> None:
     click.secho(f"> Gathering changes since {ctx.last_release_version}", fg="cyan")
     ctx.changes = releasetool.git.summary_log(
-        from_=ctx.last_release_committish, to=f"{ctx.upstream_name}/master"
+        from_=ctx.last_release_committish,
+        to=f"{ctx.upstream_name}/master",
+        format="%b%n%n%n%n",
+        split="\n\n\n\n",
     )
     click.secho(f"Cool, {len(ctx.changes)} changes found.")
 
 
 def edit_release_notes(ctx: Context) -> None:
-    click.secho(f"> Opening your editor to finalize release notes.", fg="cyan")
-    release_notes = "\n".join(f"- {change}" for change in ctx.changes)
+    click.secho("> Opening your editor to finalize release notes.", fg="cyan")
+    release_notes = "".join(ctx.changes)
     ctx.release_notes = releasetool.filehelpers.open_editor_with_tempfile(
         release_notes, "release-notes.md"
     ).strip()
 
 
 def determine_release_version(ctx: Context) -> None:
-    click.secho(f"> Now it's time to pick a release version!", fg="cyan")
+    click.secho("> Now it's time to pick a release version!", fg="cyan")
     release_notes = textwrap.indent(ctx.release_notes, "\t")
     click.secho(f"Here's the release notes you wrote:\n\n{release_notes}\n")
 
@@ -127,9 +131,16 @@ def determine_release_version(ctx: Context) -> None:
 
 
 def create_release_branch(ctx) -> None:
-    ctx.release_branch = f"release-{ctx.package_name}-v{ctx.release_version}"
-    click.secho(f"> Creating branch {ctx.release_branch}", fg="cyan")
-    return releasetool.git.checkout_create_branch(ctx.release_branch)
+    ctx.release_branch = f"releases-{ctx.today}"
+    current_branch = releasetool.git.get_current_branch()
+    click.secho(f"> Current branch is {current_branch}", fg="cyan")
+    if current_branch == ctx.release_branch:
+        click.secho(f"> Using branch {current_branch}", fg="cyan")
+    elif current_branch != "master" and click.confirm(f"Use {current_branch}?"):
+        click.secho(f"> Using branch {current_branch}", fg="cyan")
+    else:
+        click.secho(f"> Creating branch {ctx.release_branch}", fg="cyan")
+        return releasetool.git.checkout_create_branch(ctx.release_branch)
 
 
 def update_changelog(ctx: Context) -> None:
@@ -137,16 +148,29 @@ def update_changelog(ctx: Context) -> None:
     click.secho(f"> Updating {changelog_filename}.", fg="cyan")
 
     if not os.path.exists(changelog_filename):
-        print(f"{changelog_filename} does not yet exist. Opening it for " "creation.")
+        click.secho(
+            f"{changelog_filename} does not yet exist. Opening it for " "creation."
+        )
 
         releasetool.filehelpers.open_editor_with_content(
             changelog_filename,
             _CHANGELOG_TEMPLATE.format(package_name=ctx.package_name),
         )
 
-    today = datetime.date.today()
+    if releasetool.filehelpers.detect(
+        changelog_filename, f"### ({ctx.release_version})"
+    ):
+        click.secho(
+            f"Version {ctx.release_version} already exists in {changelog_filename}. Aborting.",
+            fg="magenta",
+        )
+        os.abort()
+
     changelog_entry = (
-        f"### {ctx.release_version} / {today}" f"\n\n" f"{ctx.release_notes}" f"\n\n"
+        f"### {ctx.release_version} / {ctx.today}"
+        f"\n\n"
+        f"{ctx.release_notes}"
+        f"\n\n"
     )
     releasetool.filehelpers.insert_before(
         changelog_filename, changelog_entry, "^### (.+)$|\Z"
@@ -154,11 +178,22 @@ def update_changelog(ctx: Context) -> None:
 
 
 def update_version(ctx: Context) -> None:
-    click.secho("> Updating version.rb.", fg="cyan")
-    ctx.version_file = glob.glob("lib/**/version.rb", recursive=True)[0]
-    releasetool.filehelpers.replace(
-        ctx.version_file, r'VERSION = "(.+?)"', f'VERSION = "{ctx.release_version}"'
-    )
+    version_rb = glob.glob("lib/**/version.rb", recursive=True)
+    if version_rb:
+        ctx.version_file = glob.glob("lib/**/version.rb", recursive=True)[0]
+        releasetool.filehelpers.replace(
+            ctx.version_file, r'VERSION = "(.+?)"', f'VERSION = "{ctx.release_version}"'
+        )
+    else:
+        ctx.version_file = f"{ctx.package_name}.gemspec"
+        releasetool.filehelpers.replace(
+            ctx.version_file,
+            r'gem.version(\s+)= "(.+?)"',
+            # TODO: Use regex group above to fill # of spaces before the = sign.
+            f'gem.version       = "{ctx.release_version}"',
+        )
+
+    click.secho(f"> Updating {ctx.version_file} to {ctx.release_version}", fg="cyan")
 
 
 def create_release_commit(ctx: Context) -> None:
@@ -176,18 +211,22 @@ def push_release_branch(ctx: Context) -> None:
 
 
 def create_release_pr(ctx: Context) -> None:
-    click.secho(f"> Creating release pull request.", fg="cyan")
+    click.secho("> Creating release pull request.", fg="cyan")
 
     if ctx.upstream_repo == ctx.origin_repo:
         head = ctx.release_branch
     else:
         head = f"{ctx.origin_user}:{ctx.release_branch}"
 
+    pr_changes = releasetool.git.summary_log(
+        from_=f"{ctx.upstream_name}/master", to="HEAD", where="..", format="%s%n%n%b"
+    )
+
     ctx.pull_request = ctx.github.create_pull_request(
         ctx.upstream_repo,
         head=head,
-        title=f"Release {ctx.package_name} {ctx.release_version}",
-        body=f"{ctx.release_notes}\n\nThis pull request was generated using releasetool.",
+        title=f"Releases {ctx.today}",
+        body="\n".join(pr_changes),
     )
     click.secho(f"Pull request is at {ctx.pull_request['html_url']}.")
 
@@ -198,17 +237,19 @@ def start() -> None:
     click.secho(f"o/ Hey, {getpass.getuser()}, let's release some Ruby!", fg="magenta")
 
     releasetool.commands.common.setup_github_context(ctx)
+    create_release_branch(ctx)
     determine_package_name(ctx)
     determine_last_release(ctx)
     gather_changes(ctx)
     edit_release_notes(ctx)
     determine_release_version(ctx)
-    create_release_branch(ctx)
     update_changelog(ctx)
     update_version(ctx)
     create_release_commit(ctx)
-    push_release_branch(ctx)
-    # TODO: Confirm?
-    create_release_pr(ctx)
+    if click.confirm("Are you ready to create your release PR?"):
+        # TODO: Rebase on master?
+        push_release_branch(ctx)
+        # TODO: Confirm?
+        create_release_pr(ctx)
 
-    click.secho(f"\o/ All done!", fg="magenta")
+    click.secho("\o/ All done!", fg="magenta")

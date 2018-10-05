@@ -72,6 +72,14 @@ def insert_before(
         fh.write(output)
 
 
+def detect(filename: str, expr: str) -> bool:
+    with open(filename, "r") as fh:
+        content = fh.read()
+
+        matches = re.search(expr, content, re.MULTILINE)
+        return matches is not None
+
+
 def replace(filename: str, expr: str, replacement: str) -> None:
     with open(filename, "r+") as fh:
         content = fh.read()
