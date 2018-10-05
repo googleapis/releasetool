@@ -15,10 +15,8 @@
 import copy
 import getpass
 import os
-import sys
 import textwrap
 from typing import List, Optional
-from glob import glob
 
 import attr
 import click
@@ -30,7 +28,8 @@ import releasetool.github
 import releasetool.secrets
 import releasetool.commands.common
 
-VERSION_REGEX = re.compile(r'(\d+)\.(\d+)\.(\d+)(-\w+)?(-\w+)?')
+VERSION_REGEX = re.compile(r"(\d+)\.(\d+)\.(\d+)(-\w+)?(-\w+)?")
+
 
 class Version:
     major: str = None
@@ -47,26 +46,26 @@ class Version:
         qualifier1 = match.group(4)
         qualifier2 = match.group(5)
         if qualifier1 and qualifier2:
-            if qualifier2 == '-SNAPSHOT':
+            if qualifier2 == "-SNAPSHOT":
                 self.variant = qualifier1
                 self.snapshot = True
             else:
                 self.variant = qualifier1 + qualifier2
         elif qualifier1:
-            if qualifier1 == '-SNAPSHOT':
+            if qualifier1 == "-SNAPSHOT":
                 self.snapshot = True
             else:
                 self.variant = qualifier1
 
     def bump(self, bump_type):
-        if bump_type == 'minor':
+        if bump_type == "minor":
             self.bump_minor()
             self.set_snapshot(False)
-        elif bump_type == 'patch':
+        elif bump_type == "patch":
             self.bump_patch()
             self.set_snapshot(False)
         else:
-            raise ValueError('invalid bump_type: {}'.format(bump_type))
+            raise ValueError("invalid bump_type: {}".format(bump_type))
 
     def bump_minor(self):
         self.minor += 1
@@ -79,25 +78,28 @@ class Version:
         self.snapshot = snapshot
 
     def __str__(self) -> str:
-        mmp = '{}.{}.{}'.format(self.major, self.minor, self.patch)
+        mmp = "{}.{}.{}".format(self.major, self.minor, self.patch)
         postfix = self.variant
         if self.snapshot:
-            postfix += '-SNAPSHOT'
+            postfix += "-SNAPSHOT"
         return mmp + postfix
+
 
 class ArtifactVersions:
     module: str = None
     current: Version = None
     released: Version = None
 
-    def __init__(self, version_line = str):
-        (self.module, released_version_str, current_version_str) = version_line.split(":")
+    def __init__(self, version_line=str):
+        (self.module, released_version_str, current_version_str) = version_line.split(
+            ":"
+        )
         # self.module = module
         self.current = Version(current_version_str)
         self.released = Version(released_version_str)
 
-    def bump(self, bump_type = str) -> None:
-        if (bump_type == "snapshot"):
+    def bump(self, bump_type=str) -> None:
+        if bump_type == "snapshot":
             self.next_snapshot()
         else:
             self.next_release(bump_type)
@@ -107,12 +109,13 @@ class ArtifactVersions:
         self.current.bump_patch()
         self.current.set_snapshot(True)
 
-    def next_release(self, bump_type = str) -> None:
+    def next_release(self, bump_type=str) -> None:
         self.current.bump(bump_type)
         self.released = copy.deepcopy(self.current)
 
     def __str__(self) -> str:
-        return '{}:{}:{}'.format(self.module, self.released, self.current)
+        return "{}:{}:{}".format(self.module, self.released, self.current)
+
 
 @attr.s(auto_attribs=True, slots=True)
 class Context(releasetool.commands.common.GitHubContext):
@@ -123,6 +126,7 @@ class Context(releasetool.commands.common.GitHubContext):
     pull_request: Optional[dict] = None
     updated_files: List[str] = []
     versions: List[ArtifactVersions] = None
+
 
 def read_versions(ctx: Context) -> None:
     click.secho("> Figuring out the current version(s)", fg="cyan")
@@ -138,10 +142,12 @@ def read_versions(ctx: Context) -> None:
 
     ctx.versions = versions
 
+
 def bump_and_update_versions(ctx: Context) -> None:
     if click.confirm("Bump versions?", default=True):
         bump_versions(ctx)
         update_versions(ctx)
+
 
 def bump_versions(ctx: Context) -> None:
     bump_type = click.prompt(
@@ -153,12 +159,14 @@ def bump_versions(ctx: Context) -> None:
     for versions in ctx.versions:
         versions.bump(bump_type)
 
+
 def update_versions(ctx: Context) -> None:
     with open("versions.txt", "w") as f:
         f.write("# Format:\n")
         f.write("# module:released-version:current-version\n\n")
         for versions in ctx.versions:
             f.write("{}\n".format(versions))
+
 
 def replace_versions(ctx: Context) -> None:
     if click.confirm("Update versions in pom.xml files?", default=True):
@@ -171,10 +179,12 @@ def replace_versions(ctx: Context) -> None:
                     updated_files.append(filepath)
         ctx.updated_files = updated_files
 
-VERSION_UPDATE_MARKER = re.compile(r'\{x-version-update:([^:]+):([^}]+)\}')
-VERSION_UPDATE_START_MARKER = re.compile(r'\{x-version-update-start:([^:]+):([^}]+)\}')
-VERSION_UPDATE_END_MARKER = re.compile(r'\{x-version-update-end\}')
-VERSION_REGEX_STR = r'\d+\.\d+\.\d+(?:-\w+)?(?:-\w+)?'
+
+VERSION_UPDATE_MARKER = re.compile(r"\{x-version-update:([^:]+):([^}]+)\}")
+VERSION_UPDATE_START_MARKER = re.compile(r"\{x-version-update-start:([^:]+):([^}]+)\}")
+VERSION_UPDATE_END_MARKER = re.compile(r"\{x-version-update-end\}")
+VERSION_REGEX_STR = r"\d+\.\d+\.\d+(?:-\w+)?(?:-\w+)?"
+
 
 def replace_version_in_file(versions: List[ArtifactVersions], target: str):
     print(target)
@@ -204,15 +214,17 @@ def replace_version_in_file(versions: List[ArtifactVersions], target: str):
 
             if repl_thisline:
                 if module_name not in version_map:
-                    raise ValueError('module not found in version.txt: {}'.format(module_name))
+                    raise ValueError(
+                        "module not found in version.txt: {}".format(module_name)
+                    )
                 module = version_map[module_name]
                 new_version = None
-                if version_type == 'current':
+                if version_type == "current":
                     new_version = module.current
-                elif version_type == 'released':
+                elif version_type == "released":
                     new_version = module.released
                 else:
-                    raise ValueError('invalid version type: {}'.format(version_type))
+                    raise ValueError("invalid version type: {}".format(version_type))
 
                 newline = re.sub(VERSION_REGEX_STR, str(new_version), line)
                 newlines.append(newline)
@@ -220,11 +232,12 @@ def replace_version_in_file(versions: List[ArtifactVersions], target: str):
                 newlines.append(line)
 
             if not repl_open:
-                module_name, version_type = '', ''
+                module_name, version_type = "", ""
 
-    with open(target, 'w') as f:
+    with open(target, "w") as f:
         for line in newlines:
             f.write(line)
+
 
 def determine_package_name(ctx: Context) -> None:
     click.secho("> Figuring out the package name.", fg="cyan")
@@ -253,6 +266,7 @@ def determine_last_release(ctx: Context) -> None:
         ctx.last_release_version = "0.0.0"
 
     click.secho(f"The last release was {ctx.last_release_version}.")
+
 
 def gather_changes(ctx: Context) -> None:
     click.secho(f"> Gathering changes since {ctx.last_release_version}", fg="cyan")
@@ -307,7 +321,8 @@ def create_release_commit(ctx: Context) -> None:
     """Create a release commit."""
     click.secho("> Committing changes", fg="cyan")
     releasetool.git.commit(
-        ["README.md", "versions.txt"] + ctx.updated_files, f"Release v{ctx.release_version}"
+        ["README.md", "versions.txt"] + ctx.updated_files,
+        f"Release v{ctx.release_version}",
     )
 
 
@@ -325,7 +340,9 @@ def create_release_pr(ctx: Context) -> None:
         else:
             head = f"{ctx.origin_user}:{ctx.release_branch}"
 
-        body = "This pull request was generated using releasetool.\n\n" + ctx.release_notes
+        body = (
+            "This pull request was generated using releasetool.\n\n" + ctx.release_notes
+        )
 
         ctx.pull_request = ctx.github.create_pull_request(
             ctx.upstream_repo,
