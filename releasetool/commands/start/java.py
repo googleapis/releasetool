@@ -125,9 +125,17 @@ class Context(releasetool.commands.common.GitHubContext):
     last_release_committish: Optional[str] = None
     release_version: Optional[str] = None
     release_branch: Optional[str] = None
+    release_type: str = None
     pull_request: Optional[dict] = None
     updated_files: List[str] = []
     versions: List[ArtifactVersions] = None
+
+def determine_release_type(ctx: Context) -> None:
+    ctx.release_type = click.prompt(
+        "What type of release is this? (minor|patch|snapshot)",
+        type=click.Choice(["minor", "patch", "snapshot"]),
+        default="minor",
+    )
 
 
 def read_versions(ctx: Context) -> None:
@@ -145,29 +153,18 @@ def read_versions(ctx: Context) -> None:
     ctx.versions = versions
 
 
-def bump_and_update_versions(ctx: Context) -> None:
-    if click.confirm("Bump versions?", default=True):
-        bump_versions(ctx)
-        update_versions(ctx)
-
-
 def bump_versions(ctx: Context) -> None:
-    bump_type = click.prompt(
-        "What type of release is this? (minor|patch|snapshot)",
-        type=click.Choice(["minor", "patch", "snapshot"]),
-        default="minor",
-    )
-
     for versions in ctx.versions:
-        versions.bump(bump_type)
+        versions.bump(ctx.release_type)
 
 
 def update_versions(ctx: Context) -> None:
-    with open("versions.txt", "w") as f:
-        f.write("# Format:\n")
-        f.write("# module:released-version:current-version\n\n")
-        for versions in ctx.versions:
-            f.write("{}\n".format(versions))
+    if click.confirm("Bump versions?", default=True):
+        with open("versions.txt", "w") as f:
+            f.write("# Format:\n")
+            f.write("# module:released-version:current-version\n\n")
+            for versions in ctx.versions:
+                f.write("{}\n".format(versions))
 
 
 def replace_versions(ctx: Context) -> None:
@@ -279,30 +276,10 @@ def determine_release_version(ctx: Context) -> None:
     release_notes = textwrap.indent(ctx.release_notes, "\t")
     click.secho(f"Here's the release notes you wrote:\n\n{release_notes}\n")
 
-    parsed_version = [int(x) for x in ctx.last_release_version.split(".")]
+    release_version = Version(ctx.last_release_version)
+    release_version.bump(ctx.release_type)
 
-    if parsed_version == [0, 0, 0]:
-        ctx.release_version = "0.1.0"
-        return
-
-    selection = click.prompt(
-        "Is this a major, minor, or patch update (or enter the new version " "directly)"
-    )
-    if selection == "major":
-        parsed_version[0] += 1
-        parsed_version[1] = 0
-        parsed_version[2] = 0
-    elif selection == "minor":
-        parsed_version[1] += 1
-        parsed_version[2] = 0
-    elif selection == "patch":
-        parsed_version[2] += 1
-    else:
-        ctx.release_version = selection
-        return
-
-    ctx.release_version = "{}.{}.{}".format(*parsed_version)
-
+    ctx.release_version = str(release_version)
     click.secho(f"Got it, releasing {ctx.release_version}.")
 
 
@@ -355,10 +332,12 @@ def start() -> None:
     click.secho(f"o/ Hey, {getpass.getuser()}, let's release some stuff!", fg="magenta")
     releasetool.commands.common.setup_github_context(ctx)
     determine_package_name(ctx)
+    determine_release_type(ctx)
 
     # version management in code
     read_versions(ctx)
-    bump_and_update_versions(ctx)
+    bump_versions(ctx)
+    update_versions(ctx)
     replace_versions(ctx)
 
     # create release
