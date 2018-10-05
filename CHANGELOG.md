@@ -4,6 +4,26 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+## 0.9.0
+
+10-05-2018 09:09 PDT
+
+### Implementation Changes
+- Move edit_release_notes to common ([#58](https://github.com/GoogleCloudPlatform/releasetool/pull/58))
+
+### New Features
+- Default to yes for opening build page, copy commitish to clipboard ([#64](https://github.com/GoogleCloudPlatform/releasetool/pull/64))
+- Add release dates to changelog ([#57](https://github.com/GoogleCloudPlatform/releasetool/pull/57))
+
+### Dependencies
+- Require python>=3.6 ([#71](https://github.com/GoogleCloudPlatform/releasetool/pull/71))
+
+### Internal / Testing Changes
+- Fix Ruby start ([#63](https://github.com/GoogleCloudPlatform/releasetool/pull/63))
+- Fix failing tests ([#61](https://github.com/GoogleCloudPlatform/releasetool/pull/61))
+- Set up CI ([#60](https://github.com/GoogleCloudPlatform/releasetool/pull/60))
+- Use new Nox ([#59](https://github.com/GoogleCloudPlatform/releasetool/pull/59))
+
 ## 0.8.0
 
 ### Implementation Changes
