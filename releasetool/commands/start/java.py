@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import copy
 import getpass
 import os
 import sys
@@ -35,7 +36,7 @@ class Version:
     major: str = None
     minor: str = None
     patch: str = None
-    variant: str = None
+    variant: str = ""
     snapshot: bool = False
 
     def __init__(self, version_str):
@@ -60,8 +61,10 @@ class Version:
     def bump(self, bump_type):
         if bump_type == 'minor':
             self.bump_minor()
+            self.set_snapshot(False)
         elif bump_type == 'patch':
             self.bump_patch()
+            self.set_snapshot(False)
         else:
             raise ValueError('invalid bump_type: {}'.format(bump_type))
 
@@ -75,13 +78,41 @@ class Version:
     def set_snapshot(self, snapshot):
         self.snapshot = snapshot
 
-    def __str__(self):
+    def __str__(self) -> str:
         mmp = '{}.{}.{}'.format(self.major, self.minor, self.patch)
         postfix = self.variant
         if self.snapshot:
             postfix += '-SNAPSHOT'
         return mmp + postfix
 
+class ArtifactVersions:
+    module: str = None
+    current: Version = None
+    released: Version = None
+
+    def __init__(self, version_line = str):
+        (self.module, released_version_str, current_version_str) = version_line.split(":")
+        # self.module = module
+        self.current = Version(current_version_str)
+        self.released = Version(released_version_str)
+
+    def bump(self, bump_type = str) -> None:
+        if (bump_type == "snapshot"):
+            self.next_snapshot()
+        else:
+            self.next_release(bump_type)
+
+    def next_snapshot(self) -> None:
+        self.current = copy.deepcopy(self.released)
+        self.current.bump_patch()
+        self.current.set_snapshot(True)
+
+    def next_release(self, bump_type = str) -> None:
+        self.current.bump(bump_type)
+        self.released = copy.deepcopy(self.current)
+
+    def __str__(self) -> str:
+        return '{}:{}:{}'.format(self.module, self.released, self.current)
 
 @attr.s(auto_attribs=True, slots=True)
 class Context(releasetool.commands.common.GitHubContext):
@@ -92,7 +123,106 @@ class Context(releasetool.commands.common.GitHubContext):
     release_version: Optional[str] = None
     release_branch: Optional[str] = None
     pull_request: Optional[dict] = None
+    versions: List[ArtifactVersions] = None
 
+def read_versions(ctx: Context) -> None:
+    click.secho("> Figuring out the current version(s)", fg="cyan")
+
+    versions = []
+    with open("versions.txt") as f:
+        for line in f:
+            version_line = line.strip()
+            if not version_line or version_line.startswith("#"):
+                continue
+
+            versions.append(ArtifactVersions(version_line))
+
+    ctx.versions = versions
+
+def bump_and_update_versions(ctx: Context) -> None:
+    if click.confirm("Bump versions?", default=True):
+        bump_versions(ctx)
+        update_versions(ctx)
+
+def bump_versions(ctx: Context) -> None:
+    bump_type = click.prompt(
+        "What type of release is this? (minor|patch|snapshot)",
+        type=click.Choice(["minor", "patch", "snapshot"]),
+        default="minor",
+    )
+
+    for versions in ctx.versions:
+        versions.bump(bump_type)
+
+def update_versions(ctx: Context) -> None:
+    with open("versions.txt", "w") as f:
+        f.write("# Format:\n")
+        f.write("# module:released-version:current-version\n\n")
+        for versions in ctx.versions:
+            f.write("{}\n".format(versions))
+
+def replace_versions(ctx: Context) -> None:
+    if click.confirm("Update versions in pom.xml files?", default=True):
+        for root, _, files in os.walk("."):
+            for filename in files:
+                filepath = root + os.sep + filename
+                if filename == "README.md" or filename == "pom.xml":
+                    replace_version_in_file(ctx.versions, filepath)
+
+VERSION_UPDATE_MARKER = re.compile(r'\{x-version-update:([^:]+):([^}]+)\}')
+VERSION_UPDATE_START_MARKER = re.compile(r'\{x-version-update-start:([^:]+):([^}]+)\}')
+VERSION_UPDATE_END_MARKER = re.compile(r'\{x-version-update-end\}')
+VERSION_REGEX_STR = r'\d+\.\d+\.\d+(?:-\w+)?(?:-\w+)?'
+
+def replace_version_in_file(versions: List[ArtifactVersions], target: str):
+    print(target)
+    newlines = []
+    version_map = {}
+    for av in versions:
+        version_map[av.module] = av
+
+    repl_open, repl_thisline = False, False
+    with open(target) as f:
+        # do something
+        for line in f:
+            repl_thisline = repl_open
+            match = VERSION_UPDATE_MARKER.search(line)
+            if match:
+                module_name, version_type = match.group(1), match.group(2)
+                repl_thisline = True
+            else:
+                match = VERSION_UPDATE_START_MARKER.search(line)
+                if match:
+                    module_name, version_type = match.group(1), match.group(2)
+                    repl_open, repl_thisline = True, True
+                else:
+                    match = VERSION_UPDATE_END_MARKER.search(line)
+                    if match:
+                        repl_open, repl_thisline = False, False
+
+            if repl_thisline:
+                if module_name not in version_map:
+                    raise ValueError('module not found in version.txt: {}'.format(module_name))
+                module = version_map[module_name]
+                new_version = None
+                if version_type == 'current':
+                    new_version = module.current
+                elif version_type == 'released':
+                    new_version = module.released
+                else:
+                    raise ValueError('invalid version type: {}'.format(version_type))
+
+                newline = re.sub(VERSION_REGEX_STR, str(new_version), line)
+                newlines.append(newline)
+            else:
+                newlines.append(line)
+
+            if not repl_open:
+                module_name, version_type = '', ''
+
+    with open(target, 'w') as f:
+        for line in newlines:
+            f.write(line)
 
 def determine_package_name(ctx: Context) -> None:
     click.secho("> Figuring out the package name.", fg="cyan")
@@ -245,8 +375,9 @@ def create_release_pr(ctx: Context) -> None:
 def start() -> None:
     ctx = Context()
 
-    version = Version("1.2.3-alpha-SNAPSHOT")
-    print(version)
+    read_versions(ctx)
+    bump_and_update_versions(ctx)
+    replace_versions(ctx)
 
     # click.secho(f"o/ Hey, {getpass.getuser()}, let's release some stuff!", fg="magenta")
 
