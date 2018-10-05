@@ -29,6 +29,9 @@ import releasetool.secrets
 import releasetool.commands.common
 
 VERSION_REGEX = re.compile(r"(\d+)\.(\d+)\.(\d+)(-\w+)?(-\w+)?")
+VERSION_UPDATE_MARKER = re.compile(r"\{x-version-update:([^:]+):([^}]+)\}")
+VERSION_UPDATE_START_MARKER = re.compile(r"\{x-version-update-start:([^:]+):([^}]+)\}")
+VERSION_UPDATE_END_MARKER = re.compile(r"\{x-version-update-end\}")
 
 
 class Version:
@@ -94,7 +97,6 @@ class ArtifactVersions:
         (self.module, released_version_str, current_version_str) = version_line.split(
             ":"
         )
-        # self.module = module
         self.current = Version(current_version_str)
         self.released = Version(released_version_str)
 
@@ -180,14 +182,7 @@ def replace_versions(ctx: Context) -> None:
         ctx.updated_files = updated_files
 
 
-VERSION_UPDATE_MARKER = re.compile(r"\{x-version-update:([^:]+):([^}]+)\}")
-VERSION_UPDATE_START_MARKER = re.compile(r"\{x-version-update-start:([^:]+):([^}]+)\}")
-VERSION_UPDATE_END_MARKER = re.compile(r"\{x-version-update-end\}")
-VERSION_REGEX_STR = r"\d+\.\d+\.\d+(?:-\w+)?(?:-\w+)?"
-
-
 def replace_version_in_file(versions: List[ArtifactVersions], target: str):
-    print(target)
     newlines = []
     version_map = {}
     for av in versions:
@@ -226,7 +221,7 @@ def replace_version_in_file(versions: List[ArtifactVersions], target: str):
                 else:
                     raise ValueError("invalid version type: {}".format(version_type))
 
-                newline = re.sub(VERSION_REGEX_STR, str(new_version), line)
+                newline = re.sub(VERSION_REGEX, str(new_version), line)
                 newlines.append(newline)
             else:
                 newlines.append(line)
@@ -356,15 +351,17 @@ def create_release_pr(ctx: Context) -> None:
 def start() -> None:
     ctx = Context()
 
+    # setup
     click.secho(f"o/ Hey, {getpass.getuser()}, let's release some stuff!", fg="magenta")
     releasetool.commands.common.setup_github_context(ctx)
     determine_package_name(ctx)
 
-    # release versioning
+    # version management in code
     read_versions(ctx)
     bump_and_update_versions(ctx)
     replace_versions(ctx)
 
+    # create release
     determine_last_release(ctx)
     gather_changes(ctx)
     releasetool.commands.common.edit_release_notes(ctx)
