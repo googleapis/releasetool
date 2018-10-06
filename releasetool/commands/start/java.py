@@ -67,6 +67,9 @@ class Version:
         elif bump_type == "patch":
             self.bump_patch()
             self.set_snapshot(False)
+        elif bump_type == "snapshot":
+            self.bump_patch()
+            self.set_snapshot(True)
         else:
             raise ValueError("invalid bump_type: {}".format(bump_type))
 
