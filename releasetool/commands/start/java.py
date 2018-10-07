@@ -296,10 +296,12 @@ def create_release_branch(ctx) -> None:
 def create_release_commit(ctx: Context) -> None:
     """Create a release commit."""
     click.secho("> Committing changes", fg="cyan")
-    releasetool.git.commit(
-        ["README.md", "versions.txt"] + ctx.updated_files,
-        f"Release v{ctx.release_version}",
+    message = (
+        "Bump next snapshot"
+        if ctx.release_type == "snapshot"
+        else f"Release v{ctx.release_version}"
     )
+    releasetool.git.commit(["README.md", "versions.txt"] + ctx.updated_files, message)
 
 
 def push_release_branch(ctx: Context) -> None:
@@ -320,11 +322,14 @@ def create_release_pr(ctx: Context) -> None:
             "This pull request was generated using releasetool.\n\n" + ctx.release_notes
         )
 
+        title = (
+            "Bump next snapshot"
+            if ctx.release_type == "snapshot"
+            else f"Release {ctx.package_name} v{ctx.release_version}"
+        )
+
         ctx.pull_request = ctx.github.create_pull_request(
-            ctx.upstream_repo,
-            head=head,
-            title=f"Release {ctx.package_name} v{ctx.release_version}",
-            body=body,
+            ctx.upstream_repo, head=head, title=title, body=body
         )
         click.secho(f"Pull request is at {ctx.pull_request['html_url']}.")
 
@@ -345,9 +350,12 @@ def start() -> None:
     replace_versions(ctx)
 
     # create release
-    determine_last_release(ctx)
-    gather_changes(ctx)
-    releasetool.commands.common.edit_release_notes(ctx)
+    if ctx.release_type == "snapshot":
+        ctx.release_notes = "Bump snapshot"
+    else:
+        determine_last_release(ctx)
+        gather_changes(ctx)
+        releasetool.commands.common.edit_release_notes(ctx)
     determine_release_version(ctx)
     create_release_branch(ctx)
     create_release_commit(ctx)
