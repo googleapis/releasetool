@@ -149,6 +149,7 @@ def determine_release_type(ctx: Context) -> None:
 
 
 def read_versions(ctx: Context) -> None:
+    """Parses current artifact versions from the versions.txt manifest file"""
     click.secho("> Figuring out the current version(s)", fg="cyan")
 
     versions = []
@@ -164,12 +165,14 @@ def read_versions(ctx: Context) -> None:
 
 
 def bump_versions(ctx: Context) -> None:
+    """Bump all versions according to the release type"""
     for versions in ctx.versions:
         versions.bump(ctx.release_type)
 
 
 def update_versions(ctx: Context) -> None:
-    if click.confirm("Bump versions?", default=True):
+    """Update the versions.txt manifest file"""
+    if click.confirm("Update versions.txt?", default=True):
         with open("versions.txt", "w") as f:
             f.write("# Format:\n")
             f.write("# module:released-version:current-version\n\n")
@@ -178,6 +181,7 @@ def update_versions(ctx: Context) -> None:
 
 
 def replace_versions(ctx: Context) -> None:
+    """Replaces version strings in source and build files"""
     if click.confirm("Update versions in pom.xml files?", default=True):
         updated_files = []
         for root, _, files in os.walk("."):
@@ -190,6 +194,7 @@ def replace_versions(ctx: Context) -> None:
 
 
 def replace_version_in_file(versions: List[ArtifactVersions], target: str):
+    """Replaces all annotated versions in a single file"""
     newlines = []
     version_map = {}
     for av in versions:
@@ -282,6 +287,7 @@ def gather_changes(ctx: Context) -> None:
 
 
 def determine_release_version(ctx: Context) -> None:
+    """Determines the release version for release tagging"""
     click.secho(f"> Now it's time to pick a release version!", fg="cyan")
     release_notes = textwrap.indent(ctx.release_notes, "\t")
     click.secho(f"Here's the release notes you wrote:\n\n{release_notes}\n")
@@ -315,6 +321,7 @@ def create_release_branch(ctx: Context) -> None:
 
 
 def create_release_pr(ctx: Context) -> None:
+    """Create a release pull request with notes"
     if ctx.release_branch is not None and click.confirm("Create PR?", default=True):
         click.secho(f"> Creating release pull request.", fg="cyan")
 
