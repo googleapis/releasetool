@@ -110,7 +110,7 @@ def create_release(ctx: Context) -> None:
 
     release_location_string = f"Release is at {ctx.github_release['html_url']}"
     click.secho(release_location_string)
-    click.secho("CI will handle publishing the package to PyPI.")
+    click.secho("CI will handle publishing the package to npm.")
 
     ctx.github.create_pull_request_comment(
         ctx.upstream_repo, ctx.release_pr["number"], release_location_string
