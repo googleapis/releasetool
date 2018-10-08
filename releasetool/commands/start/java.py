@@ -287,30 +287,27 @@ def determine_release_version(ctx: Context) -> None:
     click.secho(f"Got it, releasing {ctx.release_version}.")
 
 
-def create_release_branch(ctx) -> None:
-    ctx.release_branch = f"release-{ctx.package_name}-v{ctx.release_version}"
-    click.secho(f"> Creating branch {ctx.release_branch}", fg="cyan")
-    return releasetool.git.checkout_create_branch(ctx.release_branch)
-
-
-def create_release_commit(ctx: Context) -> None:
+def create_release_branch(ctx: Context) -> None:
     """Create a release commit."""
-    click.secho("> Committing changes", fg="cyan")
-    message = (
-        "Bump next snapshot"
-        if ctx.release_type == "snapshot"
-        else f"Release v{ctx.release_version}"
-    )
-    releasetool.git.commit(["README.md", "versions.txt"] + ctx.updated_files, message)
+    if click.confirm("Create release branch?", default=True):
+        ctx.release_branch = f"release-{ctx.package_name}-v{ctx.release_version}"
+        click.secho(f"> Creating branch {ctx.release_branch}", fg="cyan")
+        releasetool.git.checkout_create_branch(ctx.release_branch)
 
+        click.secho("> Committing changes", fg="cyan")
+        message = (
+            "Bump next snapshot"
+            if ctx.release_type == "snapshot"
+            else f"Release v{ctx.release_version}"
+        )
+        releasetool.git.commit(["README.md", "versions.txt"] + ctx.updated_files, message)
 
-def push_release_branch(ctx: Context) -> None:
-    click.secho("> Pushing release branch.", fg="cyan")
-    releasetool.git.push(ctx.release_branch)
+        click.secho("> Pushing release branch.", fg="cyan")
+        releasetool.git.push(ctx.release_branch)
 
 
 def create_release_pr(ctx: Context) -> None:
-    if click.confirm("Create PR?", default=True):
+    if ctx.release_branch is not None and click.confirm("Create PR?", default=True):
         click.secho(f"> Creating release pull request.", fg="cyan")
 
         if ctx.upstream_repo == ctx.origin_repo:
@@ -350,16 +347,14 @@ def start() -> None:
     replace_versions(ctx)
 
     # create release
+    determine_last_release(ctx)
     if ctx.release_type == "snapshot":
         ctx.release_notes = "Bump snapshot"
     else:
-        determine_last_release(ctx)
         gather_changes(ctx)
         releasetool.commands.common.edit_release_notes(ctx)
     determine_release_version(ctx)
     create_release_branch(ctx)
-    create_release_commit(ctx)
-    push_release_branch(ctx)
     create_release_pr(ctx)
 
     click.secho(f"\o/ All done!", fg="magenta")
