@@ -116,8 +116,8 @@ class ArtifactVersions:
         self.current.set_snapshot(True)
 
     def next_release(self, bump_type=str) -> None:
-        self.current.bump(bump_type)
-        self.released = copy.deepcopy(self.current)
+        self.released.bump(bump_type)
+        self.current = copy.deepcopy(self.released)
 
     def __str__(self) -> str:
         return "{}:{}:{}".format(self.module, self.released, self.current)
