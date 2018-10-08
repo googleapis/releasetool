@@ -71,7 +71,7 @@ def _detect_language():
             return "python-tool"
     elif os.path.exists("Gemfile"):
         return "ruby"
-    elif os.path.exists("pom.xml"):
+    elif os.path.exists("pom.xml") or os.path.exists("build.gradle"):
         return "java"
     return None
 
