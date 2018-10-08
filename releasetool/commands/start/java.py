@@ -321,7 +321,7 @@ def create_release_branch(ctx: Context) -> None:
 
 
 def create_release_pr(ctx: Context) -> None:
-    """Create a release pull request with notes"
+    """Create a release pull request with notes"""
     if ctx.release_branch is not None and click.confirm("Create PR?", default=True):
         click.secho(f"> Creating release pull request.", fg="cyan")
 
