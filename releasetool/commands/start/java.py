@@ -32,6 +32,7 @@ VERSION_REGEX = re.compile(r"(\d+)\.(\d+)\.(\d+)(-\w+)?(-\w+)?")
 VERSION_UPDATE_MARKER = re.compile(r"\{x-version-update:([^:]+):([^}]+)\}")
 VERSION_UPDATE_START_MARKER = re.compile(r"\{x-version-update-start:([^:]+):([^}]+)\}")
 VERSION_UPDATE_END_MARKER = re.compile(r"\{x-version-update-end\}")
+RELEASE_TAG_REGEX = re.compile(r"v?(\d+)\.(\d+)\.(\d+)")
 
 
 class Version:
@@ -244,7 +245,7 @@ def determine_package_name(ctx: Context) -> None:
 def determine_last_release(ctx: Context) -> None:
     click.secho("> Figuring out what the last release was.", fg="cyan")
     tags = releasetool.git.list_tags()
-    candidates = [tag for tag in tags if tag.startswith("v")]
+    candidates = [tag for tag in tags if RELEASE_TAG_REGEX.match(tag)]
 
     if candidates:
         ctx.last_release_committish = candidates[0]
@@ -259,7 +260,7 @@ def determine_last_release(ctx: Context) -> None:
             fg="yellow",
         )
         ctx.last_release_committish = click.prompt("Committish")
-        ctx.last_release_version = "0.0.0"
+        ctx.last_release_version = click.prompt("Last version", default="0.0.0")
 
     click.secho(f"The last release was {ctx.last_release_version}.")
 
