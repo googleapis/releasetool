@@ -33,6 +33,11 @@ VERSION_UPDATE_MARKER = re.compile(r"\{x-version-update:([^:]+):([^}]+)\}")
 VERSION_UPDATE_START_MARKER = re.compile(r"\{x-version-update-start:([^:]+):([^}]+)\}")
 VERSION_UPDATE_END_MARKER = re.compile(r"\{x-version-update-end\}")
 RELEASE_TAG_REGEX = re.compile(r"v?(\d+)\.(\d+)\.(\d+)")
+VERSION_REPLACEMENT_FILENAMES = {
+    "README.md": True,
+    "pom.xml": True,
+    "build.gradle": True,
+}
 
 
 class Version:
@@ -178,7 +183,7 @@ def replace_versions(ctx: Context) -> None:
         for root, _, files in os.walk("."):
             for filename in files:
                 filepath = root + os.sep + filename
-                if filename == "README.md" or filename == "pom.xml":
+                if filename in VERSION_REPLACEMENT_FILENAMES:
                     replace_version_in_file(ctx.versions, filepath)
                     updated_files.append(filepath)
         ctx.updated_files = updated_files
