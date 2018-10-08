@@ -301,7 +301,9 @@ def create_release_branch(ctx: Context) -> None:
             if ctx.release_type == "snapshot"
             else f"Release v{ctx.release_version}"
         )
-        releasetool.git.commit(["README.md", "versions.txt"] + ctx.updated_files, message)
+        releasetool.git.commit(
+            ["README.md", "versions.txt"] + ctx.updated_files, message
+        )
 
         click.secho("> Pushing release branch.", fg="cyan")
         releasetool.git.push(ctx.release_branch)
