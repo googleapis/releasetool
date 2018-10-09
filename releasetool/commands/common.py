@@ -94,7 +94,9 @@ def setup_github_context(
     # Compare upstream/master with master
     click.secho(f"> Comparing {ctx.upstream_name}/master to master.", fg="cyan")
 
-    if releasetool.git.diff(f"{ctx.upstream_name}/master", "master") == "":
+    if releasetool.git.get_latest_commit(
+        f"{ctx.upstream_name}/master"
+    ) == releasetool.git.get_latest_commit("master"):
         click.echo(f"master is up to date with {ctx.upstream_name}/master")
     else:
         click.secho(

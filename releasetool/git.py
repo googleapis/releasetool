@@ -27,9 +27,11 @@ def list_tags() -> Sequence[str]:
     return tags
 
 
-def diff(from_: str, to: str = "master") -> bool:
-    output = subprocess.check_output(["git", "diff", from_, to]).decode("utf-8")
-    return output
+def get_latest_commit(branch: str) -> str:
+    commit = subprocess.check_output(
+        ["git", "log", "-1", branch, "--pretty=%H"]
+    ).decode("utf-8")
+    return commit
 
 
 def summary_log(from_: str, to: str = "master", where: str = ".") -> Sequence[str]:
