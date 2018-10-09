@@ -12,12 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import copy
 import getpass
 import os
-import sys
 import textwrap
 from typing import List, Optional
-from glob import glob
 
 import attr
 import click
@@ -29,16 +28,222 @@ import releasetool.github
 import releasetool.secrets
 import releasetool.commands.common
 
+VERSION_REGEX = re.compile(r"(\d+)\.(\d+)\.(\d+)(-\w+)?(-\w+)?")
+VERSION_UPDATE_MARKER = re.compile(r"\{x-version-update:([^:]+):([^}]+)\}")
+VERSION_UPDATE_START_MARKER = re.compile(r"\{x-version-update-start:([^:]+):([^}]+)\}")
+VERSION_UPDATE_END_MARKER = re.compile(r"\{x-version-update-end\}")
+RELEASE_TAG_REGEX = re.compile(r"v?(\d+)\.(\d+)\.(\d+)")
+VERSION_REPLACEMENT_FILENAMES = {
+    "README.md": True,
+    "pom.xml": True,
+    "build.gradle": True,
+}
+
+
+class Version:
+    major: str = None
+    minor: str = None
+    patch: str = None
+    variant: str = ""
+    snapshot: bool = False
+
+    def __init__(self, version_str):
+        match = VERSION_REGEX.match(version_str)
+        self.major = int(match.group(1))
+        self.minor = int(match.group(2))
+        self.patch = int(match.group(3))
+        qualifier1 = match.group(4)
+        qualifier2 = match.group(5)
+        if qualifier1 and qualifier2:
+            if qualifier2 == "-SNAPSHOT":
+                self.variant = qualifier1
+                self.snapshot = True
+            else:
+                self.variant = qualifier1 + qualifier2
+        elif qualifier1:
+            if qualifier1 == "-SNAPSHOT":
+                self.snapshot = True
+            else:
+                self.variant = qualifier1
+
+    def bump(self, bump_type):
+        if bump_type == "minor":
+            self.bump_minor()
+            self.set_snapshot(False)
+        elif bump_type == "patch":
+            self.bump_patch()
+            self.set_snapshot(False)
+        elif bump_type == "snapshot":
+            self.bump_patch()
+            self.set_snapshot(True)
+        else:
+            raise ValueError("invalid bump_type: {}".format(bump_type))
+
+    def bump_minor(self):
+        self.minor += 1
+        self.patch = 0
+
+    def bump_patch(self):
+        self.patch += 1
+
+    def set_snapshot(self, snapshot):
+        self.snapshot = snapshot
+
+    def __str__(self) -> str:
+        mmp = "{}.{}.{}".format(self.major, self.minor, self.patch)
+        postfix = self.variant
+        if self.snapshot:
+            postfix += "-SNAPSHOT"
+        return mmp + postfix
+
+
+class ArtifactVersions:
+    module: str = None
+    current: Version = None
+    released: Version = None
+
+    def __init__(self, version_line=str):
+        (self.module, released_version_str, current_version_str) = version_line.split(
+            ":"
+        )
+        self.current = Version(current_version_str)
+        self.released = Version(released_version_str)
+
+    def bump(self, bump_type=str) -> None:
+        if bump_type == "snapshot":
+            self.next_snapshot()
+        else:
+            self.next_release(bump_type)
+
+    def next_snapshot(self) -> None:
+        self.current = copy.deepcopy(self.released)
+        self.current.bump_patch()
+        self.current.set_snapshot(True)
+
+    def next_release(self, bump_type=str) -> None:
+        self.released.bump(bump_type)
+        self.current = copy.deepcopy(self.released)
+
+    def __str__(self) -> str:
+        return "{}:{}:{}".format(self.module, self.released, self.current)
+
 
 @attr.s(auto_attribs=True, slots=True)
 class Context(releasetool.commands.common.GitHubContext):
     last_release_version: Optional[str] = None
     last_release_committish: Optional[str] = None
-    pom_files: List[str] = []
-    snapshot_version: Optional[str] = None
     release_version: Optional[str] = None
     release_branch: Optional[str] = None
+    release_type: str = None
     pull_request: Optional[dict] = None
+    updated_files: List[str] = []
+    versions: List[ArtifactVersions] = None
+
+
+def determine_release_type(ctx: Context) -> None:
+    ctx.release_type = click.prompt(
+        "What type of release is this? (minor|patch|snapshot)",
+        type=click.Choice(["minor", "patch", "snapshot"]),
+        default="minor",
+    )
+
+
+def read_versions(ctx: Context) -> None:
+    """Parses current artifact versions from the versions.txt manifest file"""
+    click.secho("> Figuring out the current version(s)", fg="cyan")
+
+    versions = []
+    with open("versions.txt") as f:
+        for line in f:
+            version_line = line.strip()
+            if not version_line or version_line.startswith("#"):
+                continue
+
+            versions.append(ArtifactVersions(version_line))
+
+    ctx.versions = versions
+
+
+def bump_versions(ctx: Context) -> None:
+    """Bump all versions according to the release type"""
+    for versions in ctx.versions:
+        versions.bump(ctx.release_type)
+
+
+def update_versions(ctx: Context) -> None:
+    """Update the versions.txt manifest file"""
+    if click.confirm("Update versions.txt?", default=True):
+        with open("versions.txt", "w") as f:
+            f.write("# Format:\n")
+            f.write("# module:released-version:current-version\n\n")
+            for versions in ctx.versions:
+                f.write("{}\n".format(versions))
+
+
+def replace_versions(ctx: Context) -> None:
+    """Replaces version strings in source and build files"""
+    if click.confirm("Update versions in pom.xml files?", default=True):
+        updated_files = []
+        for root, _, files in os.walk("."):
+            for filename in files:
+                filepath = root + os.sep + filename
+                if filename in VERSION_REPLACEMENT_FILENAMES:
+                    replace_version_in_file(ctx.versions, filepath)
+                    updated_files.append(filepath)
+        ctx.updated_files = updated_files
+
+
+def replace_version_in_file(versions: List[ArtifactVersions], target: str):
+    """Replaces all annotated versions in a single file"""
+    newlines = []
+    version_map = {}
+    for av in versions:
+        version_map[av.module] = av
+
+    repl_open, repl_thisline = False, False
+    with open(target) as f:
+        # do something
+        for line in f:
+            repl_thisline = repl_open
+            match = VERSION_UPDATE_MARKER.search(line)
+            if match:
+                module_name, version_type = match.group(1), match.group(2)
+                repl_thisline = True
+            else:
+                match = VERSION_UPDATE_START_MARKER.search(line)
+                if match:
+                    module_name, version_type = match.group(1), match.group(2)
+                    repl_open, repl_thisline = True, True
+                else:
+                    match = VERSION_UPDATE_END_MARKER.search(line)
+                    if match:
+                        repl_open, repl_thisline = False, False
+
+            if repl_thisline:
+                if module_name not in version_map:
+                    raise ValueError(
+                        "module not found in version.txt: {}".format(module_name)
+                    )
+                module = version_map[module_name]
+                new_version = None
+                if version_type == "current":
+                    new_version = module.current
+                elif version_type == "released":
+                    new_version = module.released
+                else:
+                    raise ValueError("invalid version type: {}".format(version_type))
+
+                newline = re.sub(VERSION_REGEX, str(new_version), line)
+                newlines.append(newline)
+            else:
+                newlines.append(line)
+
+            if not repl_open:
+                module_name, version_type = "", ""
+
+    with open(target, "w") as f:
+        for line in newlines:
+            f.write(line)
 
 
 def determine_package_name(ctx: Context) -> None:
@@ -50,7 +255,7 @@ def determine_package_name(ctx: Context) -> None:
 def determine_last_release(ctx: Context) -> None:
     click.secho("> Figuring out what the last release was.", fg="cyan")
     tags = releasetool.git.list_tags()
-    candidates = [tag for tag in tags if tag.startswith("v")]
+    candidates = [tag for tag in tags if RELEASE_TAG_REGEX.match(tag)]
 
     if candidates:
         ctx.last_release_committish = candidates[0]
@@ -65,25 +270,9 @@ def determine_last_release(ctx: Context) -> None:
             fg="yellow",
         )
         ctx.last_release_committish = click.prompt("Committish")
-        ctx.last_release_version = "0.0.0"
+        ctx.last_release_version = click.prompt("Last version", default="0.0.0")
 
     click.secho(f"The last release was {ctx.last_release_version}.")
-
-
-def determine_snapshot_version(ctx: Context) -> None:
-    click.secho("> Figuring out the current snapshot version.", fg="cyan")
-
-    with open("pom.xml", "r") as fh:
-        content = fh.read()
-        m = re.search(r"<version>(\d+\.\d+\.\d+)-SNAPSHOT</version>", content)
-        if m:
-            ctx.snapshot_version = m.group(1)
-
-    if ctx.snapshot_version is None:
-        click.secho(
-            "I couldn't figure out the current snapshot version from pom.xml.", fg="red"
-        )
-        sys.exit(1)
 
 
 def gather_changes(ctx: Context) -> None:
@@ -98,115 +287,89 @@ def gather_changes(ctx: Context) -> None:
 
 
 def determine_release_version(ctx: Context) -> None:
+    """Determines the release version for release tagging"""
     click.secho(f"> Now it's time to pick a release version!", fg="cyan")
     release_notes = textwrap.indent(ctx.release_notes, "\t")
     click.secho(f"Here's the release notes you wrote:\n\n{release_notes}\n")
 
-    parsed_version = [int(x) for x in ctx.last_release_version.split(".")]
+    release_version = Version(ctx.last_release_version)
+    release_version.bump(ctx.release_type)
 
-    if parsed_version == [0, 0, 0]:
-        ctx.release_version = "0.1.0"
-        return
-
-    selection = click.prompt(
-        "Is this a major, minor, or patch update (or enter the new version " "directly)"
-    )
-    if selection == "major":
-        parsed_version[0] += 1
-        parsed_version[1] = 0
-        parsed_version[2] = 0
-    elif selection == "minor":
-        parsed_version[1] += 1
-        parsed_version[2] = 0
-    elif selection == "patch":
-        parsed_version[2] += 1
-    else:
-        ctx.release_version = selection
-        return
-
-    ctx.release_version = "{}.{}.{}".format(*parsed_version)
-
+    ctx.release_version = str(release_version)
     click.secho(f"Got it, releasing {ctx.release_version}.")
 
 
-def create_release_branch(ctx) -> None:
-    ctx.release_branch = f"release-{ctx.package_name}-v{ctx.release_version}"
-    click.secho(f"> Creating branch {ctx.release_branch}", fg="cyan")
-    return releasetool.git.checkout_create_branch(ctx.release_branch)
+def create_release_branch(ctx: Context) -> None:
+    """Create a release commit."""
+    if click.confirm("Create release branch?", default=True):
+        ctx.release_branch = f"release-{ctx.package_name}-v{ctx.release_version}"
+        click.secho(f"> Creating branch {ctx.release_branch}", fg="cyan")
+        releasetool.git.checkout_create_branch(ctx.release_branch)
 
-
-def gather_pom_xml_files(ctx: Context) -> None:
-    ctx.pom_files = glob("**/pom.xml", recursive=True)
-
-
-def update_pom_xml(ctx: Context) -> None:
-    click.secho("> Updating snapshot versions in pom.xml files.", fg="cyan")
-    for file in ctx.pom_files:
-        click.secho(f"> Updating {file}.", fg="cyan")
-        releasetool.filehelpers.replace(
-            file,
-            f"<version>{ctx.snapshot_version}-SNAPSHOT</version>",
-            f"<version>{ctx.release_version}</version>",
+        click.secho("> Committing changes", fg="cyan")
+        message = (
+            "Bump next snapshot"
+            if ctx.release_type == "snapshot"
+            else f"Release v{ctx.release_version}"
+        )
+        releasetool.git.commit(
+            ["README.md", "versions.txt"] + ctx.updated_files, message
         )
 
-
-def update_readme(ctx: Context) -> None:
-    click.secho("> Updating README.md file.", fg="cyan")
-    releasetool.filehelpers.replace(
-        "README.md", ctx.last_release_version, ctx.release_version
-    )
-
-
-def create_release_commit(ctx: Context) -> None:
-    """Create a release commit."""
-    click.secho("> Committing changes", fg="cyan")
-    releasetool.git.commit(
-        ["README.md"] + ctx.pom_files, f"Release v{ctx.release_version}"
-    )
-
-
-def push_release_branch(ctx: Context) -> None:
-    click.secho("> Pushing release branch.", fg="cyan")
-    releasetool.git.push(ctx.release_branch)
+        click.secho("> Pushing release branch.", fg="cyan")
+        releasetool.git.push(ctx.release_branch)
 
 
 def create_release_pr(ctx: Context) -> None:
-    click.secho(f"> Creating release pull request.", fg="cyan")
+    """Create a release pull request with notes"""
+    if ctx.release_branch is not None and click.confirm("Create PR?", default=True):
+        click.secho(f"> Creating release pull request.", fg="cyan")
 
-    if ctx.upstream_repo == ctx.origin_repo:
-        head = ctx.release_branch
-    else:
-        head = f"{ctx.origin_user}:{ctx.release_branch}"
+        if ctx.upstream_repo == ctx.origin_repo:
+            head = ctx.release_branch
+        else:
+            head = f"{ctx.origin_user}:{ctx.release_branch}"
 
-    body = "This pull request was generated using releasetool.\n\n" + ctx.release_notes
+        body = (
+            "This pull request was generated using releasetool.\n\n" + ctx.release_notes
+        )
 
-    ctx.pull_request = ctx.github.create_pull_request(
-        ctx.upstream_repo,
-        head=head,
-        title=f"Release {ctx.package_name} v{ctx.release_version}",
-        body=body,
-    )
-    click.secho(f"Pull request is at {ctx.pull_request['html_url']}.")
+        title = (
+            "Bump next snapshot"
+            if ctx.release_type == "snapshot"
+            else f"Release {ctx.package_name} v{ctx.release_version}"
+        )
+
+        ctx.pull_request = ctx.github.create_pull_request(
+            ctx.upstream_repo, head=head, title=title, body=body
+        )
+        click.secho(f"Pull request is at {ctx.pull_request['html_url']}.")
 
 
 def start() -> None:
     ctx = Context()
 
+    # setup
     click.secho(f"o/ Hey, {getpass.getuser()}, let's release some stuff!", fg="magenta")
-
     releasetool.commands.common.setup_github_context(ctx)
     determine_package_name(ctx)
+    determine_release_type(ctx)
+
+    # version management in code
+    read_versions(ctx)
+    bump_versions(ctx)
+    update_versions(ctx)
+    replace_versions(ctx)
+
+    # create release
     determine_last_release(ctx)
-    determine_snapshot_version(ctx)
-    gather_changes(ctx)
-    releasetool.commands.common.edit_release_notes(ctx)
+    if ctx.release_type == "snapshot":
+        ctx.release_notes = "Bump snapshot"
+    else:
+        gather_changes(ctx)
+        releasetool.commands.common.edit_release_notes(ctx)
     determine_release_version(ctx)
     create_release_branch(ctx)
-    gather_pom_xml_files(ctx)
-    update_pom_xml(ctx)
-    create_release_commit(ctx)
-    push_release_branch(ctx)
-    # TODO: Confirm?
     create_release_pr(ctx)
 
     click.secho(f"\o/ All done!", fg="magenta")
