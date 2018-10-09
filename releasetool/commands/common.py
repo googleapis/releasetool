@@ -91,6 +91,21 @@ def setup_github_context(
 
     click.secho(f"Origin: {ctx.origin_repo}, Upstream: {ctx.upstream_repo}")
 
+    # Compare upstream/master with master
+    click.secho(f"> Comparing {ctx.upstream_name}/master to master.", fg="cyan")
+
+    if releasetool.git.get_latest_commit(
+        f"{ctx.upstream_name}/master"
+    ) == releasetool.git.get_latest_commit("master"):
+        click.echo(f"master is up to date with {ctx.upstream_name}/master")
+    else:
+        click.secho(
+            f"WARNING: master is not up to date with {ctx.upstream_name}/master",
+            fg="red",
+        )
+        if click.confirm("> Would you like to continue?") is False:
+            exit()
+
 
 def edit_release_notes(ctx: GitHubContext) -> None:
     click.secho(f"> Opening your editor to finalize release notes.", fg="cyan")

@@ -27,9 +27,14 @@ def list_tags() -> Sequence[str]:
     return tags
 
 
-def summary_log(
-    from_: str, to: str = "origin/master", where: str = "."
-) -> Sequence[str]:
+def get_latest_commit(branch: str) -> str:
+    commit = subprocess.check_output(
+        ["git", "log", "-1", branch, "--pretty=%H"]
+    ).decode("utf-8")
+    return commit
+
+
+def summary_log(from_: str, to: str = "master", where: str = ".") -> Sequence[str]:
     output = subprocess.check_output(
         ["git", "log", "--format=%s", f"{from_}..{to}", where]
     ).decode("utf-8")
@@ -37,7 +42,7 @@ def summary_log(
     return commits
 
 
-def checkout_create_branch(branch_name: str, base: str = "origin/master") -> None:
+def checkout_create_branch(branch_name: str, base: str = "master") -> None:
     subprocess.check_output(["git", "checkout", "-b", branch_name, base])
 
 
