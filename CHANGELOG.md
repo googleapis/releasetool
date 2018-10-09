@@ -4,6 +4,19 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+## 0.10.0
+
+10-09-2018 14:29 PDT
+
+### Implementation Changes
+- Cut release branch from master, warn when master != upstream/master. ([#76](https://github.com/GoogleCloudPlatform/releasetool/pull/76))
+- fix(nodejs): change output from PyPI -> npm ([#75](https://github.com/GoogleCloudPlatform/releasetool/pull/75))
+
+### New Features
+- Java: support multiple versions per release ([#74](https://github.com/GoogleCloudPlatform/releasetool/pull/74))
+- Autodetect java if a root pom.xml file exists ([#73](https://github.com/GoogleCloudPlatform/releasetool/pull/73))
+- Add start command for Go ([#67](https://github.com/GoogleCloudPlatform/releasetool/pull/67))
+
 ## 0.9.0
 
 10-05-2018 09:09 PDT
