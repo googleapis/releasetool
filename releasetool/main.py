@@ -17,6 +17,7 @@ import os
 
 import click
 
+import releasetool.secrets
 import releasetool.update_check
 import releasetool.commands.start.python
 import releasetool.commands.start.python_tool
@@ -123,3 +124,8 @@ def tag(language):
         return releasetool.commands.tag.java.tag()
     if language == "ruby":
         return releasetool.commands.tag.ruby.tag()
+
+
+@main.command()
+def reset():
+    releasetool.secrets.delete_password()
