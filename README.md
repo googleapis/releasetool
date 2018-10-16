@@ -35,3 +35,7 @@ releasetool start
 
 Once the PR has been approved and merged, you can run `releasetool tag` from
 anywhere in the repository to tag the commit and start CI.
+
+If you need to change the GitHub API token associated with releasetool, run `releasetool reset`. This will
+delete the existing token. The next time you run `releasetool start` you will be
+prompted to enter a new token. 
