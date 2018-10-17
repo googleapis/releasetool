@@ -126,6 +126,6 @@ def tag(language):
         return releasetool.commands.tag.ruby.tag()
 
 
-@main.command()
-def reset():
+@main.command(name="reset-config")
+def reset_config():
     releasetool.secrets.delete_password()
