@@ -27,6 +27,10 @@ def set_password(name, password):
     keyring.set_password(_SERVICE, "github", password)
 
 
+def delete_password():
+    keyring.delete_password(_SERVICE, "github")
+
+
 def ensure_password(name, prompt):
     password = get_password(name)
 
