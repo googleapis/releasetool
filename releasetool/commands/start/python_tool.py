@@ -12,7 +12,26 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import releasetool.commands.start.python
+import datetime
 
-# For now, Python tools can use the same process as Python libraries. :3
+import click
+from pytz import timezone
+
+import releasetool.commands.start.python
+from releasetool.commands.start.python import Context
+
+
+def determine_release_version(ctx: Context) -> None:
+    ctx.release_version = (
+        datetime.datetime.now(datetime.timezone.utc)
+        .astimezone(timezone("US/Pacific"))
+        .strftime("%Y.%m.%d")
+    )
+    click.secho(f"Releasing {ctx.release_version}.")
+
+
+# Python tools has different versioning, otherwise the process is the same as
+# Python libraries.
+releasetool.commands.start.python.determine_release_version = determine_release_version
+
 start = releasetool.commands.start.python.start
