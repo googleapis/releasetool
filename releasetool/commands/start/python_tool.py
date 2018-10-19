@@ -15,7 +15,7 @@
 import datetime
 
 import click
-from pytz import timezone
+from dateutil import tz
 
 import releasetool.commands.start.python
 from releasetool.commands.start.python import Context
@@ -24,7 +24,7 @@ from releasetool.commands.start.python import Context
 def determine_release_version(ctx: Context) -> None:
     ctx.release_version = (
         datetime.datetime.now(datetime.timezone.utc)
-        .astimezone(timezone("US/Pacific"))
+        .astimezone(tz.gettz("US/Pacific"))
         .strftime("%Y.%m.%d")
     )
     click.secho(f"Releasing {ctx.release_version}.")

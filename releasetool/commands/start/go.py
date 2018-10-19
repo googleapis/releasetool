@@ -22,7 +22,7 @@ from typing import List, Optional, Sequence
 
 import attr
 import click
-from pytz import timezone
+from dateutil import tz
 
 import releasetool.filehelpers
 import releasetool.git
@@ -196,7 +196,7 @@ def edit_release_notes(ctx: Context) -> None:
     click.secho(f"> Opening your editor to finalize release notes.", fg="cyan")
     release_notes = (
         datetime.datetime.now(datetime.timezone.utc)
-        .astimezone(timezone("US/Pacific"))
+        .astimezone(tz.gettz("US/Pacific"))
         .strftime("%m-%d-%Y %H:%M %Z\n\n")
     )
     release_notes += "\n".join(f"- {change}" for change in ctx.changes)
