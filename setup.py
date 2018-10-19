@@ -25,7 +25,7 @@ dependencies = [
     "keyring",
     "packaging",
     "pyperclip",
-    "pytz",
+    "python-dateutil",
 ]
 
 packages = setuptools.find_packages()
