@@ -4,6 +4,18 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+## 2018.10.23
+
+10-23-2018 13:02 PDT
+
+### Implementation Changes
+
+- Use CalVer for Python Tools ([#80](https://github.com/googleapis/releasetool/pull/80))
+
+### New Features
+
+- Add command to reset GitHub API key ([#79](https://github.com/googleapis/releasetool/pull/79))
+
 ## 0.10.0
 
 10-09-2018 14:29 PDT
