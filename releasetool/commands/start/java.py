@@ -372,4 +372,4 @@ def start() -> None:
     create_release_branch(ctx)
     create_release_pr(ctx)
 
-    click.secho(f"\o/ All done!", fg="magenta")
+    click.secho(f"\\o/ All done!", fg="magenta")

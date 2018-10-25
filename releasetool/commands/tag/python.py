@@ -74,7 +74,7 @@ def determine_release_tag(ctx: Context) -> None:
 
 def determine_package_name_and_version(ctx: Context) -> None:
     click.secho("> Determining the package name and version.", fg="cyan")
-    match = re.match("(?P<name>.+?)-(?P<version>\d+?\.\d+?\.\d+?)", ctx.release_tag)
+    match = re.match(r"(?P<name>.+?)-(?P<version>\d+?\.\d+?\.\d+?)", ctx.release_tag)
     ctx.package_name = match.group("name")
     ctx.release_version = match.group("version")
     click.secho(
@@ -151,4 +151,4 @@ def tag() -> None:
     create_release(ctx)
     wait_on_circle(ctx)
 
-    click.secho(f"\o/ All done!", fg="magenta")
+    click.secho(f"\\o/ All done!", fg="magenta")

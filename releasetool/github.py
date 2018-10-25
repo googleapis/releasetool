@@ -57,7 +57,7 @@ class GitHub:
         return response.json()
 
     def link_pull_request(self, text: str, repository: str) -> str:
-        match = "#(?P<pull_request>\d+)"
+        match = r"#(?P<pull_request>\d+)"
         url = f"{_GITHUB_UI_ROOT}/{repository}/pull/\\g<pull_request>"
         replacement = f"[#\\g<pull_request>]({url})"
         return re.sub(match, replacement, text)
