@@ -66,7 +66,9 @@ def publish_via_kokoro(ctx: Context) -> None:
     kokoro_url = "https://fusion.corp.google.com/projectanalysis/current/KOKORO/"
 
     ctx.kokoro_job_name = f"cloud-devrel/client-libraries/{ctx.package_name}/release"
-    ctx.fusion_url = parse.urljoin(kokoro_url, parse.quote_plus(f"prod:{ctx.kokoro_job_name}"))
+    ctx.fusion_url = parse.urljoin(
+        kokoro_url, parse.quote_plus(f"prod:{ctx.kokoro_job_name}")
+    )
 
     if ctx.interactive:
         pyperclip.copy(ctx.release_tag)
