@@ -26,7 +26,12 @@ import releasetool.secrets
 
 
 @attr.s(auto_attribs=True, slots=True)
-class GitHubContext:
+class BaseContext:
+    interactive: bool = True
+
+
+@attr.s(auto_attribs=True, slots=True)
+class GitHubContext(BaseContext):
     github: Optional[releasetool.github.GitHub] = None
     origin_user: Optional[str] = None
     origin_repo: Optional[str] = None

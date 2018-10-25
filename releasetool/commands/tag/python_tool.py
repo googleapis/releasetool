@@ -62,29 +62,34 @@ def create_release(ctx: Context) -> None:
     )
 
 
-def publish_to_pypi(ctx: Context) -> None:
+def publish_via_kokoro(ctx: Context) -> None:
     kokoro_url = "https://fusion.corp.google.com/projectanalysis/current/KOKORO/"
-    project = f"prod:cloud-devrel/client-libraries/{ctx.package_name}/release"
-    project_url = parse.urljoin(kokoro_url, parse.quote_plus(project))
 
-    pyperclip.copy(ctx.release_tag)
+    ctx.kokoro_job_name = f"cloud-devrel/client-libraries/{ctx.package_name}/release"
+    ctx.fusion_url = parse.urljoin(kokoro_url, parse.quote_plus(f"prod:{ctx.kokoro_job_name}"))
 
-    click.secho(
-        f"> Trigger the Kokoro build with the commitish below to publish to PyPI. The commitish has been copied to the clipboard.",
-        fg="cyan",
-    )
-    click.secho(f"Build:\t\t{click.style(project_url, underline=True)}")
+    if ctx.interactive:
+        pyperclip.copy(ctx.release_tag)
+
+        click.secho(
+            f"> Trigger the Kokoro build with the commitish below to publish to PyPI. The commitish has been copied to the clipboard.",
+            fg="cyan",
+        )
+
+    click.secho(f"Kokoro build URL:\t\t{click.style(ctx.fusion_url, underline=True)}")
     click.secho(f"Commitish:\t{click.style(ctx.release_tag, bold=True)}")
 
-    if click.confirm("Would you like to go the Kokoro build page?", default=True):
-        click.launch(project_url)
+    if ctx.interactive:
+        if click.confirm("Would you like to go the Kokoro build page?", default=True):
+            click.launch(ctx.fusion_url)
 
 
 def tag(ctx: Context = None) -> Context:
     if not ctx:
         ctx = Context()
 
-    click.secho(f"o/ Hey, {getpass.getuser()}, let's tag a release!", fg="magenta")
+    if ctx.interactive:
+        click.secho(f"o/ Hey, {getpass.getuser()}, let's tag a release!", fg="magenta")
 
     if ctx.github is None:
         releasetool.commands.common.setup_github_context(ctx)
@@ -98,8 +103,9 @@ def tag(ctx: Context = None) -> Context:
 
     create_release(ctx)
 
-    publish_to_pypi(ctx)
+    publish_via_kokoro(ctx)
 
-    click.secho(f"\\o/ All done!", fg="magenta")
+    if ctx.interactive:
+        click.secho(f"\\o/ All done!", fg="magenta")
 
     return ctx
