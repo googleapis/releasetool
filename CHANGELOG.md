@@ -4,6 +4,18 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+## 2018.10.25
+
+10-25-2018 13:18 PDT
+
+### New Features
+
+- Allow python-tool tag to be executed with external context.
+
+### Internal / Testing Changes
+
+- Fix lint errors around bad escape characters
+
 ## 2018.10.23
 
 10-23-2018 13:02 PDT
