@@ -181,6 +181,11 @@ def create_release_pr(ctx: Context) -> None:
         title=f"Release {ctx.package_name} {ctx.release_version}",
         body="This pull request was generated using releasetool.",
     )
+
+    ctx.github.add_issue_labels(
+        ctx.upstream_repo, ctx.pull_request["number"], ["releasetool: pending"]
+    )
+
     click.secho(f"Pull request is at {ctx.pull_request['html_url']}.")
 
 

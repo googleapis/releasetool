@@ -34,6 +34,8 @@ class Context(releasetool.commands.common.GitHubContext):
     release_version: Optional[str] = None
     release_notes: Optional[str] = None
     github_release: Optional[dict] = None
+    kokoro_job_name: Optional[str] = None
+    fusion_url: Optional[str] = None
 
 
 def determine_release_pr(ctx: Context) -> None:

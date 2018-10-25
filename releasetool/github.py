@@ -89,6 +89,14 @@ class GitHub:
         response.raise_for_status()
         return response.json()
 
+    def add_issue_labels(
+        self, repository: str, issue_number: str, labels: Sequence[str]
+    ) -> dict:
+        url = f"{_GITHUB_ROOT}/repos/{repository}/issues/{issue_number}/labels"
+        response = self.session.post(url, json={"labels": labels})
+        response.raise_for_status()
+        return response.json()
+
     def create_pull_request_comment(
         self, repository: str, pull_request_number: int, comment: str
     ) -> dict:
