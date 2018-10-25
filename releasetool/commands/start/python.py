@@ -143,7 +143,7 @@ def update_changelog(ctx: Context) -> None:
 
     changelog_entry = f"## {ctx.release_version}" f"\n\n" f"{ctx.release_notes}" f"\n\n"
     releasetool.filehelpers.insert_before(
-        changelog_filename, changelog_entry, "^## (.+)$|\Z"
+        changelog_filename, changelog_entry, r"^## (.+)$|\Z"
     )
 
 
@@ -203,4 +203,4 @@ def start() -> None:
     # TODO: Confirm?
     create_release_pr(ctx)
 
-    click.secho(f"\o/ All done!", fg="magenta")
+    click.secho(f"\\o/ All done!", fg="magenta")

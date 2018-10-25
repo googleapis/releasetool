@@ -56,7 +56,7 @@ def determine_release_pr(ctx: Context) -> None:
 def determine_release_tag(ctx: Context) -> None:
     click.secho("> Determining what the release tag should be.", fg="cyan")
     head_ref = ctx.release_pr["head"]["ref"]
-    match = re.match("release-.+-(v\d+\.\d+\.\d+)", head_ref)
+    match = re.match(r"release-.+-(v\d+\.\d+\.\d+)", head_ref)
 
     if match is not None:
         ctx.release_tag = match.group(1)
@@ -75,7 +75,7 @@ def determine_release_tag(ctx: Context) -> None:
 
 def determine_package_name_and_version(ctx: Context) -> None:
     click.secho("> Determining the release version.", fg="cyan")
-    match = re.match("v(\d+\.\d+\.\d+)", ctx.release_tag)
+    match = re.match(r"v(\d+\.\d+\.\d+)", ctx.release_tag)
     ctx.release_version = match.group(1)
     click.secho(f"Package version: {ctx.release_version}.")
 
@@ -129,4 +129,4 @@ def tag() -> None:
 
     create_release(ctx)
 
-    click.secho(f"\o/ All done!", fg="magenta")
+    click.secho(f"\\o/ All done!", fg="magenta")

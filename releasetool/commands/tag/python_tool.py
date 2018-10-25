@@ -100,6 +100,6 @@ def tag(ctx: Context = None) -> Context:
 
     publish_to_pypi(ctx)
 
-    click.secho(f"\o/ All done!", fg="magenta")
+    click.secho(f"\\o/ All done!", fg="magenta")
 
     return ctx
