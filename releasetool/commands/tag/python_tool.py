@@ -16,14 +16,17 @@ import getpass
 import re
 from urllib import parse
 
-import pyperclip
 import click
+import pyperclip
 
 import releasetool.commands.common
 from releasetool.commands.tag import python
 
 
-def get_release_notes(ctx: python.Context) -> None:
+Context = python.Context
+
+
+def get_release_notes(ctx: Context) -> None:
     click.secho("> Grabbing the release notes.")
     changelog = ctx.github.get_contents(
         ctx.upstream_repo, f"CHANGELOG.md", ref=ctx.release_pr["merge_commit_sha"]
@@ -40,7 +43,7 @@ def get_release_notes(ctx: python.Context) -> None:
         ctx.release_notes = ""
 
 
-def create_release(ctx: python.Context) -> None:
+def create_release(ctx: Context) -> None:
     click.secho("> Creating the release.")
 
     ctx.github_release = ctx.github.create_release(
@@ -59,7 +62,7 @@ def create_release(ctx: python.Context) -> None:
     )
 
 
-def publish_to_pypi(ctx: python.Context) -> None:
+def publish_to_pypi(ctx: Context) -> None:
     kokoro_url = "https://fusion.corp.google.com/projectanalysis/current/KOKORO/"
     project = f"prod:cloud-devrel/client-libraries/{ctx.package_name}/release"
     project_url = parse.urljoin(kokoro_url, parse.quote_plus(project))
@@ -77,14 +80,18 @@ def publish_to_pypi(ctx: python.Context) -> None:
         click.launch(project_url)
 
 
-def tag() -> None:
-    ctx = python.Context()
+def tag(ctx: Context = None) -> Context:
+    if not ctx:
+        ctx = Context()
 
     click.secho(f"o/ Hey, {getpass.getuser()}, let's tag a release!", fg="magenta")
 
-    releasetool.commands.common.setup_github_context(ctx)
+    if ctx.github is None:
+        releasetool.commands.common.setup_github_context(ctx)
 
-    python.determine_release_pr(ctx)
+    if ctx.release_pr is None:
+        python.determine_release_pr(ctx)
+
     python.determine_release_tag(ctx)
     python.determine_package_name_and_version(ctx)
     get_release_notes(ctx)
@@ -94,3 +101,5 @@ def tag() -> None:
     publish_to_pypi(ctx)
 
     click.secho(f"\o/ All done!", fg="magenta")
+
+    return ctx
