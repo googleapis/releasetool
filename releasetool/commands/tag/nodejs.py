@@ -26,17 +26,7 @@ import releasetool.secrets
 import releasetool.commands.common
 
 
-@attr.s(auto_attribs=True, slots=True)
-class Context(releasetool.commands.common.GitHubContext):
-    package_name: Optional[str] = None
-    release_pr: Optional[dict] = None
-    release_tag: Optional[str] = None
-    release_version: Optional[str] = None
-    release_notes: Optional[str] = None
-    github_release: Optional[dict] = None
-
-
-def determine_release_pr(ctx: Context) -> None:
+def determine_release_pr(ctx: TagContext) -> None:
     click.secho(
         "> Let's figure out which pull request corresponds to your release.", fg="cyan"
     )
@@ -53,7 +43,7 @@ def determine_release_pr(ctx: Context) -> None:
     ctx.release_pr = pulls[pull_idx - 1]
 
 
-def determine_release_tag(ctx: Context) -> None:
+def determine_release_tag(ctx: TagContext) -> None:
     click.secho("> Determining what the release tag should be.", fg="cyan")
     head_ref = ctx.release_pr["head"]["ref"]
     match = re.match("release-(.+)", head_ref)
@@ -73,14 +63,14 @@ def determine_release_tag(ctx: Context) -> None:
     click.secho(f"Release tag is {ctx.release_tag}.")
 
 
-def determine_package_version(ctx: Context) -> None:
+def determine_package_version(ctx: TagContext) -> None:
     click.secho("> Determining the package version.", fg="cyan")
     match = re.match(r"(?P<version>v?\d+?\.\d+?\.\d+?)", ctx.release_tag)
     ctx.release_version = match.group("version")
     click.secho(f"package version: {ctx.release_version}.")
 
 
-def get_release_notes(ctx: Context) -> None:
+def get_release_notes(ctx: TagContext) -> None:
     click.secho("> Grabbing the release notes.")
     changelog = ctx.github.get_contents(
         ctx.upstream_repo, "CHANGELOG.md", ref=ctx.release_pr["merge_commit_sha"]
@@ -97,7 +87,7 @@ def get_release_notes(ctx: Context) -> None:
         ctx.release_notes = ""
 
 
-def create_release(ctx: Context) -> None:
+def create_release(ctx: TagContext) -> None:
     click.secho("> Creating the release.")
 
     ctx.github_release = ctx.github.create_release(
@@ -117,7 +107,7 @@ def create_release(ctx: Context) -> None:
     )
 
 
-def wait_on_circle(ctx: Context) -> None:
+def wait_on_circle(ctx: TagContext) -> None:
     circle = releasetool.circleci.CircleCI(repository=ctx.upstream_repo)
     click.secho("> Waiting for CircleCI to queue a release build")
     tag_name = ctx.release_version
@@ -133,7 +123,7 @@ def wait_on_circle(ctx: Context) -> None:
 
 
 def tag() -> None:
-    ctx = Context()
+    ctx = TagContext()
 
     click.secho(f"o/ Hey, {getpass.getuser()}, let's tag a release!", fg="magenta")
 

@@ -42,6 +42,18 @@ class GitHubContext(BaseContext):
     release_notes: Optional[str] = None
 
 
+@attr.s(auto_attribs=True, slots=True)
+class TagContext(GitHubContext):
+    package_name: Optional[str] = None
+    release_pr: Optional[dict] = None
+    release_tag: Optional[str] = None
+    release_version: Optional[str] = None
+    release_notes: Optional[str] = None
+    github_release: Optional[dict] = None
+    kokoro_job_name: Optional[str] = None
+    fusion_url: Optional[str] = None
+
+
 def _determine_origin(ctx: GitHubContext) -> None:
     remotes = releasetool.git.get_github_remotes()
     origin = remotes["origin"]
@@ -133,3 +145,28 @@ def edit_release_notes(ctx: GitHubContext) -> None:
     ctx.release_notes = releasetool.filehelpers.open_editor_with_tempfile(
         release_notes, "release-notes.md"
     ).strip()
+
+
+def publish_via_kokoro(ctx: TagContext) -> None:
+    kokoro_url = "https://fusion.corp.google.com/projectanalysis/current/KOKORO/"
+
+    ctx.kokoro_job_name = f"cloud-devrel/client-libraries/{ctx.package_name}/release"
+    ctx.fusion_url = parse.urljoin(
+        kokoro_url, parse.quote_plus(f"prod:{ctx.kokoro_job_name}")
+    )
+
+    if ctx.interactive:
+        pyperclip.copy(ctx.release_tag)
+
+        click.secho(
+            f"> Trigger the Kokoro build with the commitish below to publish to PyPI. The commitish has been copied to the clipboard.",
+            fg="cyan",
+        )
+
+    click.secho(f"Kokoro build URL:\t\t{click.style(ctx.fusion_url, underline=True)}")
+    click.secho(f"Commitish:\t{click.style(ctx.release_tag, bold=True)}")
+
+    if ctx.interactive:
+        if click.confirm("Would you like to go the Kokoro build page?", default=True):
+            click.launch(ctx.fusion_url)
+
