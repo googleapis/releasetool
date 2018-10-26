@@ -92,12 +92,12 @@ def get_github_remotes() -> Dict[str, str]:
         # Match SSH or HTTP URLs, like:
         # git@github.com:GoogleCloudPlatform/google-cloud-python.git
         # https://github.com/GoogleCloudPlatform/google-cloud-python.git
-        match = re.match(r"^git@github.com:(?P<name>.+)\.git$", url)
+        match = re.match(r"^git@github.com:(?P<name>.+)(?\.git)?$", url)
         if match:
             github_repos[name] = match.group("name")
             continue
 
-        match = re.match(r"^https://(.+?)?github.com/(?P<name>.+)\.git$", url)
+        match = re.match(r"^https://(.+?)?github.com/(?P<name>.+)(?\.git)?$", url)
         if match:
             github_repos[name] = match.group("name")
             continue
