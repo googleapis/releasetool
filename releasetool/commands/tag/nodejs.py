@@ -14,9 +14,7 @@
 
 import getpass
 import re
-from typing import Optional
 
-import attr
 import click
 
 import releasetool.circleci
@@ -24,6 +22,7 @@ import releasetool.git
 import releasetool.github
 import releasetool.secrets
 import releasetool.commands.common
+from releasetool.commands.common import TagContext
 
 
 def determine_release_pr(ctx: TagContext) -> None:

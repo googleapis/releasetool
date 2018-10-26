@@ -14,9 +14,11 @@
 
 import datetime
 from typing import Optional, Sequence, Tuple
+from urllib import parse
 
 import attr
 import click
+import pyperclip
 from dateutil import tz
 
 import releasetool.filehelpers
@@ -169,4 +171,3 @@ def publish_via_kokoro(ctx: TagContext) -> None:
     if ctx.interactive:
         if click.confirm("Would you like to go the Kokoro build page?", default=True):
             click.launch(ctx.fusion_url)
-
