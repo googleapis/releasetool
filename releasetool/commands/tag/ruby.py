@@ -22,7 +22,7 @@ import releasetool.git
 import releasetool.github
 import releasetool.secrets
 import releasetool.commands.common
-from releaseotol.commands.common import TagContext
+from releasetool.commands.common import TagContext
 
 
 def determine_release_pr(ctx: TagContext) -> None:
