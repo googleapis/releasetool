@@ -167,7 +167,7 @@ def push_release_branch(ctx: Context) -> None:
     releasetool.git.push(ctx.release_branch)
 
 
-def create_release_pr(ctx: Context) -> None:
+def create_release_pr(ctx: Context, autorelease: bool = False) -> None:
     click.secho(f"> Creating release pull request.", fg="cyan")
 
     if ctx.upstream_repo == ctx.origin_repo:
@@ -182,9 +182,10 @@ def create_release_pr(ctx: Context) -> None:
         body="This pull request was generated using releasetool.",
     )
 
-    ctx.github.add_issue_labels(
-        ctx.upstream_repo, ctx.pull_request["number"], ["releasetool: pending"]
-    )
+    if autorelease:
+        ctx.github.add_issue_labels(
+            ctx.upstream_repo, ctx.pull_request["number"], ["releasetool: pending"]
+        )
 
     click.secho(f"Pull request is at {ctx.pull_request['html_url']}.")
 
