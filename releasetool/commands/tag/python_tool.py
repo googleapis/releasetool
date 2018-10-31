@@ -14,19 +14,15 @@
 
 import getpass
 import re
-from urllib import parse
 
 import click
-import pyperclip
 
 import releasetool.commands.common
+from releasetool.commands.common import TagContext
 from releasetool.commands.tag import python
 
 
-Context = python.Context
-
-
-def get_release_notes(ctx: Context) -> None:
+def get_release_notes(ctx: TagContext) -> None:
     click.secho("> Grabbing the release notes.")
     changelog = ctx.github.get_contents(
         ctx.upstream_repo, f"CHANGELOG.md", ref=ctx.release_pr["merge_commit_sha"]
@@ -43,7 +39,7 @@ def get_release_notes(ctx: Context) -> None:
         ctx.release_notes = ""
 
 
-def create_release(ctx: Context) -> None:
+def create_release(ctx: TagContext) -> None:
     click.secho("> Creating the release.")
 
     ctx.github_release = ctx.github.create_release(
@@ -62,33 +58,9 @@ def create_release(ctx: Context) -> None:
     )
 
 
-def publish_via_kokoro(ctx: Context) -> None:
-    kokoro_url = "https://fusion.corp.google.com/projectanalysis/current/KOKORO/"
-
-    ctx.kokoro_job_name = f"cloud-devrel/client-libraries/{ctx.package_name}/release"
-    ctx.fusion_url = parse.urljoin(
-        kokoro_url, parse.quote_plus(f"prod:{ctx.kokoro_job_name}")
-    )
-
-    if ctx.interactive:
-        pyperclip.copy(ctx.release_tag)
-
-        click.secho(
-            f"> Trigger the Kokoro build with the commitish below to publish to PyPI. The commitish has been copied to the clipboard.",
-            fg="cyan",
-        )
-
-    click.secho(f"Kokoro build URL:\t\t{click.style(ctx.fusion_url, underline=True)}")
-    click.secho(f"Commitish:\t{click.style(ctx.release_tag, bold=True)}")
-
-    if ctx.interactive:
-        if click.confirm("Would you like to go the Kokoro build page?", default=True):
-            click.launch(ctx.fusion_url)
-
-
-def tag(ctx: Context = None) -> Context:
+def tag(ctx: TagContext = None) -> TagContext:
     if not ctx:
-        ctx = Context()
+        ctx = TagContext()
 
     if ctx.interactive:
         click.secho(f"o/ Hey, {getpass.getuser()}, let's tag a release!", fg="magenta")
@@ -105,7 +77,7 @@ def tag(ctx: Context = None) -> Context:
 
     create_release(ctx)
 
-    publish_via_kokoro(ctx)
+    releasetool.commands.common.publish_via_kokoro(ctx)
 
     if ctx.interactive:
         click.secho(f"\\o/ All done!", fg="magenta")
