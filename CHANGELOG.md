@@ -4,6 +4,26 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+## 2018.10.31
+
+10-31-2018 12:42 PDT
+
+- Fix typo in ruby command
+- Allow remotes that don't end in .git ([#92](https://github.com/googleapis/releasetool/pull/92))
+- Create tag context and move publish_via_kokoro to common ([#91](https://github.com/googleapis/releasetool/pull/91))
+- Only use calver for python_tools, not python ([#94](https://github.com/googleapis/releasetool/pull/94))
+- Finish up autorelease support for python-tool ([#87](https://github.com/googleapis/releasetool/pull/87))
+
+### Implementation Changes
+
+### New Features
+
+### Dependencies
+
+### Documentation
+
+### Internal / Testing Changes
+
 ## 2018.10.25
 
 10-25-2018 13:18 PDT
