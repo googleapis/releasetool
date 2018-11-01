@@ -19,6 +19,7 @@ import click
 
 import releasetool.secrets
 import releasetool.update_check
+import releasetool.commands.publish_reporter
 import releasetool.commands.start.python
 import releasetool.commands.start.python_tool
 import releasetool.commands.start.nodejs
@@ -129,3 +130,19 @@ def tag(language):
 @main.command(name="reset-config")
 def reset_config():
     releasetool.secrets.delete_password()
+
+
+@main.command(name="publish-reporter-start")
+@click.option("--github_token", envvar="GITHUB_TOKEN")
+@click.option("--pr", envvar="AUTORELEASE_PR")
+def publish_reporter_start(github_token: str, pr: str):
+    releasetool.commands.publish_reporter.start(github_token, pr)
+
+
+@main.command(name="publish-reporter-finish")
+@click.option("--github_token", envvar="GITHUB_TOKEN")
+@click.option("--pr", envvar="AUTORELEASE_PR")
+@click.option("--status", type=bool, default=True)
+@click.option("--details", default=None)
+def publish_reporter_finish(github_token: str, pr: str, status: bool, details: str):
+    releasetool.commands.publish_reporter.finish(github_token, pr, status, details)

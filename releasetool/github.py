@@ -14,7 +14,7 @@
 
 import base64
 import re
-from typing import Sequence
+from typing import Sequence, Union
 
 import requests
 
@@ -36,6 +36,12 @@ class GitHub:
     def list_pull_requests(self, repository: str, state: str = None) -> Sequence[dict]:
         url = f"{_GITHUB_ROOT}/repos/{repository}/pulls"
         response = self.session.get(url, params={"state": state})
+        response.raise_for_status()
+        return response.json()
+
+    def get_pull_request(self, repository: str, number: str) -> dict:
+        url = f"{_GITHUB_ROOT}/repos/{repository}/pulls/{number}"
+        response = self.session.get(url)
         response.raise_for_status()
         return response.json()
 
@@ -97,8 +103,35 @@ class GitHub:
         response.raise_for_status()
         return response.json()
 
+    def replace_issue_labels(
+        self, owner: str, repository: str, number: str, labels: Sequence[str]
+    ) -> dict:
+        url = f"{_GITHUB_ROOT}/repos/{owner}/{repository}/issues/{number}/labels"
+        response = self.session.put(url, json={"labels": labels})
+        response.raise_for_status()
+        return response.json()
+
+    def update_pull_labels(
+        self, pull: dict, add: Sequence[str] = None, remove: Sequence[str] = None
+    ) -> dict:
+        """Updates labels for a github pull, adding and removing labels as needed."""
+        label_names = set([label["name"] for label in pull["labels"]])
+
+        if add:
+            label_names = label_names.union(add)
+
+        if remove:
+            label_names = label_names.difference(remove)
+
+        return self.replace_issue_labels(
+            owner=pull["base"]["repo"]["owner"]["login"],
+            repository=pull["base"]["repo"]["name"],
+            number=pull["number"],
+            labels=list(label_names),
+        )
+
     def create_pull_request_comment(
-        self, repository: str, pull_request_number: int, comment: str
+        self, repository: str, pull_request_number: Union[str, int], comment: str
     ) -> dict:
         repo_url = f"{_GITHUB_ROOT}/repos/{repository}"
         url = f"{repo_url}/issues/{pull_request_number}/comments"
