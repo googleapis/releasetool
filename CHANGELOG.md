@@ -4,6 +4,14 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+## 2018.11.01
+
+11-01-2018 10:16 PDT
+
+### New Features
+
+- Add reporting commands for release builds ([#99](https://github.com/googleapis/releasetool/pull/99))
+
 ## 2018.10.31
 
 10-31-2018 13:54 PDT
