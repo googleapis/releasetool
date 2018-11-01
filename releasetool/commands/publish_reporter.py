@@ -21,6 +21,39 @@ from typing import Tuple
 import releasetool.github
 
 
+def figure_out_github_token(github_token):
+    # This script is designed to run in Kokoro. There's several sources where
+    # the GitHub token could be, and we want to make adding this script easy.
+    # We'll try the common ones before giving up.
+
+    # A valid github token was passed on the command line, make sure it's
+    # not a file and just return it.
+    if github_token:
+        if os.path.exists(github_token):
+            with open(github_token, "r", encoding="utf-8") as fh:
+                return fh.read()
+        else:
+            return github_token
+
+    # First, try KeyStore
+    paths = []
+    if "KOKORO_KEYSTORE_DIR" in os.environ:
+        paths.append(
+            os.path.join(os.environ["KOKORO_KEYSTORE_DIR"], "73713_dpebot_github_token")
+        )
+
+    # Second, try gfile resources.
+    if "KOKORO_GFILE_DIR" in os.environ:
+        paths.append(os.path.join(os.environ["KOKORO_GFILE_DIR"], "github-token.txt"))
+
+    for path in paths:
+        if os.path.exists(path):
+            with open(path, "r", encoding="utf-8") as fh:
+                return fh.read()
+
+    return None
+
+
 def extract_pr_details(pr) -> Tuple[str, str, str]:
     match = re.match(
         r"https://github\.com/(?P<owner>.+?)/(?P<repo>.+?)/pull/(?P<number>\d+?)$", pr
@@ -34,6 +67,8 @@ def extract_pr_details(pr) -> Tuple[str, str, str]:
 
 def start(github_token: str, pr: str) -> None:
     """Reports the start of a publication job to GitHub."""
+    figure_out_github_token(github_token)
+
     if not github_token or not pr:
         print("No github token or PR specified to report status to, returning.")
         return
@@ -64,6 +99,8 @@ def start(github_token: str, pr: str) -> None:
 
 def finish(github_token: str, pr: str, status: bool, details: str) -> None:
     """Reports the completion of a publication job to GitHub."""
+    figure_out_github_token(github_token)
+
     if not github_token or not pr:
         print("No github token or PR specified to report status to, returning.")
         return
