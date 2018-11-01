@@ -65,7 +65,6 @@ def start(github_token: str, pr: str) -> None:
 
 def finish(github_token: str, pr: str, status: bool, details: str) -> None:
     """Reports the completion of a publication job to GitHub."""
-    print("Details:", details)
     if not github_token or not pr:
         print("No github token or PR specified to report status to, returning.")
         return
