@@ -15,6 +15,7 @@
 """Used by publish CI jobs to report status back to GitHub."""
 
 import os
+import pkgutil
 import re
 from typing import Tuple
 
@@ -64,6 +65,7 @@ def start(github_token: str, pr: str) -> None:
 
 def finish(github_token: str, pr: str, status: bool, details: str) -> None:
     """Reports the completion of a publication job to GitHub."""
+    print("Details:", details)
     if not github_token or not pr:
         print("No github token or PR specified to report status to, returning.")
         return
@@ -91,3 +93,8 @@ def finish(github_token: str, pr: str, status: bool, details: str) -> None:
     pull = gh.get_pull_request(f"{owner}/{repo}", number)
 
     gh.update_pull_labels(pull, add=labels, remove=["releasetool: tagged"])
+
+
+def script():
+    resource = pkgutil.get_data("releasetool.commands", "publish_reporter.sh")
+    print(resource.decode("utf-8"), flush=True)

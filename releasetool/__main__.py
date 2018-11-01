@@ -146,3 +146,12 @@ def publish_reporter_start(github_token: str, pr: str):
 @click.option("--details", default=None)
 def publish_reporter_finish(github_token: str, pr: str, status: bool, details: str):
     releasetool.commands.publish_reporter.finish(github_token, pr, status, details)
+
+
+@main.command(name="publish-reporter-script")
+def publish_reporter_script():
+    releasetool.commands.publish_reporter.script()
+
+
+if __name__ == "__main__":
+    main()
