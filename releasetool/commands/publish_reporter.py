@@ -51,7 +51,10 @@ def figure_out_github_token(github_token: str) -> str:
 
     for path in paths:
         if os.path.exists(path):
+            print(f"Found token at {path}")
             with open(path, "r", encoding="utf-8") as fh:
+                data = fh.read()
+                print(f"Token is {len(data)} long.")
                 return fh.read()
 
     print(f"Couldn't find token in {paths}, Kokoro gfile resources:")
