@@ -32,7 +32,7 @@ def figure_out_github_token(github_token: str) -> str:
     if github_token is not None:
         if os.path.exists(github_token):
             with open(github_token, "r", encoding="utf-8") as fh:
-                return fh.read().decode("utf-8")
+                return fh.read()
         else:
             return github_token
 
@@ -50,7 +50,7 @@ def figure_out_github_token(github_token: str) -> str:
     for path in paths:
         if os.path.exists(path):
             with open(path, "r", encoding="utf-8") as fh:
-                return fh.read().decode("utf-8")
+                return fh.read()
 
     return None
 
@@ -74,6 +74,7 @@ def start(github_token: str, pr: str) -> None:
         print("No github token or PR specified to report status to, returning.")
         return
 
+    print("Token type?", type(github_token))
     gh = releasetool.github.GitHub(github_token)
 
     try:
