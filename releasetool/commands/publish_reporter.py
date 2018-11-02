@@ -73,6 +73,9 @@ def start(github_token: str, pr: str) -> None:
     """Reports the start of a publication job to GitHub."""
     figure_out_github_token(github_token)
 
+    print("Has token?", github_token is None)
+    print("PR?", pr)
+
     if not github_token or not pr:
         print("No github token or PR specified to report status to, returning.")
         return
