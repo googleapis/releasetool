@@ -4,6 +4,14 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+## 2018.11.02.1
+
+11-02-2018 14:47 PDT
+
+### Internal / Testing Changes
+
+- Added github bot token to build
+
 ## 2018.11.02
 
 11-02-2018 14:27 PDT
