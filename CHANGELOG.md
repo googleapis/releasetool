@@ -4,6 +4,20 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+## 2018.11.02
+
+11-02-2018 14:27 PDT
+
+### Implementation Changes
+
+- Only include merged PRs in release PR list ([#104](https://github.com/googleapis/releasetool/pull/104))
+- Update package name and version regex ([#105](https://github.com/googleapis/releasetool/pull/105))
+- Let reporter figure out the github token location instead of needing to manually specify it ([#102](https://github.com/googleapis/releasetool/pull/102))
+
+### New Features
+
+- Add release reporter script. ([#101](https://github.com/googleapis/releasetool/pull/101))
+
 ## 2018.11.01
 
 11-01-2018 10:16 PDT
