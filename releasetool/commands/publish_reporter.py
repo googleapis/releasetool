@@ -21,7 +21,7 @@ from typing import Tuple
 import releasetool.github
 
 
-def figure_out_github_token(github_token):
+def figure_out_github_token(github_token: str) -> str:
     # This script is designed to run in Kokoro. There's several sources where
     # the GitHub token could be, and we want to make adding this script easy.
     # We'll try the common ones before giving up.
