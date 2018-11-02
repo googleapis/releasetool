@@ -29,12 +29,14 @@ def figure_out_github_token(github_token: str) -> str:
 
     # A valid github token was passed on the command line, make sure it's
     # not a file and just return it.
-    if github_token:
+    if github_token is not None:
         if os.path.exists(github_token):
             with open(github_token, "r", encoding="utf-8") as fh:
                 return fh.read()
         else:
             return github_token
+
+    print("Checking paths")
 
     # First, try KeyStore
     paths = []
@@ -73,7 +75,7 @@ def start(github_token: str, pr: str) -> None:
     """Reports the start of a publication job to GitHub."""
     figure_out_github_token(github_token)
 
-    print("Has token?", github_token is None)
+    print("Has token?", github_token is not None)
     print("PR?", pr)
 
     if not github_token or not pr:

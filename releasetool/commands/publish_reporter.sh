@@ -18,9 +18,9 @@
 releasetool_finish_report() {
     rv=$?
     if [[ $rv == 0 ]]; then
-        ! releasetool publish-reporter-finish --status yes --details ${PUBLISH_DETAILS+""}
+        ! releasetool publish-reporter-finish --status yes --details ${PUBLISH_DETAILS+""} || true
     else
-        ! releasetool publish-reporter-finish --status no --details ${PUBLISH_DETAILS+""}
+        ! releasetool publish-reporter-finish --status no --details ${PUBLISH_DETAILS+""} || true
     fi
     exit $rv
 }

@@ -133,15 +133,15 @@ def reset_config():
 
 
 @main.command(name="publish-reporter-start")
-@click.option("--github_token", envvar="GITHUB_TOKEN")
-@click.option("--pr", envvar="AUTORELEASE_PR")
+@click.option("--github_token", envvar="GITHUB_TOKEN", default=None)
+@click.option("--pr", envvar="AUTORELEASE_PR", default=None)
 def publish_reporter_start(github_token: str, pr: str):
     releasetool.commands.publish_reporter.start(github_token, pr)
 
 
 @main.command(name="publish-reporter-finish")
-@click.option("--github_token", envvar="GITHUB_TOKEN")
-@click.option("--pr", envvar="AUTORELEASE_PR")
+@click.option("--github_token", envvar="GITHUB_TOKEN", default=None)
+@click.option("--pr", envvar="AUTORELEASE_PR", default=None)
 @click.option("--status", type=bool, default=True)
 @click.option("--details", default="")
 def publish_reporter_finish(github_token: str, pr: str, status: bool, details: str):
