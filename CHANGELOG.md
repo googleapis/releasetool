@@ -4,6 +4,14 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+## 2018.11.02.2
+
+11-02-2018 15:25 PDT
+
+### Implementation Changes
+
+- Allow version regex to include more than 3 segements. Matches PEP440. ([#109](https://github.com/googleapis/releasetool/pull/109))
+
 ## 2018.11.02.1
 
 11-02-2018 14:47 PDT
