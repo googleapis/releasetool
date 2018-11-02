@@ -32,7 +32,7 @@ def figure_out_github_token(github_token: str) -> str:
     if github_token is not None:
         if os.path.exists(github_token):
             with open(github_token, "r", encoding="utf-8") as fh:
-                return fh.read()
+                return fh.read().decode("utf-8")
         else:
             return github_token
 
@@ -50,7 +50,7 @@ def figure_out_github_token(github_token: str) -> str:
     for path in paths:
         if os.path.exists(path):
             with open(path, "r", encoding="utf-8") as fh:
-                return fh.read()
+                return fh.read().decode("utf-8")
 
     return None
 
