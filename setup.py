@@ -30,7 +30,7 @@ dependencies = [
 
 packages = setuptools.find_packages()
 scripts = [
-    'releasetool=releasetool.main:main'
+    'releasetool=releasetool.__main__:main'
 ]
 
 
