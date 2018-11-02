@@ -33,10 +33,16 @@ class GitHub:
             }
         )
 
-    def list_pull_requests(self, repository: str, state: str = None) -> Sequence[dict]:
+    def list_pull_requests(
+        self, repository: str, state: str = None, merged: bool = True
+    ) -> Sequence[dict]:
         url = f"{_GITHUB_ROOT}/repos/{repository}/pulls"
         response = self.session.get(url, params={"state": state})
         response.raise_for_status()
+
+        if merged:
+            return [pull for pull in response.json() if pull["merged_at"] is not None]
+
         return response.json()
 
     def get_pull_request(self, repository: str, number: str) -> dict:
