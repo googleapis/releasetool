@@ -52,6 +52,9 @@ def figure_out_github_token(github_token: str) -> str:
             with open(path, "r", encoding="utf-8") as fh:
                 return fh.read()
 
+    print(f"Couldn't find token in {paths}, Kokoro gfile resources:")
+    import subprocess; subprocess.check_call("ls", os.environ["KOKORO_GFILE_DIR"])
+
     return None
 
 
