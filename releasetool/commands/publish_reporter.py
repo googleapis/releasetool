@@ -36,8 +36,6 @@ def figure_out_github_token(github_token: str) -> str:
         else:
             return github_token
 
-    print("Checking paths")
-
     # First, try KeyStore
     paths = []
     if "KOKORO_KEYSTORE_DIR" in os.environ:
@@ -51,14 +49,8 @@ def figure_out_github_token(github_token: str) -> str:
 
     for path in paths:
         if os.path.exists(path):
-            print(f"Found token at {path}")
             with open(path, "r", encoding="utf-8") as fh:
-                data = fh.read()
-                print(f"Token is {len(data)} long.")
                 return fh.read()
-
-    print(f"Couldn't find token in {paths}, Kokoro gfile resources:")
-    import subprocess; subprocess.check_call("ls", os.environ["KOKORO_GFILE_DIR"])
 
     return None
 
@@ -77,9 +69,6 @@ def extract_pr_details(pr) -> Tuple[str, str, str]:
 def start(github_token: str, pr: str) -> None:
     """Reports the start of a publication job to GitHub."""
     github_token = figure_out_github_token(github_token)
-
-    print("Has token?", github_token is not None)
-    print("PR?", pr)
 
     if not github_token or not pr:
         print("No github token or PR specified to report status to, returning.")
