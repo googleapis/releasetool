@@ -14,15 +14,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#set -eo pipefail
+set -eo pipefail
 
 # Install an exit hook to report status.
 releasetool_finish_report() {
     rv=$?
     if [[ $rv == 0 ]]; then
-        ! releasetool publish-reporter-finish --status yes --details ${PUBLISH_DETAILS+""} || true
+        ! releasetool publish-reporter-finish --status yes
     else
-        ! releasetool publish-reporter-finish --status no --details ${PUBLISH_DETAILS+""} || true
+        ! releasetool publish-reporter-finish --status no
     fi
     exit $rv
 }

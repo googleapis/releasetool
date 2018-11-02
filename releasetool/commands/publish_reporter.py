@@ -76,7 +76,7 @@ def extract_pr_details(pr) -> Tuple[str, str, str]:
 
 def start(github_token: str, pr: str) -> None:
     """Reports the start of a publication job to GitHub."""
-    figure_out_github_token(github_token)
+    github_token = figure_out_github_token(github_token)
 
     print("Has token?", github_token is not None)
     print("PR?", pr)
@@ -111,7 +111,7 @@ def start(github_token: str, pr: str) -> None:
 
 def finish(github_token: str, pr: str, status: bool, details: str) -> None:
     """Reports the completion of a publication job to GitHub."""
-    figure_out_github_token(github_token)
+    github_token = figure_out_github_token(github_token)
 
     if not github_token or not pr:
         print("No github token or PR specified to report status to, returning.")
