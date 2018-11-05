@@ -17,7 +17,9 @@
 set -eo pipefail
 
 # Enable the publish build reporter
-python3 -m pip install gcp-releasetool
+# Note: this installs from source since we're in the releasetool repo. Other projects
+# will need to use python3 -m pip install gcp-releasetool
+python3 -m pip install github/releasetool
 python3 -m releasetool publish-reporter-script > /tmp/publisher-script; source /tmp/publisher-script
 
 
