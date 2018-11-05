@@ -29,8 +29,10 @@ def determine_release_version(ctx: Context) -> None:
         .strftime("%Y.%m.%d")
     )
 
-    if(ctx.release_version in ctx.last_release_version):
-        click.secho(f"The release version {ctx.release_version} is already used.", fg="red")
+    if ctx.release_version in ctx.last_release_version:
+        click.secho(
+            f"The release version {ctx.release_version} is already used.", fg="red"
+        )
         ctx.release_version = click.prompt("Please input another version: ")
 
     click.secho(f"Releasing {ctx.release_version}.")
