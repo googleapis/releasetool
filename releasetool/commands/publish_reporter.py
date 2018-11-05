@@ -29,10 +29,10 @@ def figure_out_github_token(github_token: str) -> str:
 
     # A valid github token was passed on the command line, make sure it's
     # not a file and just return it.
-    if github_token:
+    if github_token is not None:
         if os.path.exists(github_token):
             with open(github_token, "r", encoding="utf-8") as fh:
-                return fh.read()
+                return fh.read().strip()
         else:
             return github_token
 
@@ -50,7 +50,7 @@ def figure_out_github_token(github_token: str) -> str:
     for path in paths:
         if os.path.exists(path):
             with open(path, "r", encoding="utf-8") as fh:
-                return fh.read()
+                return fh.read().strip()
 
     return None
 
@@ -68,7 +68,7 @@ def extract_pr_details(pr) -> Tuple[str, str, str]:
 
 def start(github_token: str, pr: str) -> None:
     """Reports the start of a publication job to GitHub."""
-    figure_out_github_token(github_token)
+    github_token = figure_out_github_token(github_token)
 
     if not github_token or not pr:
         print("No github token or PR specified to report status to, returning.")
@@ -100,7 +100,7 @@ def start(github_token: str, pr: str) -> None:
 
 def finish(github_token: str, pr: str, status: bool, details: str) -> None:
     """Reports the completion of a publication job to GitHub."""
-    figure_out_github_token(github_token)
+    github_token = figure_out_github_token(github_token)
 
     if not github_token or not pr:
         print("No github token or PR specified to report status to, returning.")
