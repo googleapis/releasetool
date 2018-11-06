@@ -4,6 +4,50 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+## 2018.11.05
+
+11-05-2018 10:50 PST
+
+### Implementation Changes
+
+- Prompt when a calver release collides with the most recent release tag. ([#112](https://github.com/googleapis/releasetool/pull/112))
+- Fix release reporter's determination of the GitHub token ([#113](https://github.com/googleapis/releasetool/pull/113))
+
+### Internal / Testing Changes
+
+- Install releasetool from source in the release job ([#115](https://github.com/googleapis/releasetool/pull/115))
+- Update github issue templates ([#114](https://github.com/googleapis/releasetool/pull/114))
+
+## 2018.11.02.2
+
+11-02-2018 15:25 PDT
+
+### Implementation Changes
+
+- Allow version regex to include more than 3 segements. Matches PEP440. ([#109](https://github.com/googleapis/releasetool/pull/109))
+
+## 2018.11.02.1
+
+11-02-2018 14:47 PDT
+
+### Internal / Testing Changes
+
+- Added github bot token to build
+
+## 2018.11.02
+
+11-02-2018 14:27 PDT
+
+### Implementation Changes
+
+- Only include merged PRs in release PR list ([#104](https://github.com/googleapis/releasetool/pull/104))
+- Update package name and version regex ([#105](https://github.com/googleapis/releasetool/pull/105))
+- Let reporter figure out the github token location instead of needing to manually specify it ([#102](https://github.com/googleapis/releasetool/pull/102))
+
+### New Features
+
+- Add release reporter script. ([#101](https://github.com/googleapis/releasetool/pull/101))
+
 ## 2018.11.01
 
 11-01-2018 10:16 PDT

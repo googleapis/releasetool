@@ -18,14 +18,15 @@
 releasetool_finish_report() {
     rv=$?
     if [[ $rv == 0 ]]; then
-        ! releasetool publish-reporter-finish --status yes --details ${PUBLISH_DETAILS:=""}
+        releasetool publish-reporter-finish --status yes || true
     else
-        ! releasetool publish-reporter-finish --status no --details ${PUBLISH_DETAILS:=""}
+        releasetool publish-reporter-finish --status no || true
     fi
+    echo "Release status reported."
     exit $rv
 }
 
 trap releasetool_finish_report EXIT
 
 # Report the start of a build
-! releasetool publish-reporter-start
+releasetool publish-reporter-start || true

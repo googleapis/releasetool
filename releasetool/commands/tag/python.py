@@ -63,7 +63,7 @@ def determine_release_tag(ctx: TagContext) -> None:
 
 def determine_package_name_and_version(ctx: TagContext) -> None:
     click.secho("> Determining the package name and version.", fg="cyan")
-    match = re.match(r"(?P<name>.+?)-(?P<version>\d+?\.\d+?\.\d+?)", ctx.release_tag)
+    match = re.match(r"(?P<name>.+?)-(?P<version>\d+?\.\d+?(\.\d+)+)", ctx.release_tag)
     ctx.package_name = match.group("name")
     ctx.release_version = match.group("version")
     click.secho(
