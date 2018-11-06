@@ -40,7 +40,9 @@ def figure_out_github_token(github_token: str) -> str:
     paths = []
     if "KOKORO_KEYSTORE_DIR" in os.environ:
         paths.append(
-            os.path.join(os.environ["KOKORO_KEYSTORE_DIR"], "73713_dpebot_github_token")
+            os.path.join(
+                os.environ["KOKORO_KEYSTORE_DIR"], "73713_yoshi-automation-github-key"
+            )
         )
 
     # Second, try gfile resources.
