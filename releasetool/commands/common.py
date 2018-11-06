@@ -46,11 +46,9 @@ class GitHubContext(BaseContext):
 
 @attr.s(auto_attribs=True, slots=True)
 class TagContext(GitHubContext):
-    package_name: Optional[str] = None
     release_pr: Optional[dict] = None
     release_tag: Optional[str] = None
     release_version: Optional[str] = None
-    release_notes: Optional[str] = None
     github_release: Optional[dict] = None
     kokoro_job_name: Optional[str] = None
     fusion_url: Optional[str] = None
@@ -148,6 +146,14 @@ def edit_release_notes(ctx: GitHubContext) -> None:
         release_notes, "release-notes.md"
     ).strip()
 
+def exists_release(ctx: TagContext) -> bool:
+    release = ctx.github.get_release(ctx.upstream_repo, ctx.release_tag)
+    tag_sha = ctx.github.get_tag_sha(ctx.upstream_repo, ctx.release_tag)
+
+    if release is not None and tag_sha == ctx.release_pr["merge_commit_sha"]:
+        return True
+    else:
+        return False
 
 def publish_via_kokoro(ctx: TagContext) -> None:
     kokoro_url = "https://fusion.corp.google.com/projectanalysis/current/KOKORO/"

@@ -73,11 +73,17 @@ def tag(ctx: TagContext = None) -> TagContext:
 
     python.determine_release_tag(ctx)
     python.determine_package_name_and_version(ctx)
+
+    # If the release already exists, don't make it again
+    if releasetool.commands.common.exists_release(ctx):
+        click.secho(f"Release {ctx.release_tag} already exists.", fg="magenta")
+        return ctx
+
     get_release_notes(ctx)
 
-    create_release(ctx)
+    # create_release(ctx)
 
-    releasetool.commands.common.publish_via_kokoro(ctx)
+    # releasetool.commands.common.publish_via_kokoro(ctx)
 
     if ctx.interactive:
         click.secho(f"\\o/ All done!", fg="magenta")
