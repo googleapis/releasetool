@@ -147,7 +147,7 @@ def edit_release_notes(ctx: GitHubContext) -> None:
     ).strip()
 
 
-def exists_release(ctx: TagContext) -> bool:
+def release_exists(ctx: TagContext) -> bool:
     release = ctx.github.get_release(ctx.upstream_repo, ctx.release_tag)
     tag_sha = ctx.github.get_tag_sha(ctx.upstream_repo, ctx.release_tag)
 
