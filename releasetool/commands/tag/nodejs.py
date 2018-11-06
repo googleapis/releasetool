@@ -131,7 +131,7 @@ def tag() -> None:
     determine_release_pr(ctx)
     determine_release_tag(ctx)
     determine_package_version(ctx)
-  
+
     # If the release already exists, don't do anything
     if releasetool.commands.common.exists_release(ctx):
         click.secho(f"{ctx.release_tag} already exists.", fg="magenta")

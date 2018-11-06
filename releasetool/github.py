@@ -18,6 +18,7 @@ from typing import Sequence, Union
 
 import requests
 
+
 _GITHUB_ROOT: str = "https://api.github.com"
 _GITHUB_UI_ROOT: str = "https://github.com"
 
@@ -151,6 +152,6 @@ class GitHub:
 
         for tag in response.json():
             if tag["name"] == tag_name:
-              return tag["commit"]["sha"]
+                return tag["commit"]["sha"]
 
         return None

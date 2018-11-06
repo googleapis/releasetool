@@ -146,6 +146,7 @@ def edit_release_notes(ctx: GitHubContext) -> None:
         release_notes, "release-notes.md"
     ).strip()
 
+
 def exists_release(ctx: TagContext) -> bool:
     release = ctx.github.get_release(ctx.upstream_repo, ctx.release_tag)
     tag_sha = ctx.github.get_tag_sha(ctx.upstream_repo, ctx.release_tag)
@@ -154,6 +155,7 @@ def exists_release(ctx: TagContext) -> bool:
         return True
     else:
         return False
+
 
 def publish_via_kokoro(ctx: TagContext) -> None:
     kokoro_url = "https://fusion.corp.google.com/projectanalysis/current/KOKORO/"
