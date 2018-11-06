@@ -17,7 +17,6 @@ import re
 from typing import Sequence, Union
 
 import requests
-import urllib
 
 _GITHUB_ROOT: str = "https://api.github.com"
 _GITHUB_UI_ROOT: str = "https://github.com"
