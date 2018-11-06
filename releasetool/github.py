@@ -144,3 +144,20 @@ class GitHub:
         response = self.session.post(url, json={"body": comment})
         response.raise_for_status()
         return response.json()
+
+    def get_release(self, repository: str, tag_name: str) -> dict:
+        url = f"{_GITHUB_ROOT}/repos/{repository}/releases/tags/{tag_name}"
+        response = self.session.get(url)
+        response.raise_for_status()
+        return response.json()
+
+    def get_tag_sha(self, repository: str, tag_name: str) -> str:
+        url = f"{_GITHUB_ROOT}/repos/{repository}/tags"
+        response = self.session.get(url)
+        response.raise_for_status()
+
+        for tag in response.json():
+            if tag["name"] == tag_name:
+                return tag["commit"]["sha"]
+
+        return None
