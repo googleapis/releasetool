@@ -57,6 +57,10 @@ def create_release(ctx: TagContext) -> None:
         ctx.upstream_repo, ctx.release_pr["number"], release_location_string
     )
 
+    ctx.github.update_pull_labels(
+        ctx.release_pr, add=["autorelease: tagged"], remove=["autorelease: pending"]
+    )
+
 
 def tag(ctx: TagContext = None) -> TagContext:
     if not ctx:
