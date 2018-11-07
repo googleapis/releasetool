@@ -24,7 +24,6 @@ import releasetool.secrets
 import releasetool.commands.common
 from releasetool.commands.common import TagContext
 
-
 def determine_release_pr(ctx: TagContext) -> None:
     click.secho(
         "> Let's figure out which pull request corresponds to your release.", fg="cyan"
@@ -62,12 +61,15 @@ def determine_release_tag(ctx: TagContext) -> None:
     click.secho(f"Release tag is {ctx.release_tag}.")
 
 
-def determine_package_version(ctx: TagContext) -> None:
+def determine_package_name_and_version(ctx: TagContext) -> None:
     click.secho("> Determining the package version.", fg="cyan")
     match = re.match(r"(?P<version>v?\d+?\.\d+?\.\d+?)", ctx.release_tag)
     ctx.release_version = match.group("version")
     click.secho(f"package version: {ctx.release_version}.")
-
+    
+    ctx.package_name = releasetool.filehelpers.extract(
+        "package.json", r'"name": "(.*?)"'
+    )
 
 def get_release_notes(ctx: TagContext) -> None:
     click.secho("> Grabbing the release notes.")
@@ -121,25 +123,35 @@ def wait_on_circle(ctx: TagContext) -> None:
         click.secho(f"CircleCI Build not found for tag {tag_name}...")
 
 
-def tag() -> None:
-    ctx = TagContext()
+def tag(ctx: TagContext = None) -> TagContext:
+    if not ctx:
+        ctx = TagContext()
 
-    click.secho(f"o/ Hey, {getpass.getuser()}, let's tag a release!", fg="magenta")
+    if ctx.interactive:
+        click.secho(f"o/ Hey, {getpass.getuser()}, let's tag a release!", fg="magenta")
 
-    releasetool.commands.common.setup_github_context(ctx)
+    if ctx.github is None:
+        releasetool.commands.common.setup_github_context(ctx)
 
-    determine_release_pr(ctx)
+    if ctx.release_pr is None:
+        determine_release_pr(ctx)
+
     determine_release_tag(ctx)
-    determine_package_version(ctx)
+    determine_package_name_and_version(ctx)
 
     # If the release already exists, don't do anything
     if releasetool.commands.common.release_exists(ctx):
         click.secho(f"{ctx.release_tag} already exists.", fg="magenta")
-        return
+        return ctx
 
     get_release_notes(ctx)
-
     create_release(ctx)
-    wait_on_circle(ctx)
 
-    click.secho(f"\\o/ All done!", fg="magenta")
+    ctx.kokoro_job_name = f"cloud-devrel/client-libraries/nodejs/googleapis/{ctx.package_name}/release"
+    releasetool.commands.common.publish_via_kokoro(ctx)
+
+    if ctx.interactive:
+        wait_on_circle(ctx)
+        click.secho(f"\\o/ All done!", fg="magenta")
+
+    return ctx
