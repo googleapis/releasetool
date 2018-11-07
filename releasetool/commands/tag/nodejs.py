@@ -24,6 +24,7 @@ import releasetool.secrets
 import releasetool.commands.common
 from releasetool.commands.common import TagContext
 
+
 def determine_release_pr(ctx: TagContext) -> None:
     click.secho(
         "> Let's figure out which pull request corresponds to your release.", fg="cyan"
@@ -66,10 +67,11 @@ def determine_package_name_and_version(ctx: TagContext) -> None:
     match = re.match(r"(?P<version>v?\d+?\.\d+?\.\d+?)", ctx.release_tag)
     ctx.release_version = match.group("version")
     click.secho(f"package version: {ctx.release_version}.")
-    
+
     ctx.package_name = releasetool.filehelpers.extract(
         "package.json", r'"name": "(.*?)"'
     )
+
 
 def get_release_notes(ctx: TagContext) -> None:
     click.secho("> Grabbing the release notes.")
@@ -147,7 +149,9 @@ def tag(ctx: TagContext = None) -> TagContext:
     get_release_notes(ctx)
     create_release(ctx)
 
-    ctx.kokoro_job_name = f"cloud-devrel/client-libraries/nodejs/googleapis/{ctx.package_name}/release"
+    ctx.kokoro_job_name = (
+        f"cloud-devrel/client-libraries/nodejs/googleapis/{ctx.package_name}/release"
+    )
     releasetool.commands.common.publish_via_kokoro(ctx)
 
     if ctx.interactive:
