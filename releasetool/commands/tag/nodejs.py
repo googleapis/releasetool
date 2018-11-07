@@ -68,8 +68,13 @@ def determine_package_name_and_version(ctx: TagContext) -> None:
     ctx.release_version = match.group("version")
     click.secho(f"package version: {ctx.release_version}.")
 
-    ctx.package_name = releasetool.filehelpers.extract(
-        "package.json", r'"name": "(.*?)"'
+
+def determine_kokoro_job_name(ctx: TagContext) -> None:
+    repository_name = releasetool.filehelpers.extract(
+        "package.json", r'"repository": "(.*?)"'
+    )
+    ctx.kokoro_job_name = (
+        f"cloud-devrel/client-libraries/nodejs/{repository_name}/release"
     )
 
 
@@ -139,7 +144,7 @@ def tag(ctx: TagContext = None) -> TagContext:
         determine_release_pr(ctx)
 
     determine_release_tag(ctx)
-    determine_package_name_and_version(ctx)
+    determine_package_version(ctx)
 
     # If the release already exists, don't do anything
     if releasetool.commands.common.release_exists(ctx):
@@ -149,9 +154,7 @@ def tag(ctx: TagContext = None) -> TagContext:
     get_release_notes(ctx)
     create_release(ctx)
 
-    ctx.kokoro_job_name = (
-        f"cloud-devrel/client-libraries/nodejs/googleapis/{ctx.package_name}/release"
-    )
+    determine_kokoro_job_name(ctx)
     releasetool.commands.common.publish_via_kokoro(ctx)
 
     if ctx.interactive:
