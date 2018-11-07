@@ -4,6 +4,20 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+## 2018.11.07
+
+11-07-2018 10:30 PST
+
+### Implementation Changes
+
+- Make tag idempotent ([#118](https://github.com/googleapis/releasetool/pull/118))
+- Add steps for tagging the merged commit for the release ([#119](https://github.com/googleapis/releasetool/pull/119))
+- Use a different method of ignoring errors when reporting release status ([#117](https://github.com/googleapis/releasetool/pull/117))
+
+### Internal / Testing Changes
+
+- Use yoshi-automation GitHub account ([#120](https://github.com/googleapis/releasetool/pull/120))
+
 ## 2018.11.05
 
 11-05-2018 10:50 PST
