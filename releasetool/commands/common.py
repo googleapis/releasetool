@@ -20,6 +20,7 @@ import attr
 import click
 import pyperclip
 from dateutil import tz
+import requests
 
 import releasetool.filehelpers
 import releasetool.git
@@ -148,8 +149,13 @@ def edit_release_notes(ctx: GitHubContext) -> None:
 
 
 def release_exists(ctx: TagContext) -> bool:
-    release = ctx.github.get_release(ctx.upstream_repo, ctx.release_tag)
-    tag_sha = ctx.github.get_tag_sha(ctx.upstream_repo, ctx.release_tag)
+    try:
+        release = ctx.github.get_release(ctx.upstream_repo, ctx.release_tag)
+        tag_sha = ctx.github.get_tag_sha(ctx.upstream_repo, ctx.release_tag)
+    # If a 404 or similar happened, return False as it indicates the release
+    # doesn't exit.
+    except requests.HTTPError:
+        return False
 
     if release is not None and tag_sha == ctx.release_pr["merge_commit_sha"]:
         return True
