@@ -87,6 +87,7 @@ def tag(ctx: TagContext = None) -> TagContext:
 
     create_release(ctx)
 
+    ctx.kokoro_job_name = f"cloud-devrel/client-libraries/{ctx.package_name}/release"
     releasetool.commands.common.publish_via_kokoro(ctx)
 
     if ctx.interactive:

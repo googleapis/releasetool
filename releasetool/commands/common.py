@@ -166,7 +166,6 @@ def release_exists(ctx: TagContext) -> bool:
 def publish_via_kokoro(ctx: TagContext) -> None:
     kokoro_url = "https://fusion.corp.google.com/projectanalysis/current/KOKORO/"
 
-    ctx.kokoro_job_name = f"cloud-devrel/client-libraries/{ctx.package_name}/release"
     ctx.fusion_url = parse.urljoin(
         kokoro_url, parse.quote_plus(f"prod:{ctx.kokoro_job_name}")
     )
