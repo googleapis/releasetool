@@ -4,6 +4,14 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+## 2018.11.07.2
+
+11-07-2018 13:32 PST
+
+### Implementation Changes
+
+- Change the autorelease label names, add labeling to 'tag' for python-tool ([#124](https://github.com/googleapis/releasetool/pull/124))
+
 ## 2018.11.07.1
 
 11-07-2018 12:25 PST
