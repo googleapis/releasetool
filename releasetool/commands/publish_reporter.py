@@ -117,11 +117,11 @@ def finish(github_token: str, pr: str, status: bool, details: str) -> None:
         return
 
     if status:
-        message = "The release build finished successfully! :purple_heart:"
-        labels = ["releasetool: published"]
+        message = ":egg: You hatched a release! The release build finished successfully! :purple_heart:"
+        labels = ["autorelease: published"]
     else:
         message = "The release build failed! Please investigate!"
-        labels = ["releasetool: failed"]
+        labels = ["autorelease: failed"]
 
     if details:
         message += f"\n{details}"
@@ -130,7 +130,7 @@ def finish(github_token: str, pr: str, status: bool, details: str) -> None:
 
     pull = gh.get_pull_request(f"{owner}/{repo}", number)
 
-    gh.update_pull_labels(pull, add=labels, remove=["releasetool: tagged"])
+    gh.update_pull_labels(pull, add=labels, remove=["autorelease: tagged"])
 
 
 def script():

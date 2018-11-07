@@ -184,7 +184,7 @@ def create_release_pr(ctx: Context, autorelease: bool = False) -> None:
 
     if autorelease:
         ctx.github.add_issue_labels(
-            ctx.upstream_repo, ctx.pull_request["number"], ["releasetool: pending"]
+            ctx.upstream_repo, ctx.pull_request["number"], ["autorelease: pending"]
         )
 
     click.secho(f"Pull request is at {ctx.pull_request['html_url']}.")
