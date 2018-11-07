@@ -4,6 +4,14 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+## 2018.11.07.1
+
+11-07-2018 12:25 PST
+
+### Implementation Changes
+
+- Catch requests exceptions when checking if a release exists (#122)
+
 ## 2018.11.07
 
 11-07-2018 10:30 PST
