@@ -14,7 +14,7 @@ pyenv to get 3.6.
 Install using pip:
 
 ```
-python3 -m pip install --upgrade gcp-releasetool
+python3 -m pip install --user --upgrade gcp-releasetool
 ```
 
 ## Usage
