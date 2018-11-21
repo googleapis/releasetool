@@ -18,7 +18,7 @@ import json
 import os
 import subprocess
 import textwrap
-from typing import List, Optional, Sequence
+from typing import Dict, List, Optional, Sequence
 
 import attr
 import click
@@ -183,7 +183,7 @@ def update_changelog(ctx: Context) -> None:
 def create_release_commit(ctx: Context) -> None:
     """Create a release commit."""
     click.secho("> Comitting changes", fg="cyan")
-    releasetool.git.commit([_CHANGELOG_FILENAME], f"Release {ctx.release_version}")
+    releasetool.git.commit([_CHANGELOG_FILENAME], f"all: release {ctx.release_version}")
 
 
 def create_release_cl(ctx: Context) -> None:
@@ -199,7 +199,24 @@ def edit_release_notes(ctx: Context) -> None:
         .astimezone(tz.gettz("US/Pacific"))
         .strftime("%m-%d-%Y %H:%M %Z\n\n")
     )
-    release_notes += "\n".join(f"- {change}" for change in ctx.changes)
+
+    packages: Dict[str, List[str]] = {}
+    for change in ctx.changes:
+        package, commit = change.split(":", 1)
+        try:
+            packages[package].append(commit.strip())
+        except KeyError:
+            packages[package] = [commit.strip()]
+
+    # sort packages alphabetically
+    sorted_packages = sorted(
+        list(packages.items()), key=lambda x: x[0]
+    )
+    for package, commits in sorted_packages:
+        changes = "\n".join(f"  - {change}" for change in commits)
+        release_notes += f"- {package}:\n{changes}\n"
+
+    # release_notes += "\n".join(f"- {change}" for change in ctx.changes)
     ctx.release_notes = releasetool.filehelpers.open_editor_with_tempfile(
         release_notes, "release-notes.md"
     ).strip()
@@ -217,7 +234,7 @@ def start() -> None:
     determine_release_version(ctx)
     create_release_branch(ctx)
     update_changelog(ctx)
-    create_release_commit(ctx)
-    create_release_cl(ctx)
+    # create_release_commit(ctx)
+    # create_release_cl(ctx)
 
     click.secho(f"\\o/ All done!", fg="magenta")
