@@ -232,7 +232,7 @@ def start() -> None:
     determine_release_version(ctx)
     create_release_branch(ctx)
     update_changelog(ctx)
-    # create_release_commit(ctx)
-    # create_release_cl(ctx)
+    create_release_commit(ctx)
+    create_release_cl(ctx)
 
     click.secho(f"\\o/ All done!", fg="magenta")
