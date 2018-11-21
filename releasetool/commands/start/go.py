@@ -203,20 +203,18 @@ def edit_release_notes(ctx: Context) -> None:
     packages: Dict[str, List[str]] = {}
     for change in ctx.changes:
         package, commit = change.split(":", 1)
+        commit = commit.strip()
         try:
-            packages[package].append(commit.strip())
+            packages[package].append(commit)
         except KeyError:
-            packages[package] = [commit.strip()]
+            packages[package] = [commit]
 
     # sort packages alphabetically
-    sorted_packages = sorted(
-        list(packages.items()), key=lambda x: x[0]
-    )
+    sorted_packages = sorted(list(packages.items()), key=lambda x: x[0])
     for package, commits in sorted_packages:
-        changes = "\n".join(f"  - {change}" for change in commits)
-        release_notes += f"- {package}:\n{changes}\n"
+        commit_list = "\n".join(f"  - {commit}" for commit in commits)
+        release_notes += f"- {package}:\n{commit_list}\n"
 
-    # release_notes += "\n".join(f"- {change}" for change in ctx.changes)
     ctx.release_notes = releasetool.filehelpers.open_editor_with_tempfile(
         release_notes, "release-notes.md"
     ).strip()
