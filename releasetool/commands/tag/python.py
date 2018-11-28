@@ -109,8 +109,7 @@ def create_release(ctx: TagContext) -> None:
     )
 
 
-
-def tag(ctx: Context = None) -> Context:
+def tag(ctx: TagContext = None) -> TagContext:
     if not ctx:
         ctx = TagContext()
 
@@ -135,7 +134,9 @@ def tag(ctx: Context = None) -> Context:
 
     create_release(ctx)
 
-    ctx.kokoro_job_name = f"cloud-devrel/client-libraries/google-cloud-python/release/{ctx.package_name}"
+    ctx.kokoro_job_name = (
+        f"cloud-devrel/client-libraries/google-cloud-python/release/{ctx.package_name}"
+    )
     releasetool.commands.common.publish_via_kokoro(ctx)
 
     if ctx.interactive:
