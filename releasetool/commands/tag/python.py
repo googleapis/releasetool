@@ -103,47 +103,43 @@ def create_release(ctx: TagContext) -> None:
 
     release_location_string = f"Release is at {ctx.github_release['html_url']}"
     click.secho(release_location_string)
-    click.secho("CI will handle publishing the package to PyPI.")
 
     ctx.github.create_pull_request_comment(
         ctx.upstream_repo, ctx.release_pr["number"], release_location_string
     )
 
 
-def wait_on_circle(ctx: TagContext) -> None:
-    circle = releasetool.circleci.CircleCI(repository=ctx.upstream_repo)
-    click.secho("> Waiting for CircleCI to queue a release build")
-    tag_name = f"{ctx.package_name}-{ctx.release_version}"
-    fresh_build = circle.get_latest_build_by_tag(tag_name)
-    if fresh_build:
-        click.secho(f"CircleCI Build: {fresh_build['build_url']}")
-        click.secho("> Monitoring CircleCI for completion of release")
-        click.secho("")
-        for state in circle.get_build_status_generator(fresh_build["build_num"]):
-            click.secho(f"CircleCI Build State: {state}\r", nl=False)
-    else:
-        click.secho(f"CircleCI Build not found for tag {tag_name}...")
+def tag(ctx: TagContext = None) -> TagContext:
+    if not ctx:
+        ctx = TagContext()
 
+    if ctx.interactive:
+        click.secho(f"o/ Hey, {getpass.getuser()}, let's tag a release!", fg="magenta")
 
-def tag() -> None:
-    ctx = TagContext()
+    if ctx.github is None:
+        releasetool.commands.common.setup_github_context(ctx)
 
-    click.secho(f"o/ Hey, {getpass.getuser()}, let's tag a release!", fg="magenta")
+    if ctx.release_pr is None:
+        determine_release_pr(ctx)
 
-    releasetool.commands.common.setup_github_context(ctx)
-
-    determine_release_pr(ctx)
     determine_release_tag(ctx)
     determine_package_name_and_version(ctx)
 
     # If the release already exists, don't do anything
     if releasetool.commands.common.release_exists(ctx):
         click.secho(f"{ctx.release_tag} already exists.", fg="magenta")
-        return
+        return ctx
 
     get_release_notes(ctx)
 
     create_release(ctx)
-    wait_on_circle(ctx)
 
-    click.secho(f"\\o/ All done!", fg="magenta")
+    ctx.kokoro_job_name = (
+        f"cloud-devrel/client-libraries/google-cloud-python/release/{ctx.package_name}"
+    )
+    releasetool.commands.common.publish_via_kokoro(ctx)
+
+    if ctx.interactive:
+        click.secho(f"\\o/ All done!", fg="magenta")
+
+    return ctx
