@@ -174,10 +174,7 @@ def create_release_commit(ctx: Context) -> None:
     if os.path.exists("samples/package.json"):
         files.append("samples/package.json")
 
-    releasetool.git.commit(
-        files,
-        f"Release v{ctx.release_version}",
-    )
+    releasetool.git.commit(files, f"Release v{ctx.release_version}")
 
 
 def push_release_branch(ctx: Context) -> None:
