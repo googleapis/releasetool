@@ -168,10 +168,13 @@ def update_samples_package_json(ctx: Context) -> None:
 def create_release_commit(ctx: Context) -> None:
     """Create a release commit."""
     click.secho("> Committing changes", fg="cyan")
-    releasetool.git.commit(
-        ["CHANGELOG.md", "package.json", "samples/package.json"],
-        f"Release v{ctx.release_version}",
-    )
+    files = ["CHANGELOG.md", "package.json"]
+
+    # Not all node.js repos have a samples directory
+    if os.path.exists("samples/package.json"):
+        files.append("samples/package.json")
+
+    releasetool.git.commit(files, f"Release v{ctx.release_version}")
 
 
 def push_release_branch(ctx: Context) -> None:
