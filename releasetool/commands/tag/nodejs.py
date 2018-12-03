@@ -74,7 +74,7 @@ def determine_kokoro_job_name(ctx: TagContext) -> None:
         "package.json", r'"repository": "(.*?)"'
     )
     ctx.kokoro_job_name = (
-        f"cloud-devrel/client-libraries/nodejs/{repository_name}/release"
+        f"cloud-devrel/client-libraries/nodejs/release/{repository_name}/publish"
     )
 
 
@@ -112,6 +112,10 @@ def create_release(ctx: TagContext) -> None:
 
     ctx.github.create_pull_request_comment(
         ctx.upstream_repo, ctx.release_pr["number"], release_location_string
+    )
+
+    ctx.github.update_pull_labels(
+        ctx.release_pr, add=["autorelease: tagged"], remove=["autorelease: pending"]
     )
 
 
