@@ -70,9 +70,7 @@ def determine_package_version(ctx: TagContext) -> None:
 
 
 def determine_kokoro_job_name(ctx: TagContext) -> None:
-    repository_name = releasetool.filehelpers.extract(
-        "package.json", r'"repository": "(.*?)"'
-    )
+    repository_name = ctx.upstream_repo.split("/", 1)[1]
     ctx.kokoro_job_name = (
         f"cloud-devrel/client-libraries/nodejs/release/{repository_name}/publish"
     )
