@@ -57,6 +57,6 @@ def start() -> None:
     releasetool.commands.start.python.create_release_commit(ctx)
     releasetool.commands.start.python.push_release_branch(ctx)
     # TODO: Confirm?
-    releasetool.commands.start.python.create_release_pr(ctx, autorelease=True)
+    releasetool.commands.start.python.create_release_pr(ctx)
 
     click.secho(f"\\o/ All done!", fg="magenta")
