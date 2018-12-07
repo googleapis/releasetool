@@ -18,9 +18,9 @@
 releasetool_finish_report() {
     rv=$?
     if [[ $rv == 0 ]]; then
-        releasetool publish-reporter-finish --status yes || true
+        python3 -m releasetool publish-reporter-finish --status yes || true
     else
-        releasetool publish-reporter-finish --status no || true
+        python3 -m releasetool publish-reporter-finish --status no || true
     fi
     echo "Release status reported."
     exit $rv
