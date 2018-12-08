@@ -29,4 +29,4 @@ releasetool_finish_report() {
 trap releasetool_finish_report EXIT
 
 # Report the start of a build
-releasetool publish-reporter-start || true
+python3 -m releasetool publish-reporter-start || true
