@@ -4,6 +4,28 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+## 2018.12.10
+
+12-10-2018 15:26 PST
+
+
+### Implementation Changes
+- fix: run releasetool as module ([#140](https://github.com/GoogleCloudPlatform/releasetool/pull/140))
+- fix(node): kokoro job name ([#139](https://github.com/GoogleCloudPlatform/releasetool/pull/139))
+- fix: publish_reporter.sh runs releasetool as python3 module ([#138](https://github.com/GoogleCloudPlatform/releasetool/pull/138))
+- Make Node.js use the context to determine repo name for Kokoro job ([#135](https://github.com/GoogleCloudPlatform/releasetool/pull/135))
+- Don't try to commit samples/package.json if it doesn't exist ([#131](https://github.com/GoogleCloudPlatform/releasetool/pull/131))
+- Go commit msg ([#128](https://github.com/GoogleCloudPlatform/releasetool/pull/128))
+
+### New Features
+- node: add autorelease: pending label for releasetool start ([#127](https://github.com/GoogleCloudPlatform/releasetool/pull/127))
+- Enable Autorelease for Python ([#132](https://github.com/GoogleCloudPlatform/releasetool/pull/132))
+- Make nodejs releasetool tag work in non-interactive mode ([#126](https://github.com/GoogleCloudPlatform/releasetool/pull/126))
+- Make releasetool tag for Python work in non-interactive mode ([#129](https://github.com/GoogleCloudPlatform/releasetool/pull/129))
+
+### Documentation
+- Update README.md
+
 ## 2018.11.07.2
 
 11-07-2018 13:32 PST
