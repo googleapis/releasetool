@@ -16,6 +16,7 @@ import datetime
 import getpass
 import json
 import os
+import re
 import subprocess
 import textwrap
 from typing import Dict, List, Optional, Sequence
@@ -90,11 +91,11 @@ def relative_module_name(modname) -> str:
 def determine_last_release(ctx: Context) -> None:
     click.secho("> Figuring out what the last release was.", fg="cyan")
     if ctx.relative_module_name is None:
-        prefix = "v"
+        pattern = re.compile(r"v[0-9].*")
     else:
-        prefix = ctx.relative_module_name + "/v"
+        pattern = re.compile(ctx.relative_module_name + r"/v[0-9].*")
     tags = releasetool.git.list_tags()
-    candidates = [tag for tag in tags if tag.startswith(prefix)]
+    candidates = [tag for tag in tags if pattern.match(tag)]
 
     if candidates:
         ctx.last_release_committish = candidates[0]
