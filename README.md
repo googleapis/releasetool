@@ -8,9 +8,13 @@ in such a way that it could easily be used for other languages.
 
 ## Installation
 
-**This tool requires Python 3.6 or 3.7 and pip.** We recommend following [this guide](https://docs.python-guide.org/starting/installation/#installation-guides). You can also install Python from python.org or use pyenv.
+**Requirements:**
+- Python 3.6 or Python 3.7
+- pip
 
-Install using pip:
+We recommend following [this guide](https://docs.python-guide.org/starting/installation/#installation-guides) for installing both Python 3 and pip. 
+
+Install releasetool using pip:
 ```
 python3 -m pip install --user --upgrade gcp-releasetool
 ```
