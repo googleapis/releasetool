@@ -61,7 +61,6 @@ def determine_release_tag(ctx: TagContext) -> None:
         ctx.release_tag = click.prompt(
             "What should the release tag be (for example, google-cloud-storage/v1.2.3)?"
         )
-        determine_package_name_and_version(ctx)
 
     click.secho(f"Package name is {ctx.package_name}")
     click.secho(f"Package version is {ctx.release_version}")
@@ -117,31 +116,26 @@ def create_release(ctx: TagContext) -> None:
         ctx.upstream_repo, ctx.release_pr["number"], release_location_string
     )
 
-
-def wait_on_circle(ctx: TagContext) -> None:
-    circle = releasetool.circleci.CircleCI(repository=ctx.upstream_repo)
-    click.secho("> Waiting for CircleCI to queue a release build")
-    tag_name = f"{ctx.package_name}/v{ctx.release_version}"
-    fresh_build = circle.get_latest_build_by_tag(tag_name)
-    if fresh_build:
-        click.secho(f"CircleCI Build: {fresh_build['build_url']}")
-        click.secho("> Monitoring CircleCI for completion of release")
-        click.secho("")
-        for state in circle.get_build_status_generator(fresh_build["build_num"]):
-            click.secho(f"CircleCI Build State: {state}\r", nl=False)
-    else:
-        click.secho(f"CircleCI Build not found for tag {tag_name}...")
+    ctx.github.update_pull_labels(
+        ctx.release_pr, add=["autorelease: tagged"], remove=["autorelease: pending"]
+    )
 
 
-def tag() -> None:
-    ctx = TagContext()
+def tag(ctx: TagContext = None) -> TagContext:
+    if not ctx:
+        ctx = TagContext()
 
-    click.secho(f"o/ Hey, {getpass.getuser()}, let's tag a Ruby release!", fg="magenta")
+    if ctx.interactive:
+        click.secho(f"o/ Hey, {getpass.getuser()}, let's tag a Ruby release!", fg="magenta")
 
-    releasetool.commands.common.setup_github_context(ctx)
+    if ctx.github is None:
+        releasetool.commands.common.setup_github_context(ctx)
 
-    determine_release_pr(ctx)
+    if ctx.release_pr is None:
+        determine_release_pr(ctx)
+
     determine_release_tag(ctx)
+    determine_package_name_and_version(ctx)
 
     # If the release already exists, don't do anything
     if releasetool.commands.common.release_exists(ctx):
@@ -151,6 +145,14 @@ def tag() -> None:
     get_release_notes(ctx)
 
     create_release(ctx)
-    wait_on_circle(ctx)
 
-    click.secho(f"\\o/ All done!", fg="magenta")
+    job_name = ctx.package_name.split("google-cloud-")[-1]
+    ctx.kokoro_job_name = (
+        f"cloud-devrel/client-libraries/google-cloud-ruby/release/{job_name}"
+    )
+    releasetool.commands.common.publish_via_kokoro(ctx)
+
+    if ctx.interactive:
+        click.secho(f"\\o/ All done!", fg="magenta")
+
+    return ctx
