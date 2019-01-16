@@ -157,13 +157,14 @@ def update_changelog(ctx: Context) -> None:
 def update_version(ctx: Context) -> None:
     click.secho("> Updating version.rb.", fg="cyan")
     gemspec = glob.glob("*.gemspec")[0]
-    version = releasetool.filehelpers.extract(gemspec, r'gem.version.*=(.*)')
+    version = releasetool.filehelpers.extract(gemspec, r"gem.version.*=(.*)")
     if version.lower().find("version") == -1:
-        final = releasetool.filehelpers.extract(gemspec, '(gem.version.*=)') + f' "{ctx.release_version}"'
-        ctx.version_file = gemspec
-        releasetool.filehelpers.replace(
-            ctx.version_file, r'gem.version.*', final
+        final = (
+            releasetool.filehelpers.extract(gemspec, "(gem.version.*=)")
+            + f' "{ctx.release_version}"'
         )
+        ctx.version_file = gemspec
+        releasetool.filehelpers.replace(ctx.version_file, r"gem.version.*", final)
     else:
         ctx.version_file = glob.glob("lib/**/version.rb", recursive=True)[0]
         releasetool.filehelpers.replace(

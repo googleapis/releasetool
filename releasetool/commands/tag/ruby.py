@@ -126,7 +126,9 @@ def tag(ctx: TagContext = None) -> TagContext:
         ctx = TagContext()
 
     if ctx.interactive:
-        click.secho(f"o/ Hey, {getpass.getuser()}, let's tag a Ruby release!", fg="magenta")
+        click.secho(
+            f"o/ Hey, {getpass.getuser()}, let's tag a Ruby release!", fg="magenta"
+        )
 
     if ctx.github is None:
         releasetool.commands.common.setup_github_context(ctx)
@@ -140,7 +142,7 @@ def tag(ctx: TagContext = None) -> TagContext:
     # If the release already exists, don't do anything
     if releasetool.commands.common.release_exists(ctx):
         click.secho(f"{ctx.release_tag} already exists.", fg="magenta")
-        return
+        return ctx
 
     get_release_notes(ctx)
 
