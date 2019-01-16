@@ -104,23 +104,38 @@ def create_release(ctx: TagContext) -> None:
     )
 
 
-def tag() -> None:
-    ctx = TagContext()
+def tag(ctx: TagContext = None) -> TagContext:
+    if not ctx:
+        ctx = TagContext()
 
-    click.secho(f"o/ Hey, {getpass.getuser()}, let's tag a release!", fg="magenta")
+    if ctx.interactive:
+        click.secho(f"o/ Hey, {getpass.getuser()}, let's tag a release!", fg="magenta")
 
-    releasetool.commands.common.setup_github_context(ctx)
+    if ctx.github is None:
+        releasetool.commands.common.setup_github_context(ctx)
 
-    determine_release_pr(ctx)
+    if ctx.release_pr is None:
+        determine_release_pr(ctx)
+
     determine_release_tag(ctx)
     determine_package_name_and_version(ctx)
 
     # If the release already exists, don't do anything
     if releasetool.commands.common.release_exists(ctx):
         click.secho(f"{ctx.release_tag} already exists.", fg="magenta")
-        return
+        return ctx
 
     get_release_notes(ctx)
     create_release(ctx)
 
-    click.secho(f"\\o/ All done!", fg="magenta")
+    # Only enable release job triggering on google-auth-java-library for now.
+    if ctx.upstream_repo == "googleapis/google-auth-java-library":
+        ctx.kokoro_job_name = (
+            "cloud-devrel/client-libraries/java/google-auth-java-library/release/stage"
+        )
+        releasetool.commands.common.publish_via_kokoro(ctx)
+
+    if ctx.interactive:
+        click.secho(f"\\o/ All done!", fg="magenta")
+
+    return ctx
