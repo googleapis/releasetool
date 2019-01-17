@@ -60,11 +60,12 @@ def determine_last_release(ctx: Context) -> None:
     click.secho("> Figuring out what the last release was.", fg="cyan")
     tags = releasetool.git.list_tags()
     candidates = [tag for tag in tags if tag.startswith(ctx.package_name)]
-
-    if candidates:
+    if candidates and "google-cloud" in candidates[0]:
         ctx.last_release_committish = candidates[0]
         ctx.last_release_version = candidates[0].rsplit("/").pop().lstrip("v")
-
+    elif ("google-cloud" not in ctx.package_name) and tags:
+        ctx.last_release_committish = tags[0]
+        ctx.last_release_version = tags[0].rsplit("/")[-1].lstrip("v")
     else:
         click.secho(
             f"I couldn't figure out the last release for {ctx.package_name}, "
@@ -155,10 +156,20 @@ def update_changelog(ctx: Context) -> None:
 
 def update_version(ctx: Context) -> None:
     click.secho("> Updating version.rb.", fg="cyan")
-    ctx.version_file = glob.glob("lib/**/version.rb", recursive=True)[0]
-    releasetool.filehelpers.replace(
-        ctx.version_file, r'VERSION = "(.+?)"', f'VERSION = "{ctx.release_version}"'
-    )
+    gemspec = glob.glob("*.gemspec")[0]
+    version = releasetool.filehelpers.extract(gemspec, r"gem.version.*=(.*)")
+    if version.lower().find("version") == -1:
+        final = (
+            releasetool.filehelpers.extract(gemspec, "(gem.version.*=)")
+            + f' "{ctx.release_version}"'
+        )
+        ctx.version_file = gemspec
+        releasetool.filehelpers.replace(ctx.version_file, r"gem.version.*", final)
+    else:
+        ctx.version_file = glob.glob("lib/**/version.rb", recursive=True)[0]
+        releasetool.filehelpers.replace(
+            ctx.version_file, r'VERSION = "(.+?)"', f'VERSION = "{ctx.release_version}"'
+        )
 
 
 def create_release_commit(ctx: Context) -> None:
@@ -175,7 +186,7 @@ def push_release_branch(ctx: Context) -> None:
     releasetool.git.push(ctx.release_branch)
 
 
-def create_release_pr(ctx: Context) -> None:
+def create_release_pr(ctx: Context, autorelease: bool = True) -> None:
     click.secho(f"> Creating release pull request.", fg="cyan")
 
     if ctx.upstream_repo == ctx.origin_repo:
@@ -189,6 +200,12 @@ def create_release_pr(ctx: Context) -> None:
         title=f"Release {ctx.package_name} {ctx.release_version}",
         body=f"{ctx.release_notes}\n\nThis pull request was generated using releasetool.",
     )
+
+    if autorelease:
+        ctx.github.add_issue_labels(
+            ctx.upstream_repo, ctx.pull_request["number"], ["autorelease: pending"]
+        )
+
     click.secho(f"Pull request is at {ctx.pull_request['html_url']}.")
 
 
