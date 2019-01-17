@@ -128,10 +128,15 @@ def tag(ctx: TagContext = None) -> TagContext:
     get_release_notes(ctx)
     create_release(ctx)
 
-    # Only enable release job triggering on google-auth-java-library for now.
-    if ctx.upstream_repo == "googleapis/google-auth-java-library":
+    # Only enable release job triggering on google-auth-library-java for now.
+    if ctx.upstream_repo == "googleapis/google-auth-library-java":
         ctx.kokoro_job_name = (
-            "cloud-devrel/client-libraries/java/google-auth-java-library/release/stage"
+            "cloud-devrel/client-libraries/java/google-auth-library-java/release/stage"
+        )
+        # TODO: Move to create_release once autorelease is enabled for all
+        # java repositories
+        ctx.github.update_pull_labels(
+            ctx.release_pr, add=["autorelease: tagged"], remove=["autorelease: pending"]
         )
         releasetool.commands.common.publish_via_kokoro(ctx)
 
