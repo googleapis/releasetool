@@ -63,11 +63,11 @@ def determine_module_name(ctx: Context) -> None:
 
 
 def read_gomod() -> Optional[dict]:
-    if os.path.isfile("go.mod"):
+    if os.path.isdir(".git"):
+        return None
+    elif os.path.isfile("go.mod"):
         output = subprocess.check_output(["go", "mod", "edit", "-json"]).decode("utf-8")
         return json.loads(output)
-    elif os.path.isdir(".git"):
-        return None
     else:
         raise ValueError("no go.mod; must release from repo root")
 
