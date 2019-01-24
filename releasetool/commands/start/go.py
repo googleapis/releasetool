@@ -202,7 +202,7 @@ def edit_release_notes(ctx: Context) -> None:
 
     packages: Dict[str, List[str]] = {}
     for change in ctx.changes:
-        try: 
+        try:
             package, commit = change.split(":", 1)
         except ValueError:
             package = "all"
