@@ -71,7 +71,7 @@ def determine_package_name_and_version(ctx: TagContext) -> None:
     click.secho(
         "> Determining the package name and version from your release tag.", fg="cyan"
     )
-    match = re.match(r"^([a-z-]+)\/v(\d.\d.\d)$", ctx.release_tag)
+    match = re.match(r"^([a-z-]+)\/v(\d+.\d+.\d+)$", ctx.release_tag)
     ctx.package_name = match.group(1)
     ctx.release_version = match.group(2)
 
@@ -102,7 +102,7 @@ def create_release(ctx: TagContext) -> None:
 
     ctx.github_release = ctx.github.create_release(
         repository=ctx.upstream_repo,
-        tag_name=ctx.release_version,
+        tag_name=ctx.release_tag,
         target_committish=ctx.release_pr["merge_commit_sha"],
         name=f"Release {ctx.package_name} {ctx.release_version}",
         body=ctx.release_notes,
