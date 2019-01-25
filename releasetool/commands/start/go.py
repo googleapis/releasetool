@@ -63,11 +63,11 @@ def determine_module_name(ctx: Context) -> None:
 
 
 def read_gomod() -> Optional[dict]:
-    if os.path.isfile("go.mod"):
+    if os.path.isdir(".git"):
+        return None
+    elif os.path.isfile("go.mod"):
         output = subprocess.check_output(["go", "mod", "edit", "-json"]).decode("utf-8")
         return json.loads(output)
-    elif os.path.isdir(".git"):
-        return None
     else:
         raise ValueError("no go.mod; must release from repo root")
 
@@ -202,7 +202,11 @@ def edit_release_notes(ctx: Context) -> None:
 
     packages: Dict[str, List[str]] = {}
     for change in ctx.changes:
-        package, commit = change.split(":", 1)
+        try:
+            package, commit = change.split(":", 1)
+        except ValueError:
+            package = "all"
+            commit = change
         commit = commit.strip()
         try:
             packages[package].append(commit)
