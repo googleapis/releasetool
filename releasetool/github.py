@@ -84,7 +84,7 @@ class GitHub:
         self,
         repository: str,
         tag_name: str,
-        target_committish: str,
+        target_commitish: str,
         name: str,
         body: str,
     ) -> dict:
@@ -93,7 +93,7 @@ class GitHub:
             url,
             json={
                 "tag_name": tag_name,
-                "target_committish": target_committish,
+                "target_commitish": target_commitish,
                 "name": name,
                 "body": body,
             },
