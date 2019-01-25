@@ -127,15 +127,12 @@ def create_release(ctx: TagContext) -> None:
 def determine_commit_hash(ctx: TagContext) -> str:
     out, _ = Popen('git log --pretty=oneline', stdout=PIPE, shell=True).communicate()
     out = out.decode("utf-8").split("\n")
-    commits = []
     for line in out:
         if '(tag: ' in line:
             next
         if f'Release {ctx.package_name}' in line and f'(#{ctx.release_pr})' in line:
-            commits.append(line)
-    if len(commits) == 0:
-        return ""
-    return commits[0].split(" ")[0]
+            return line.split(" ")[0]
+    return ""
 
 
 def tag(ctx: TagContext = None) -> TagContext:
