@@ -39,6 +39,7 @@ def determine_release_pr(ctx: TagContext) -> None:
         print(f"\t{n}: {pull['title']} ({pull['number']})")
 
     pull_idx = click.prompt("\nWhich one do you want to tag and release?", type=int)
+
     ctx.release_pr = pulls[pull_idx - 1]
 
 
@@ -100,9 +101,6 @@ def get_release_notes(ctx: TagContext) -> None:
 def create_release(ctx: TagContext) -> None:
     click.secho("> Creating the release.")
     sha = determine_commit_hash(ctx)
-    if len(sha) == 0:
-        sha = ctx.release_pr["merge_commit_sha"]
-
     ctx.github_release = ctx.github.create_release(
         repository=ctx.upstream_repo,
         tag_name=ctx.release_tag,
@@ -132,7 +130,7 @@ def determine_commit_hash(ctx: TagContext) -> str:
             next
         if f'Release {ctx.package_name}' in line and f'(#{ctx.release_pr})' in line:
             return line.split(" ")[0]
-    return ""
+    return ctx.release_pr["merge_commit_sha"]
 
 
 def tag(ctx: TagContext = None) -> TagContext:
