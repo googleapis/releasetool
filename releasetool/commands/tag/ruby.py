@@ -26,6 +26,7 @@ from releasetool.commands.common import TagContext
 
 from subprocess import Popen, PIPE
 
+
 def determine_release_pr(ctx: TagContext) -> None:
     click.secho(
         "> Let's figure out which pull request corresponds to your release.", fg="cyan"
@@ -104,7 +105,7 @@ def create_release(ctx: TagContext) -> None:
     ctx.github_release = ctx.github.create_release(
         repository=ctx.upstream_repo,
         tag_name=ctx.release_tag,
-        target_committish=ctx.release_pr["merge_commit_sha"],
+        target_committish=sha,
         name=f"Release {ctx.package_name} {ctx.release_version}",
         body=ctx.release_notes,
     )
