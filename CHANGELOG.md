@@ -4,6 +4,27 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+## 2019.01.25
+
+01-25-2019 15:24 PST
+
+
+### Implementation Changes
+- change target_committish to target_commitish ([#160](https://github.com/googleapis/releasetool/pull/160))
+- Fix go start ([#156](https://github.com/googleapis/releasetool/pull/156))
+- use release_tag for tag_name ([#158](https://github.com/googleapis/releasetool/pull/158))
+- Fix ruby regex for matching tag ([#157](https://github.com/googleapis/releasetool/pull/157))
+- update ruby tag regex ([#155](https://github.com/googleapis/releasetool/pull/155))
+- change ruby bullet points to * ([#154](https://github.com/googleapis/releasetool/pull/154))
+- Correct name of repo, kokoro job and remove autorelease: pending label from PR ([#152](https://github.com/googleapis/releasetool/pull/152))
+
+### New Features
+- prepare ruby for autorelease ([#151](https://github.com/googleapis/releasetool/pull/151))
+- Make releasetool tag trigger stage job for google-auth-java-library ([#150](https://github.com/googleapis/releasetool/pull/150))
+
+### Documentation
+- Clarify installation steps in README ([#147](https://github.com/googleapis/releasetool/pull/147))
+
 ## 2018.12.10
 
 12-10-2018 15:26 PST
