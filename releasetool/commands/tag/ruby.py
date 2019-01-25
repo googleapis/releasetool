@@ -24,6 +24,7 @@ import releasetool.secrets
 import releasetool.commands.common
 from releasetool.commands.common import TagContext
 
+from subprocess import Popen, PIPE
 
 def determine_release_pr(ctx: TagContext) -> None:
     click.secho(
@@ -38,7 +39,6 @@ def determine_release_pr(ctx: TagContext) -> None:
         print(f"\t{n}: {pull['title']} ({pull['number']})")
 
     pull_idx = click.prompt("\nWhich one do you want to tag and release?", type=int)
-
     ctx.release_pr = pulls[pull_idx - 1]
 
 
@@ -99,6 +99,9 @@ def get_release_notes(ctx: TagContext) -> None:
 
 def create_release(ctx: TagContext) -> None:
     click.secho("> Creating the release.")
+    sha = determine_commit_hash(ctx)
+    if len(sha) == 0:
+        sha = ctx.release_pr["merge_commit_sha"]
 
     ctx.github_release = ctx.github.create_release(
         repository=ctx.upstream_repo,
@@ -119,6 +122,20 @@ def create_release(ctx: TagContext) -> None:
     ctx.github.update_pull_labels(
         ctx.release_pr, add=["autorelease: tagged"], remove=["autorelease: pending"]
     )
+
+
+def determine_commit_hash(ctx: TagContext) -> str:
+    out, _ = Popen('git log --pretty=oneline', stdout=PIPE, shell=True).communicate()
+    out = out.decode("utf-8").split("\n")
+    commits = []
+    for line in out:
+        if '(tag: ' in line:
+            next
+        if f'Release {ctx.package_name}' in line and f'(#{ctx.release_pr})' in line:
+            commits.append(line)
+    if len(commits) == 0:
+        return ""
+    return commits[0].split(" ")[0]
 
 
 def tag(ctx: TagContext = None) -> TagContext:
