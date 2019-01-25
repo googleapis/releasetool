@@ -124,12 +124,12 @@ def create_release(ctx: TagContext) -> None:
 
 
 def determine_commit_hash(ctx: TagContext) -> str:
-    out, _ = Popen('git log --pretty=oneline', stdout=PIPE, shell=True).communicate()
+    out, _ = Popen("git log --pretty=oneline", stdout=PIPE, shell=True).communicate()
     out = out.decode("utf-8").split("\n")
     for line in out:
-        if '(tag: ' in line:
+        if "(tag: " in line:
             next
-        if f'Release {ctx.package_name}' in line and f'(#{ctx.release_pr})' in line:
+        if f"Release {ctx.package_name}" in line and f"(#{ctx.release_pr})" in line:
             return line.split(" ")[0]
     return ctx.release_pr["merge_commit_sha"]
 
