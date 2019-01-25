@@ -96,7 +96,7 @@ def create_release(ctx: TagContext) -> None:
     ctx.github_release = ctx.github.create_release(
         repository=ctx.upstream_repo,
         tag_name=ctx.release_tag,
-        target_committish=ctx.release_pr["merge_commit_sha"],
+        target_commitish=ctx.release_pr["merge_commit_sha"],
         name=f"google-cloud-{ctx.package_name} {ctx.release_version}",
         body=ctx.release_notes,
     )
