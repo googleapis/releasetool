@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import base64
+import os
 import re
 from typing import Sequence, Union
 
@@ -21,10 +22,11 @@ import requests
 
 _GITHUB_ROOT: str = "https://api.github.com"
 _GITHUB_UI_ROOT: str = "https://github.com"
+_MAGIC_GITHUB_PROXY_ROOT: str = "http://magic-github-proxy.endpoints.devrel-dev.cloud.goog"
 
 
 class GitHub:
-    def __init__(self, token: str) -> None:
+    def __init__(self, token: str, use_proxy: bool = False) -> None:
         self.session: requests.Session = requests.Session()
         self.session.headers.update(
             {
@@ -32,6 +34,35 @@ class GitHub:
                 "Authorization": f"Bearer {token}",
             }
         )
+
+        if use_proxy:
+            # To use the proxy, we need an api key for the magic github proxy.
+            paths = []
+            magic_github_proxy_key = ""
+            if "KOKORO_KEYSTORE_DIR" in os.environ:
+                paths.append(
+                    os.path.join(
+                        os.environ["KOKORO_KEYSTORE_DIR"],
+                        "73713_yoshi-magic-github-proxy-key",
+                    )
+                )
+            if "KOKORO_GFILE_DIR" in os.environ:
+                paths.append(
+                    os.path.join(os.environ["KOKORO_GFILE_DIR"]),
+                    "yoshi-magic-github-proxy-key.txt",
+                )
+
+            for path in paths:
+                if os.path.exists(path):
+                    with open(path, "r", encoding="utf-8") as fh:
+                        magic_github_proxy_key = fh.read.strip()
+                        break
+
+            if magic_github_proxy_key == "":
+                raise Exception("A magic github proxy api key is required.")
+
+            self.session.params["key"] = magic_github_proxy_key
+            self.session.proxies = {_GITHUB_ROOT: _MAGIC_GITHUB_PROXY_ROOT}
 
     def list_pull_requests(
         self, repository: str, state: str = None, merged: bool = True

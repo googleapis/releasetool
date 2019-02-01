@@ -41,13 +41,17 @@ def figure_out_github_token(github_token: str) -> str:
     if "KOKORO_KEYSTORE_DIR" in os.environ:
         paths.append(
             os.path.join(
-                os.environ["KOKORO_KEYSTORE_DIR"], "73713_yoshi-automation-github-key"
+                os.environ["KOKORO_KEYSTORE_DIR"], "73713_yoshi-releasetool-magictoken"
             )
         )
 
     # Second, try gfile resources.
     if "KOKORO_GFILE_DIR" in os.environ:
-        paths.append(os.path.join(os.environ["KOKORO_GFILE_DIR"], "github-token.txt"))
+        paths.append(
+            os.path.join(
+                os.environ["KOKORO_GFILE_DIR"], "yoshi-releasetool-magictoken.txt"
+            )
+        )
 
     for path in paths:
         if os.path.exists(path):
@@ -76,7 +80,7 @@ def start(github_token: str, pr: str) -> None:
         print("No github token or PR specified to report status to, returning.")
         return
 
-    gh = releasetool.github.GitHub(github_token)
+    gh = releasetool.github.GitHub(github_token, use_proxy=True)
 
     try:
         owner, repo, number = extract_pr_details(pr)
@@ -108,7 +112,7 @@ def finish(github_token: str, pr: str, status: bool, details: str) -> None:
         print("No github token or PR specified to report status to, returning.")
         return
 
-    gh = releasetool.github.GitHub(github_token)
+    gh = releasetool.github.GitHub(github_token, use_proxy=True)
 
     try:
         owner, repo, number = extract_pr_details(pr)
