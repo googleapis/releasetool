@@ -161,3 +161,10 @@ class GitHub:
                 return tag["commit"]["sha"]
 
         return None
+
+    def delete_branch(self, repository: str, branch: str):
+        url = f"{_GITHUB_ROOT}/repos/{repository}/git/refs/heads/{branch}"
+        response = self.session.delete(url)
+        response.raise_for_status()
+
+        return None
