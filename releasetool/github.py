@@ -22,7 +22,7 @@ import requests
 
 _GITHUB_ROOT: str = "https://api.github.com"
 _GITHUB_UI_ROOT: str = "https://github.com"
-_MAGIC_GITHUB_PROXY_ROOT: str = "http://magic-github-proxy.endpoints.devrel-dev.cloud.goog"
+_MAGIC_GITHUB_PROXY_ROOT: str = "http://magic-github-proxy.endpoints.devrel-prod.cloud.goog"
 
 
 class GitHub:
