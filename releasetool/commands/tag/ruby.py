@@ -71,7 +71,7 @@ def determine_package_name_and_version(ctx: TagContext) -> None:
     click.secho(
         "> Determining the package name and version from your release tag.", fg="cyan"
     )
-    match = re.match(r"^([a-z-]+)\/v(\d+.\d+.\d+)$", ctx.release_tag)
+    match = re.match(r"^([a-z-_]+)\/v(\d+.\d+.\d+)$", ctx.release_tag)
     ctx.package_name = match.group(1)
     ctx.release_version = match.group(2)
 
@@ -156,5 +156,9 @@ def tag(ctx: TagContext = None) -> TagContext:
 
     if ctx.interactive:
         click.secho(f"\\o/ All done!", fg="magenta")
+
+    branch = ctx.release_pr["head"]["ref"]
+    ctx.github.delete_branch(repository=ctx.upstream_repo, branch=branch)
+    click.secho(f"Deleted branch {branch}")
 
     return ctx
