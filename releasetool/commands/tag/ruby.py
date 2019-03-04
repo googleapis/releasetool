@@ -16,6 +16,7 @@ import getpass
 import re
 
 import click
+from requests import HTTPError
 
 import releasetool.circleci
 import releasetool.git
@@ -158,7 +159,13 @@ def tag(ctx: TagContext = None) -> TagContext:
         click.secho(f"\\o/ All done!", fg="magenta")
 
     branch = ctx.release_pr["head"]["ref"]
-    ctx.github.delete_branch(repository=ctx.upstream_repo, branch=branch)
-    click.secho(f"Deleted branch {branch}")
+
+    try:
+        ctx.github.delete_branch(repository=ctx.upstream_repo, branch=branch)
+        click.secho(f"Deleted branch {branch}")
+    # If user has already deleted the branch, this will fail.
+    except HTTPError as exc:
+        if exc.response.status_code != 422:
+            click.secho(f"{exc!r}")
 
     return ctx
