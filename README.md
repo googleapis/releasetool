@@ -36,7 +36,7 @@ releasetool start
 ```
 This will create a PR.
 
-**If the PR has a `autorelease: pending` tag:**
+**If the PR has a `autorelease: pending` label:**
 
 Upon approval and merging,
 `autorelease` will pick up the PR and run `releasetool tag` and release the
