@@ -34,10 +34,26 @@ cd google-cloud-python
 cd bigquery
 releasetool start
 ```
+This will create a PR.
 
-This will create a PR with a `autorelease: pending` tag. Upon approval and merging,
+**If the PR has a `autorelease: pending` label:**
+
+Upon approval and merging,
 `autorelease` will pick up the PR and run `releasetool tag` and release the
-package to their respective package managers.
+package to their respective package managers. Autorelease will comment on the release PR with the status of the release. [Example PR](https://github.com/googleapis/nodejs-pubsub/pull/521)
+
+**Otherwise:**
+
+Once the PR has been approved and merged, you can run `releasetool tag` from
+anywhere in the repository to tag the commit and start CI.
+
+```
+git fetch origin master
+git checkout origin/master
+releasetool tag
+```
+
+### Resetting the GitHub Token
 
 If you need to change the GitHub API token associated with releasetool, run `releasetool reset-config`. This will delete the existing token. The next time you run `releasetool start` you will be
 prompted to enter a new token.
