@@ -79,7 +79,7 @@ def determine_package_name_and_version(ctx: TagContext) -> None:
 
 def get_release_notes(ctx: TagContext) -> None:
     click.secho("> Grabbing the release notes.", fg="cyan")
-    if ctx.upstream_repo == ctx.package_name:
+    if ctx.package_name in ctx.upstream_repo:
         changelog_file = "CHANGELOG.md"
     else:
         changelog_file = f"{ctx.package_name}/CHANGELOG.md"
@@ -152,7 +152,7 @@ def tag(ctx: TagContext = None) -> TagContext:
     create_release(ctx)
 
     job_name = ctx.package_name.split("google-cloud-")[-1]
-    if ctx.upstream_repo == ctx.package_name:
+    if ctx.package_name in ctx.upstream_repo:
         ctx.kokoro_job_name = (
             f"cloud-devrel/client-libraries/{ctx.package_name}/release"
         )
