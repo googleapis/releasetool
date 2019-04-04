@@ -4,6 +4,24 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+## 2019.04.04
+
+04-04-2019 12:52 PDT
+
+
+### Implementation Changes
+- Make setup.py update robust to different quote marks ([#175](https://github.com/googleapis/releasetool/pull/175))
+- handle errors in delete branch ([#169](https://github.com/googleapis/releasetool/pull/169))
+- Ruby delete branch ([#163](https://github.com/googleapis/releasetool/pull/163))
+- Allow underscores in package name ([#162](https://github.com/googleapis/releasetool/pull/162))
+
+### New Features
+- [RUBY] support non-google-cloud repos ([#173](https://github.com/googleapis/releasetool/pull/173))
+
+### Documentation
+- Re-add manual `releasetool tag` instructions ([#172](https://github.com/googleapis/releasetool/pull/172))
+- Update releasetool tag instructions ([#171](https://github.com/googleapis/releasetool/pull/171))
+
 ## 2019.01.25
 
 01-25-2019 15:24 PST
