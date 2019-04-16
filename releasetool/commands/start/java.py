@@ -37,6 +37,7 @@ VERSION_REPLACEMENT_FILENAMES = {
     "README.md": True,
     "pom.xml": True,
     "build.gradle": True,
+    "dependencies.properties": True,
 }
 
 
@@ -182,7 +183,7 @@ def update_versions(ctx: Context) -> None:
 
 def replace_versions(ctx: Context) -> None:
     """Replaces version strings in source and build files"""
-    if click.confirm("Update versions in pom.xml files?", default=True):
+    if click.confirm("Update versions in source and build files?", default=True):
         updated_files = []
         for root, _, files in os.walk("."):
             for filename in files:
