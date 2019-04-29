@@ -67,7 +67,7 @@ def _detect_language():
     if os.path.exists("package.json"):
         return "nodejs"
     elif os.path.exists("setup.py"):
-        if os.path.exists("google"):
+        if os.path.exists("google") or os.path.exists("src/google"):
             return "python"
         else:
             return "python-tool"
