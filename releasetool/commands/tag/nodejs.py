@@ -81,7 +81,7 @@ def get_release_notes(ctx: TagContext) -> None:
         ctx.upstream_repo, "CHANGELOG.md", ref=ctx.release_pr["merge_commit_sha"]
     ).decode("utf-8")
 
-    ctx.release_notes = _get_latest_release_notes(ctx, changelog)
+    _get_latest_release_notes(ctx, changelog)
 
 
 def _get_latest_release_notes(ctx: TagContext, changelog: str):
