@@ -87,9 +87,9 @@ All notable changes to this project will be documented in this file. See [standa
 
 def test_old_style_release_notes():
     """
-  Our old CHANGELOG template does not make the version header a link and
-  always uses H2 headers.
-  """
+    Our old CHANGELOG template does not make the version header a link and
+    always uses H2 headers.
+    """
     expected = """03-13-2019 16:30 PDT
 
 ### Bug Fixes
@@ -101,9 +101,9 @@ def test_old_style_release_notes():
 
 def test_new_style_release_notes_patch():
     """
-  In the conventional-commits template (see: https://github.com/conventional-changelog/conventional-changelog),
-  patches are an H3 header and are linked to the underlying issue that created the release.
-  """
+    In the conventional-commits template (see: https://github.com/conventional-changelog/conventional-changelog),
+    patches are an H3 header and are linked to the underlying issue that created the release.
+    """
     expected = """### Bug Fixes
 
 * include 'x-goog-request-params' header in requests ([#167](https://www.github.com/googleapis/nodejs-os-login/issues/167)) ([074051d](https://www.github.com/googleapis/nodejs-os-login/commit/074051d))"""
@@ -114,8 +114,8 @@ def test_new_style_release_notes_patch():
 
 def test_new_style_release_notes_breaking():
     """
-  in the conventional-commits template, features/breaking-changes use an H2 header.
-  """
+    in the conventional-commits template, features/breaking-changes use an H2 header.
+    """
     expected = """### Features
 
 * added the most amazing feature ever ([42f90e2](https://www.github.com/bcoe/examples-conventional-commits/commit/42f90e2))
