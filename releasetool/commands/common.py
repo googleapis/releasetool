@@ -79,7 +79,8 @@ def _determine_upstream(ctx: GitHubContext, owners: Tuple[str, ...]) -> None:
                 f"\n\n{options}\n\n"
                 f"Please enter the *name* of one you want to use",
                 fg="yellow",
-            )
+            ),
+            default="origin",
         )
         try:
             upstream = choice, repos[choice]
