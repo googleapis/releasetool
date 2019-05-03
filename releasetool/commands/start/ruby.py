@@ -88,14 +88,16 @@ def determine_last_release(ctx: Context) -> None:
 def gather_changes(ctx: Context) -> None:
     click.secho(f"> Gathering changes since {ctx.last_release_version}", fg="cyan")
     ctx.changes = releasetool.git.summary_log(
-        from_=ctx.last_release_committish, to=f"{ctx.upstream_name}/master"
+        from_=ctx.last_release_committish,
+        to=f"{ctx.upstream_name}/master",
+        format="%s%n%b%n",
     )
     click.secho(f"Cool, {len(ctx.changes)} changes found.")
 
 
 def edit_release_notes(ctx: Context) -> None:
     click.secho(f"> Opening your editor to finalize release notes.", fg="cyan")
-    release_notes = "\n".join(f"* {change.strip()}" for change in set(ctx.changes))
+    release_notes = "\n".join(change.strip() for change in ctx.changes)
     ctx.release_notes = releasetool.filehelpers.open_editor_with_tempfile(
         release_notes, "release-notes.md"
     ).strip()
@@ -200,11 +202,20 @@ def create_release_pr(ctx: Context, autorelease: bool = True) -> None:
     else:
         head = f"{ctx.origin_user}:{ctx.release_branch}"
 
+    log = releasetool.git.log(
+        from_=ctx.last_release_committish, to=f"{ctx.upstream_name}/master"
+    )
+    log_html = f"<details><summary>Commits since previous release</summary><pre><code>{log}</code></pre></details>"
+    diff = releasetool.git.diff(
+        from_=ctx.last_release_committish, to=f"{ctx.upstream_name}/master"
+    )
+    diff_html = f"<details><summary>Code changes since previous release</summary>\n\n```diff\n{diff}\n```\n\n</details>"
+
     ctx.pull_request = ctx.github.create_pull_request(
         ctx.upstream_repo,
         head=head,
         title=f"Release {ctx.package_name} {ctx.release_version}",
-        body=f"{ctx.release_notes}\n\nThis pull request was generated using releasetool.",
+        body=f"{ctx.release_notes}\n\n{log_html}\n\n{diff_html}\n\nThis pull request was generated using releasetool.",
     )
 
     if autorelease:

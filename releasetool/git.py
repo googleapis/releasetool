@@ -34,12 +34,26 @@ def get_latest_commit(branch: str) -> str:
     return commit
 
 
-def summary_log(from_: str, to: str = "master", where: str = ".") -> Sequence[str]:
+def summary_log(
+    from_: str, to: str = "master", where: str = ".", format: str = "%s"
+) -> Sequence[str]:
     output = subprocess.check_output(
-        ["git", "log", "--format=%s", f"{from_}..{to}", where]
+        ["git", "log", f"--format={format}", f"{from_}..{to}", where]
     ).decode("utf-8")
     commits = output.strip().split("\n")
     return commits
+
+
+def log(from_: str, to: str = "master", where: str = ".") -> Sequence[str]:
+    return subprocess.check_output(["git", "log", f"{from_}..{to}", where]).decode(
+        "utf-8"
+    )
+
+
+def diff(from_: str, to: str = "master", where: str = ".") -> Sequence[str]:
+    return subprocess.check_output(
+        ["git", "diff", f"{from_}..{to}", "--", where]
+    ).decode("utf-8")
 
 
 def checkout_create_branch(branch_name: str, base: str = "master") -> None:
