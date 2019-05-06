@@ -60,6 +60,10 @@ def checkout_create_branch(branch_name: str, base: str = "master") -> None:
     subprocess.check_output(["git", "checkout", "-b", branch_name, base])
 
 
+def checkout_branch(branch_name: str) -> None:
+    subprocess.check_output(["git", "checkout", branch_name])
+
+
 def commit(files: Sequence[str], message: str) -> None:
     """Create a release commit."""
     subprocess.check_output(["git", "add"] + list(files))
