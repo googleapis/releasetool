@@ -4,6 +4,20 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+## 2019.05.02
+
+05-02-2019 12:40 PDT
+
+
+### Implementation Changes
+- Fix ruby start#determine_last_release. ([#184](https://github.com/googleapis/releasetool/pull/184))
+- ctx is populated by reference. ([#183](https://github.com/googleapis/releasetool/pull/183))
+- Detect language python when a directory src/google exists. ([#180](https://github.com/googleapis/releasetool/pull/180))
+
+### New Features
+- Java: support updating dependencies.properties. ([#178](https://github.com/googleapis/releasetool/pull/178))
+- Add support for conventionalcommits.org CHANGELOG template. ([#181](https://github.com/googleapis/releasetool/pull/181))
+
 ## 2019.04.04
 
 04-04-2019 12:52 PDT
