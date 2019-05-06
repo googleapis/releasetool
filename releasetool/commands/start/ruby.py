@@ -215,6 +215,11 @@ def create_release_pr(ctx: Context, autorelease: bool = True) -> None:
     click.secho(f"Pull request is at {ctx.pull_request['html_url']}.")
 
 
+def checkout_master() -> None:
+    click.secho("> Checkout master branch.", fg="cyan")
+    releasetool.git.checkout_branch("master")
+
+
 def start() -> None:
     ctx = Context()
 
@@ -234,5 +239,6 @@ def start() -> None:
     push_release_branch(ctx)
     # TODO: Confirm?
     create_release_pr(ctx)
+    checkout_master()
 
     click.secho(f"\\o/ All done!", fg="magenta")
