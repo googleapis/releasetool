@@ -152,7 +152,7 @@ def tag(ctx: TagContext = None) -> TagContext:
     create_release(ctx)
 
     job_name = ctx.package_name.split("google-cloud-")[-1]
-    if ctx.package_name in ctx.upstream_repo:
+    if f"{ctx.origin_user}/{ctx.package_name}" == ctx.upstream_repo:
         ctx.kokoro_job_name = (
             f"cloud-devrel/client-libraries/{ctx.package_name}/release"
         )
