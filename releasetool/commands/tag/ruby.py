@@ -79,7 +79,7 @@ def determine_package_name_and_version(ctx: TagContext) -> None:
 
 def get_release_notes(ctx: TagContext) -> None:
     click.secho("> Grabbing the release notes.", fg="cyan")
-    if ctx.package_name in ctx.upstream_repo:
+    if f"{ctx.origin_user}/{ctx.package_name}" == ctx.upstream_repo:
         changelog_file = "CHANGELOG.md"
     else:
         changelog_file = f"{ctx.package_name}/CHANGELOG.md"
