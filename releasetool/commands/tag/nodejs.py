@@ -89,7 +89,7 @@ def _get_latest_release_notes(ctx: TagContext, changelog: str):
     # used in automated CHANGELOG generation:
     version = re.sub(r"^v", "", ctx.release_version)
     match = re.search(
-        rf"## v?\[?{version}[^\n]*\n(?P<notes>.+?)(\n##\s|\Z)",
+        rf"## v?\[?{version}[^\n]*\n(?P<notes>.+?)(\n##\s|\n### \[?[0-9]+\.|\Z)",
         changelog,
         re.DOTALL | re.MULTILINE,
     )
