@@ -15,14 +15,43 @@
 import base64
 import os
 import re
-from typing import Sequence, Union
+from typing import List, Sequence, Union
 
 import requests
 
 
 _GITHUB_ROOT: str = "https://api.github.com"
 _GITHUB_UI_ROOT: str = "https://github.com"
-_MAGIC_GITHUB_PROXY_ROOT: str = "http://magic-github-proxy.endpoints.devrel-prod.cloud.goog"
+_MAGIC_GITHUB_PROXY_ROOT: str = "https://magic-github-proxy.endpoints.devrel-prod.cloud.goog"
+
+
+def _find_devrel_api_key() -> str:
+    paths: List[str] = []
+    magic_github_proxy_key: str = ""
+    if "KOKORO_KEYSTORE_DIR" in os.environ:
+        paths.append(
+            os.path.join(
+                os.environ["KOKORO_KEYSTORE_DIR"], "73713_yoshi-magic-github-proxy-key"
+            )
+        )
+
+    if "KOKORO_GFILE_DIR" in os.environ:
+        paths.append(
+            os.path.join(
+                os.environ["KOKORO_GFILE_DIR"], "yoshi-magic-github-proxy-key.txt"
+            )
+        )
+
+    for path in paths:
+        if os.path.exists(path):
+            with open(path, "r", encoding="utf-8") as fh:
+                magic_github_proxy_key = fh.read().strip()
+                break
+
+    if magic_github_proxy_key == "":
+        raise Exception("A magic github proxy api key is required.")
+
+    return magic_github_proxy_key
 
 
 class GitHub:
@@ -38,36 +67,8 @@ class GitHub:
 
         if use_proxy:
             self.GITHUB_ROOT = _MAGIC_GITHUB_PROXY_ROOT
-
             # To use the proxy, we need an api key for the magic github proxy.
-            paths = []
-            magic_github_proxy_key = ""
-            if "KOKORO_KEYSTORE_DIR" in os.environ:
-                paths.append(
-                    os.path.join(
-                        os.environ["KOKORO_KEYSTORE_DIR"],
-                        "73713_yoshi-magic-github-proxy-key",
-                    )
-                )
-
-            if "KOKORO_GFILE_DIR" in os.environ:
-                paths.append(
-                    os.path.join(
-                        os.environ["KOKORO_GFILE_DIR"],
-                        "yoshi-magic-github-proxy-key.txt",
-                    )
-                )
-
-            for path in paths:
-                if os.path.exists(path):
-                    with open(path, "r", encoding="utf-8") as fh:
-                        magic_github_proxy_key = fh.read().strip()
-                        break
-
-            if magic_github_proxy_key == "":
-                raise Exception("A magic github proxy api key is required.")
-
-            self.session.params["key"] = magic_github_proxy_key
+            self.session.params = {"key": _find_devrel_api_key()}
 
     def list_pull_requests(
         self, repository: str, state: str = None, merged: bool = True
