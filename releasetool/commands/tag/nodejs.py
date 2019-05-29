@@ -81,8 +81,15 @@ def get_release_notes(ctx: TagContext) -> None:
         ctx.upstream_repo, "CHANGELOG.md", ref=ctx.release_pr["merge_commit_sha"]
     ).decode("utf-8")
 
+    _get_latest_release_notes(ctx, changelog)
+
+
+def _get_latest_release_notes(ctx: TagContext, changelog: str):
+    # the 'v' prefix is not used in the conventional-changelog templates
+    # used in automated CHANGELOG generation:
+    version = re.sub(r"^v", "", ctx.release_version)
     match = re.search(
-        rf"## {ctx.release_version}\n(?P<notes>.+?)(\n##\s|\Z)",
+        rf"## v?\[?{version}[^\n]*\n(?P<notes>.+?)(\n##\s|\n### \[?[0-9]+\.|\Z)",
         changelog,
         re.DOTALL | re.MULTILINE,
     )

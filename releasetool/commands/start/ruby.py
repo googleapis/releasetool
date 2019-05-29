@@ -17,6 +17,7 @@ import getpass
 import os
 import textwrap
 from typing import Optional
+from typing import Sequence
 
 import attr
 import click
@@ -42,6 +43,7 @@ _CHANGELOG_TEMPLATE = """\
 
 @attr.s(auto_attribs=True, slots=True)
 class Context(releasetool.commands.common.GitHubContext):
+    tags: Optional[Sequence[str]] = None
     last_release_version: Optional[str] = None
     last_release_committish: Optional[str] = None
     release_version: Optional[str] = None
@@ -56,16 +58,19 @@ def determine_package_name(ctx: Context) -> None:
     click.secho(f"Looks like we're releasing {ctx.package_name}.")
 
 
-def determine_last_release(ctx: Context) -> None:
+def gather_tags(ctx: Context) -> None:
     click.secho("> Figuring out what the last release was.", fg="cyan")
-    tags = releasetool.git.list_tags()
-    candidates = [tag for tag in tags if tag.startswith(ctx.package_name)]
+    ctx.tags = releasetool.git.list_tags()
+
+
+def determine_last_release(ctx: Context) -> None:
+    candidates = [tag for tag in ctx.tags if tag.startswith(ctx.package_name + "/")]
     if candidates and "google-cloud" in candidates[0]:
         ctx.last_release_committish = candidates[0]
         ctx.last_release_version = candidates[0].rsplit("/").pop().lstrip("v")
-    elif ("google-cloud" not in ctx.package_name) and tags:
-        ctx.last_release_committish = tags[0]
-        ctx.last_release_version = tags[0].rsplit("/")[-1].lstrip("v")
+    elif ("google-cloud" not in ctx.package_name) and ctx.tags:
+        ctx.last_release_committish = ctx.tags[0]
+        ctx.last_release_version = ctx.tags[0].rsplit("/")[-1].lstrip("v")
     else:
         click.secho(
             f"I couldn't figure out the last release for {ctx.package_name}, "
@@ -76,20 +81,23 @@ def determine_last_release(ctx: Context) -> None:
         ctx.last_release_committish = click.prompt("Committish")
         ctx.last_release_version = "0.0.0"
 
-    click.secho(f"The last release was {ctx.last_release_version}.")
+    click.secho(f"The last_release committish was {ctx.last_release_committish}")
+    click.secho(f"The last release version was {ctx.last_release_version}")
 
 
 def gather_changes(ctx: Context) -> None:
     click.secho(f"> Gathering changes since {ctx.last_release_version}", fg="cyan")
     ctx.changes = releasetool.git.summary_log(
-        from_=ctx.last_release_committish, to=f"{ctx.upstream_name}/master"
+        from_=ctx.last_release_committish,
+        to=f"{ctx.upstream_name}/master",
+        format="%s%n%b%n",
     )
     click.secho(f"Cool, {len(ctx.changes)} changes found.")
 
 
 def edit_release_notes(ctx: Context) -> None:
     click.secho(f"> Opening your editor to finalize release notes.", fg="cyan")
-    release_notes = "\n".join(f"* {change.strip()}" for change in set(ctx.changes))
+    release_notes = "\n".join(change.strip() for change in ctx.changes)
     ctx.release_notes = releasetool.filehelpers.open_editor_with_tempfile(
         release_notes, "release-notes.md"
     ).strip()
@@ -194,11 +202,20 @@ def create_release_pr(ctx: Context, autorelease: bool = True) -> None:
     else:
         head = f"{ctx.origin_user}:{ctx.release_branch}"
 
+    log = releasetool.git.log(
+        from_=ctx.last_release_committish, to=f"{ctx.upstream_name}/master"
+    )
+    log_html = f"<details><summary>Commits since previous release</summary><pre><code>{log}</code></pre></details>"
+    diff = releasetool.git.diff(
+        from_=ctx.last_release_committish, to=f"{ctx.upstream_name}/master"
+    )
+    diff_html = f"<details><summary>Code changes since previous release</summary>\n\n```diff\n{diff}\n```\n\n</details>"
+
     ctx.pull_request = ctx.github.create_pull_request(
         ctx.upstream_repo,
         head=head,
         title=f"Release {ctx.package_name} {ctx.release_version}",
-        body=f"{ctx.release_notes}\n\nThis pull request was generated using releasetool.",
+        body=f"{ctx.release_notes}\n\n{log_html}\n\n{diff_html}\n\nThis pull request was generated using releasetool.",
     )
 
     if autorelease:
@@ -209,6 +226,11 @@ def create_release_pr(ctx: Context, autorelease: bool = True) -> None:
     click.secho(f"Pull request is at {ctx.pull_request['html_url']}.")
 
 
+def checkout_master() -> None:
+    click.secho("> Checkout master branch.", fg="cyan")
+    releasetool.git.checkout_branch("master")
+
+
 def start() -> None:
     ctx = Context()
 
@@ -216,6 +238,7 @@ def start() -> None:
 
     releasetool.commands.common.setup_github_context(ctx)
     determine_package_name(ctx)
+    gather_tags(ctx)
     determine_last_release(ctx)
     gather_changes(ctx)
     edit_release_notes(ctx)
@@ -227,5 +250,6 @@ def start() -> None:
     push_release_branch(ctx)
     # TODO: Confirm?
     create_release_pr(ctx)
+    checkout_master()
 
     click.secho(f"\\o/ All done!", fg="magenta")
