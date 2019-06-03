@@ -155,6 +155,12 @@ def determine_release_type(ctx: Context) -> None:
 
 def determine_source_branch(ctx: Context) -> None:
     ctx.source_branch = releasetool.git.current_branch()
+    # warn if not on master
+    if ctx.source_branch != "master":
+        click.secho(
+            f"WARNING: you are not on master - the release will target {ctx.source_branch}!",
+            fg="red",
+        )
 
 
 def read_versions(ctx: Context) -> None:
