@@ -77,6 +77,8 @@ class Version:
         elif bump_type == "snapshot":
             self.bump_patch()
             self.set_snapshot(True)
+        elif bump_type == "none":
+            pass
         else:
             raise ValueError("invalid bump_type: {}".format(bump_type))
 
@@ -122,8 +124,9 @@ class ArtifactVersions:
         self.current.set_snapshot(True)
 
     def next_release(self, bump_type=str) -> None:
-        self.released.bump(bump_type)
-        self.current = copy.deepcopy(self.released)
+        if bump_type != "none":
+            self.released.bump(bump_type)
+            self.current = copy.deepcopy(self.released)
 
     def __str__(self) -> str:
         return "{}:{}:{}".format(self.module, self.released, self.current)
@@ -143,8 +146,8 @@ class Context(releasetool.commands.common.GitHubContext):
 
 def determine_release_type(ctx: Context) -> None:
     ctx.release_type = click.prompt(
-        "What type of release is this? (minor|patch|snapshot)",
-        type=click.Choice(["minor", "patch", "snapshot"]),
+        "What type of release is this? (minor|patch|snapshot|none)",
+        type=click.Choice(["minor", "patch", "snapshot", "none"]),
         default="minor",
     )
 
