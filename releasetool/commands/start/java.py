@@ -313,7 +313,9 @@ def create_release_branch(ctx: Context) -> None:
     if click.confirm("Create release branch?", default=True):
         ctx.release_branch = f"release-{ctx.package_name}-v{ctx.release_version}"
         click.secho(f"> Creating branch {ctx.release_branch}", fg="cyan")
-        releasetool.git.checkout_create_branch(ctx.release_branch, base=ctx.source_branch)
+        releasetool.git.checkout_create_branch(
+            ctx.release_branch, base=ctx.source_branch
+        )
 
         click.secho("> Committing changes", fg="cyan")
         message = (
