@@ -285,7 +285,10 @@ def determine_last_release(ctx: Context) -> None:
 
 
 def gather_changes(ctx: Context) -> None:
-    click.secho(f"> Gathering changes since {ctx.last_release_version}", fg="cyan")
+    click.secho(
+        f"> Gathering changes since {ctx.last_release_version} in {ctx.source_branch}",
+        fg="cyan",
+    )
     ctx.changes = releasetool.git.summary_log(
         from_=ctx.last_release_committish, to=f"{ctx.upstream_name}/{ctx.source_branch}"
     )
@@ -334,7 +337,9 @@ def create_release_branch(ctx: Context) -> None:
 def create_release_pr(ctx: Context) -> None:
     """Create a release pull request with notes"""
     if ctx.release_branch is not None and click.confirm("Create PR?", default=True):
-        click.secho(f"> Creating release pull request.", fg="cyan")
+        click.secho(
+            f"> Creating release pull request to {ctx.source_branch}.", fg="cyan"
+        )
 
         if ctx.upstream_repo == ctx.origin_repo:
             head = ctx.release_branch
