@@ -121,3 +121,9 @@ def get_github_remotes() -> Dict[str, str]:
             continue
 
     return github_repos
+
+def current_branch() -> str:
+    """Returns the name of the current working branch."""
+    return subprocess.check_output(["git", "rev-parse", "--abbrev-ref", "HEAD"]).strip().decode(
+        "utf-8"
+    )

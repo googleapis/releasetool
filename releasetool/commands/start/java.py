@@ -136,6 +136,7 @@ class ArtifactVersions:
 class Context(releasetool.commands.common.GitHubContext):
     last_release_version: Optional[str] = None
     last_release_committish: Optional[str] = None
+    source_branch: Optional[str] = None
     release_version: Optional[str] = None
     release_branch: Optional[str] = None
     release_type: str = None
@@ -150,6 +151,10 @@ def determine_release_type(ctx: Context) -> None:
         type=click.Choice(["minor", "patch", "snapshot", "none"]),
         default="minor",
     )
+
+
+def determine_source_branch(ctx: Context) -> None:
+    ctx.source_branch = releasetool.git.current_branch()
 
 
 def read_versions(ctx: Context) -> None:
@@ -282,7 +287,7 @@ def determine_last_release(ctx: Context) -> None:
 def gather_changes(ctx: Context) -> None:
     click.secho(f"> Gathering changes since {ctx.last_release_version}", fg="cyan")
     ctx.changes = releasetool.git.summary_log(
-        from_=ctx.last_release_committish, to=f"{ctx.upstream_name}/master"
+        from_=ctx.last_release_committish, to=f"{ctx.upstream_name}/{ctx.source_branch}"
     )
     ctx.changes = [
         ctx.github.link_pull_request(c, ctx.upstream_repo) for c in ctx.changes
@@ -308,7 +313,7 @@ def create_release_branch(ctx: Context) -> None:
     if click.confirm("Create release branch?", default=True):
         ctx.release_branch = f"release-{ctx.package_name}-v{ctx.release_version}"
         click.secho(f"> Creating branch {ctx.release_branch}", fg="cyan")
-        releasetool.git.checkout_create_branch(ctx.release_branch)
+        releasetool.git.checkout_create_branch(ctx.release_branch, base=ctx.source_branch)
 
         click.secho("> Committing changes", fg="cyan")
         message = (
@@ -345,7 +350,7 @@ def create_release_pr(ctx: Context) -> None:
         )
 
         ctx.pull_request = ctx.github.create_pull_request(
-            ctx.upstream_repo, head=head, title=title, body=body
+            ctx.upstream_repo, head=head, title=title, body=body, base=ctx.source_branch
         )
         click.secho(f"Pull request is at {ctx.pull_request['html_url']}.")
 
@@ -358,6 +363,7 @@ def start() -> None:
     releasetool.commands.common.setup_github_context(ctx)
     determine_package_name(ctx)
     determine_release_type(ctx)
+    determine_source_branch(ctx)
 
     # version management in code
     read_versions(ctx)
