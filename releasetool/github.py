@@ -89,7 +89,12 @@ class GitHub:
         return response.json()
 
     def create_pull_request(
-        self, repository: str, head: str, title: str, body: str = None
+        self,
+        repository: str,
+        head: str,
+        title: str,
+        body: str = None,
+        base: str = "master",
     ) -> dict:
         url = f"{self.GITHUB_ROOT}/repos/{repository}/pulls"
         response = self.session.post(
@@ -98,7 +103,7 @@ class GitHub:
                 "title": title,
                 "body": body,
                 "head": head,
-                "base": "master",
+                "base": base,
                 "maintainer_can_modify": True,
             },
         )
