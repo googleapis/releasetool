@@ -68,6 +68,7 @@ class GitHub:
         if use_proxy:
             self.GITHUB_ROOT = _MAGIC_GITHUB_PROXY_ROOT
             # To use the proxy, we need an api key for the magic github proxy.
+            self.session.headers['Authorization'] = token
             self.session.params = {"key": _find_devrel_api_key()}
 
     def list_pull_requests(
