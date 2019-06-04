@@ -31,7 +31,7 @@ def _find_devrel_api_key() -> str:
     if "KOKORO_KEYSTORE_DIR" in os.environ:
         paths.append(
             os.path.join(
-                os.environ["KOKORO_KEYSTORE_DIR"], "73713_yoshi-magic-github-proxy-key"
+                os.environ["KOKORO_KEYSTORE_DIR"], "73713_magic-github-proxy-api-key"
             )
         )
 
