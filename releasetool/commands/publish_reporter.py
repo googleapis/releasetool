@@ -41,7 +41,7 @@ def figure_out_github_token(github_token: str) -> str:
     if "KOKORO_KEYSTORE_DIR" in os.environ:
         paths.append(
             os.path.join(
-                os.environ["KOKORO_KEYSTORE_DIR"], "73713_yoshi-releasetool-magictoken"
+                os.environ["KOKORO_KEYSTORE_DIR"], "73713_releasetool-magictoken"
             )
         )
 
