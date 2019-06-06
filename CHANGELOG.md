@@ -4,6 +4,16 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+## 2019.06.06.1
+
+06-06-2019 15:22 PDT
+
+
+### Implementation Changes
+- Enable autorelease for all java projects ([#202](https://github.com/googleapis/releasetool/pull/202))
+- fix: update key name of releasetool magictoken ([#201](https://github.com/googleapis/releasetool/pull/201))
+- Java: add prompt for autorelease when creating PR ([#200](https://github.com/googleapis/releasetool/pull/200))
+
 ## 2019.06.06
 
 06-06-2019 09:50 PDT
