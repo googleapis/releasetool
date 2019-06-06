@@ -103,6 +103,15 @@ def create_release(ctx: TagContext) -> None:
         ctx.upstream_repo, ctx.release_pr["number"], release_location_string
     )
 
+    repo_short_name = ctx.upstream_repo.split("/")[-1]
+    ctx.kokoro_job_name = (
+        f"cloud-devrel/client-libraries/java/{repo_short_name}/release/stage"
+    )
+    ctx.github.update_pull_labels(
+        ctx.release_pr, add=["autorelease: tagged"], remove=["autorelease: pending"]
+    )
+    releasetool.commands.common.publish_via_kokoro(ctx)
+
 
 def tag(ctx: TagContext = None) -> TagContext:
     if not ctx:
@@ -127,18 +136,6 @@ def tag(ctx: TagContext = None) -> TagContext:
 
     get_release_notes(ctx)
     create_release(ctx)
-
-    # Only enable release job triggering on google-auth-library-java for now.
-    if ctx.upstream_repo == "googleapis/google-auth-library-java":
-        ctx.kokoro_job_name = (
-            "cloud-devrel/client-libraries/java/google-auth-library-java/release/stage"
-        )
-        # TODO: Move to create_release once autorelease is enabled for all
-        # java repositories
-        ctx.github.update_pull_labels(
-            ctx.release_pr, add=["autorelease: tagged"], remove=["autorelease: pending"]
-        )
-        releasetool.commands.common.publish_via_kokoro(ctx)
 
     if ctx.interactive:
         click.secho(f"\\o/ All done!", fg="magenta")
