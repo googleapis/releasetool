@@ -366,7 +366,9 @@ def create_release_pr(ctx: Context) -> None:
             ctx.upstream_repo, head=head, title=title, body=body, base=ctx.source_branch
         )
 
-        if click.confirm("Autorelease?", default=False):
+        if ctx.release_type != "snapshot" and click.confirm(
+            "Autorelease?", default=True
+        ):
             ctx.github.add_issue_labels(
                 ctx.upstream_repo, ctx.pull_request["number"], ["autorelease: pending"]
             )
