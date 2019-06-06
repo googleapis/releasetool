@@ -16,7 +16,7 @@ import setuptools
 
 name = 'gcp-releasetool'
 description = ''
-version = '2019.06.06'
+version = '2019.06.06.1'
 release_status = 'Development Status :: 3 - Alpha'
 dependencies = [
     "requests",
