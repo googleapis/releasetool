@@ -365,6 +365,12 @@ def create_release_pr(ctx: Context) -> None:
         ctx.pull_request = ctx.github.create_pull_request(
             ctx.upstream_repo, head=head, title=title, body=body, base=ctx.source_branch
         )
+
+        if click.confirm("Autorelease?", default=False):
+            ctx.github.add_issue_labels(
+                ctx.upstream_repo, ctx.pull_request["number"], ["autorelease: pending"]
+            )
+
         click.secho(f"Pull request is at {ctx.pull_request['html_url']}.")
 
 
