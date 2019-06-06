@@ -4,6 +4,25 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+## 2019.06.06
+
+06-06-2019 09:50 PDT
+
+
+### Implementation Changes
+- fix: release extraction regex was not handling patch releases properly ([#193](https://github.com/googleapis/releasetool/pull/193))
+- Fix changelog detection for Ruby. ([#192](https://github.com/googleapis/releasetool/pull/192))
+- fix: Ruby tagging for google-cloud package ([#190](https://github.com/googleapis/releasetool/pull/190))
+- ruby: Update start create_release_pr() ([#186](https://github.com/googleapis/releasetool/pull/186))
+- Update releasetool.commands.common.setup_github_context ([#188](https://github.com/googleapis/releasetool/pull/188))
+- ruby: Add checkout_master() to finish of start ([#187](https://github.com/googleapis/releasetool/pull/187))
+- Fix incorrect path to magic github proxy api key. ([#197](https://github.com/googleapis/releasetool/pull/197))
+- Use magic github proxy for releasetool reporter ([#166](https://github.com/googleapis/releasetool/pull/166))
+
+### New Features
+- Java: detect current working branch to use for release ([#196](https://github.com/googleapis/releasetool/pull/196))
+- Allow user to specify no version bump so you can just run the version replace ([#194](https://github.com/googleapis/releasetool/pull/194))
+
 ## 2019.05.02
 
 05-02-2019 12:40 PDT
