@@ -53,6 +53,11 @@ git checkout origin/master
 releasetool tag
 ```
 
+## Authenticating
+
+When first running `releasetool` you will be prompted for a GitHub token. Make
+sure that the token provided has `write:repo_hook` and `public_repo` scopes.
+
 ### Resetting the GitHub Token
 
 If you need to change the GitHub API token associated with releasetool, run `releasetool reset-config`. This will delete the existing token. The next time you run `releasetool start` you will be
