@@ -4,6 +4,22 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+## 2019.06.13
+
+06-13-2019 15:48 PDT
+
+- docs: add section to README about auth ([#206](https://github.com/GoogleCloudPlatform/releasetool/pull/206))
+
+### Implementation Changes
+
+### New Features
+
+### Dependencies
+
+### Documentation
+
+### Internal / Testing Changes
+
 ## 2019.06.06.1
 
 06-06-2019 15:41 PDT
