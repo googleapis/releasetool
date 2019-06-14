@@ -65,7 +65,7 @@ def gather_tags(ctx: Context) -> None:
 
 def determine_last_release(ctx: Context) -> None:
     candidates = [tag for tag in ctx.tags if tag.startswith(ctx.package_name + "/")]
-    if candidates and "google-cloud" in candidates[0]:
+    if candidates and ctx.package_name in candidates[0]:
         ctx.last_release_committish = candidates[0]
         ctx.last_release_version = candidates[0].rsplit("/").pop().lstrip("v")
     elif ("google-cloud" not in ctx.package_name) and ctx.tags:
