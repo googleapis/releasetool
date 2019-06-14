@@ -4,6 +4,17 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+## 2019.06.14
+
+06-14-2019 09:09 PDT
+
+
+### Implementation Changes
+- fix: fix last release detection for non-cloud packages in Ruby ([#208](https://github.com/googleapis/releasetool/pull/208))
+
+### Documentation
+- docs: add section to README about auth ([#206](https://github.com/googleapis/releasetool/pull/206))
+
 ## 2019.06.06.1
 
 06-06-2019 15:41 PDT
