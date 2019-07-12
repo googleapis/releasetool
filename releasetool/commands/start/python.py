@@ -15,7 +15,7 @@
 import getpass
 import os
 import textwrap
-from typing import List, Optional
+from typing import Optional, Sequence
 
 import attr
 import click
@@ -52,7 +52,7 @@ def determine_package_name(ctx: Context) -> None:
     click.secho(f"Looks like we're releasing {ctx.package_name}.")
 
 
-def find_last_release_tag(tags: List[str], package_name: str) -> Optional[str]:
+def find_last_release_tag(tags: Sequence[str], package_name: str) -> Optional[str]:
     package_names = [package_name, package_name.replace("_", "-")]
     candidates = [tag for tag in tags if tag.rsplit("-")[0] in package_names]
 
