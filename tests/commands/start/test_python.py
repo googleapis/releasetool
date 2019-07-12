@@ -85,15 +85,7 @@ def test_update_setup_py_sets_version(
             "bigquery",
             "bigquery-1.3.0",
         ),
-        (
-            [
-                "mypackage-1.0.0",
-                "bonustag",
-                "mypackage-0.9.0",
-            ],
-            "myotherpackage",
-            None,
-        )
+        (["mypackage-1.0.0", "bonustag", "mypackage-0.9.0"], "myotherpackage", None),
     ],
 )
 def find_last_release_tag(mut, tags, package_name, expected):
