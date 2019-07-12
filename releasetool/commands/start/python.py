@@ -15,7 +15,7 @@
 import getpass
 import os
 import textwrap
-from typing import Optional
+from typing import List, Optional
 
 import attr
 import click
@@ -52,21 +52,23 @@ def determine_package_name(ctx: Context) -> None:
     click.secho(f"Looks like we're releasing {ctx.package_name}.")
 
 
+def find_last_release_tag(tags: List[str], package_name: str) -> Optional[str]:
+    package_names = [package_name, package_name.replace("_", "-")]
+    candidates = [tag for tag in tags if tag.rsplit("-")[0] in package_names]
+
+    if candidates:
+        return candidates[0]
+    return None
+
+
 def determine_last_release(ctx: Context) -> None:
     click.secho("> Figuring out what the last release was.", fg="cyan")
     tags = releasetool.git.list_tags()
-    candidates = [
-        tag
-        for tag in tags
-        if (
-            tag.startswith(ctx.package_name)
-            or tag.startswith(ctx.package_name.replace("_", "-"))
-        )
-    ]
+    candidate = find_last_release_tag(tags, ctx.package_name)
 
-    if candidates:
-        ctx.last_release_committish = candidates[0]
-        ctx.last_release_version = candidates[0].rsplit("-").pop()
+    if candidate:
+        ctx.last_release_committish = candidate
+        ctx.last_release_version = candidate.rsplit("-").pop()
 
     else:
         click.secho(

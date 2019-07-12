@@ -43,3 +43,59 @@ def test_update_setup_py_sets_version(
         mut.update_setup_py(context)
         mock_file = mock_open()
         mock_file.write.assert_called_once_with(expected)
+
+
+@pytest.mark.parametrize(
+    "tags,package_name,expected",
+    [
+        (
+            ["bonustag", "bigquery-1.3.0", "bigquery-1.2.0", "bigquery-1.0.0"],
+            "bigquery",
+            "bigquery-1.3.0",
+        ),
+        (
+            [
+                "bonustag",
+                "bigquery-1.3.0",
+                "bigquery-1.2.0",
+                "bigquery_storage-0.2.0",
+                "bigquery-1.0.0",
+                "bigquery_datatransfer-0.3.0",
+                "bigquery_datatransfer-0.2.0",
+                "bigquery_storage-0.1.1",
+                "bigquery_datatransfer-0.1.1",
+                "bigquery_storage-0.1.0",
+            ],
+            "bigquery_storage",
+            "bigquery_storage-0.2.0",
+        ),
+        (
+            [
+                "bonustag",
+                "bigquery_datatransfer-0.3.0",
+                "bigquery_storage-0.2.0",
+                "bigquery-1.3.0",
+                "bigquery-1.2.0",
+                "bigquery-1.0.0",
+                "bigquery_datatransfer-0.2.0",
+                "bigquery_datatransfer-0.1.1",
+                "bigquery_storage-0.1.1",
+                "bigquery_storage-0.1.0",
+            ],
+            "bigquery",
+            "bigquery-1.3.0",
+        ),
+        (
+            [
+                "mypackage-1.0.0",
+                "bonustag",
+                "mypackage-0.9.0",
+            ],
+            "myotherpackage",
+            None,
+        )
+    ],
+)
+def find_last_release_tag(mut, tags, package_name, expected):
+    candidate = mut.find_last_release_tag(tags, package_name)
+    assert candidate == expected
