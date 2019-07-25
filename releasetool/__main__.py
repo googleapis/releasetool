@@ -30,6 +30,7 @@ import releasetool.commands.tag.python
 import releasetool.commands.tag.python_tool
 import releasetool.commands.tag.nodejs
 import releasetool.commands.tag.java
+import releasetool.commands.tag.php
 import releasetool.commands.tag.ruby
 
 
@@ -78,7 +79,7 @@ def _detect_language():
     return None
 
 
-_language_choices = ["python", "python-tool", "nodejs", "java", "ruby", "go"]
+_language_choices = ["python", "python-tool", "nodejs", "java", "ruby", "go", "php"]
 
 
 def _language_option():
@@ -123,6 +124,8 @@ def tag(language):
         return releasetool.commands.tag.nodejs.tag()
     if language == "java":
         return releasetool.commands.tag.java.tag()
+    if language == "php":
+        return releasetool.commands.tag.php.tag()
     if language == "ruby":
         return releasetool.commands.tag.ruby.tag()
 
