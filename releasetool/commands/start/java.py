@@ -313,6 +313,10 @@ def determine_release_version(ctx: Context) -> None:
     release_version = Version(ctx.last_release_version)
     release_version.bump(ctx.release_type)
 
+    if not click.confirm(f"Release {release_version}?", default=True):
+        version = click.prompt("What version should we release?")
+        release_version = Version(version)
+
     ctx.release_version = str(release_version)
     click.secho(f"Got it, releasing {ctx.release_version}.")
 
