@@ -162,7 +162,7 @@ def create_release_commit(ctx: Context) -> None:
     """Create a release commit."""
     click.secho("> Comitting changes", fg="cyan")
     releasetool.git.commit(
-        ["CHANGELOG.md", "setup.py"], f"Release {ctx.release_version}"
+        ["CHANGELOG.md", "setup.py"], f"Release {ctx.package_name} {ctx.release_version}"
     )
 
 
