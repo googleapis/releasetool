@@ -38,6 +38,7 @@ VERSION_REPLACEMENT_FILENAMES = {
     "pom.xml": True,
     "build.gradle": True,
     "dependencies.properties": True,
+    "GoogleUtils.java": True,
 }
 
 
