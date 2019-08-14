@@ -26,8 +26,9 @@ from releasetool.commands.common import TagContext
 
 RELEASE_NOTES_HEADER_PATTERNS = [
     r"This pull request was generated using releasetool\.\s+(.*)",
-    r":robot: .*\n---(.*)",
+    r":robot: .*\n---(.*)\n---",
 ]
+
 
 def determine_release_pr(ctx: TagContext) -> None:
     click.secho(
@@ -73,20 +74,18 @@ def determine_package_name_and_version(ctx: TagContext) -> None:
     click.secho(f"Package version: {ctx.release_version}.")
 
 
+def _parse_release_notes(pr_body) -> str:
+    for pattern in RELEASE_NOTES_HEADER_PATTERNS:
+        match = re.search(pattern, pr_body, re.DOTALL | re.MULTILINE)
+        if match is not None:
+            return match.group(1).strip()
+
+    return ""
+
+
 def get_release_notes(ctx: TagContext) -> None:
     click.secho("> Grabbing the release notes.", fg="cyan")
-
-    ctx.release_notes = ""
-    for pattern in RELEASE_NOTES_HEADER_PATTERNS:
-        match = re.search(
-            pattern,
-            ctx.release_pr["body"],
-            re.DOTALL | re.MULTILINE,
-        )
-        if match is not None:
-            ctx.release_notes = match.group(1).strip()
-            break
-
+    ctx.release_notes = _parse_release_notes(ctx.release_pr["body"])
     click.secho(f"Release notes:\n{ctx.release_notes}")
 
 
