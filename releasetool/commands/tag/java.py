@@ -50,7 +50,7 @@ def determine_release_pr(ctx: TagContext) -> None:
 def determine_release_tag(ctx: TagContext) -> None:
     click.secho("> Determining what the release tag should be.", fg="cyan")
     head_ref = ctx.release_pr["head"]["ref"]
-    match = re.match(r"release-.+-(v\d+\.\d+\.\d+)", head_ref)
+    match = re.match(r"release.*-(v\d+\.\d+\.\d+)", head_ref)
 
     if match is not None:
         ctx.release_tag = match.group(1)
