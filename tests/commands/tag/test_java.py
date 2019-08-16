@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from releasetool.commands.tag.java import _parse_release_notes
+from releasetool.commands.tag.java import _parse_release_notes, _parse_release_tag
 
 RELEASETOOL_PR_DESCRIPTION = """
 This pull request was generated using releasetool.
@@ -45,3 +45,13 @@ def test_release_please_release_notes():
     """
     expected = "Some release notes here"
     assert _parse_release_notes(RELEASE_PLEASE_PR_DESCRIPTION) == expected
+
+
+def test_releasetool_release_tag():
+    expected = "v1.2.3"
+    assert _parse_release_tag("release-google-cloud-java-v1.2.3") == expected
+
+
+def test_release_please_release_tag():
+    expected = "v1.2.3"
+    assert _parse_release_tag("release-v1.2.3") == expected
