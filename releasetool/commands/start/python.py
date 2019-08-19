@@ -17,7 +17,7 @@ import os
 import re
 import subprocess
 import textwrap
-from typing import Optional, Sequence
+from typing import Optional, Sequence, Tuple
 
 import attr
 import click
@@ -61,7 +61,9 @@ def determine_package_name(ctx: Context) -> None:
     click.secho(f"Looks like we're releasing {ctx.package_name}.")
 
 
-def find_last_release_tag(tags: Sequence[str], package_name: str, monorepo: bool) -> Optional[str]:
+def find_last_release_tag(
+    tags: Sequence[str], package_name: str, monorepo: bool
+) -> Optional[Tuple[str, str]]:
     commitish = None
     if monorepo:
         # tags look like storage-1.2.3
@@ -73,7 +75,7 @@ def find_last_release_tag(tags: Sequence[str], package_name: str, monorepo: bool
             version = commitish.rsplit("-").pop()
     else:
         # tags look like v1.2.3 or 1.2.3
-        candidates = [tag for tag in tags if re.match("v?(\d+\.\d+\.\d+)", tag)]
+        candidates = [tag for tag in tags if re.match(r"v?(\d+\.\d+\.\d+)", tag)]
         if candidates:
             commitish = candidates[0]
             version = commitish.split("v").pop()
@@ -190,10 +192,7 @@ def create_release_commit(ctx: Context) -> None:
         commit_msg = f"Release {ctx.package_name} {ctx.release_version}"
     else:
         commit_msg = f"Release v{ctx.release_version}"
-    releasetool.git.commit(
-        ["CHANGELOG.md", "setup.py"],
-        commit_msg,
-    )
+    releasetool.git.commit(["CHANGELOG.md", "setup.py"], commit_msg)
 
 
 def push_release_branch(ctx: Context) -> None:

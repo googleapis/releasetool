@@ -65,18 +65,20 @@ def determine_release_tag(ctx: TagContext) -> None:
 def determine_package_name_and_version(ctx: TagContext) -> None:
     click.secho("> Determining the package name and version.", fg="cyan")
     if "google-cloud-python" in ctx.upstream_repo:
-        match = re.match(r"(?P<name>.+?)-(?P<version>\d+?\.\d+?(\.\d+)+)", ctx.release_tag)
+        match = re.match(
+            r"(?P<name>.+?)-(?P<version>\d+?\.\d+?(\.\d+)+)", ctx.release_tag
+        )
         ctx.package_name = match.group("name")
         ctx.release_version = match.group("version")
         click.secho(
-            f"Package name: {ctx.package_name}, " f"package version: {ctx.release_version}."
+            f"Package name: {ctx.package_name}, "
+            f"package version: {ctx.release_version}."
         )
     else:
         match = re.match(r"(.+)?(?P<version>\d+?\.\d+?(\.\d+)+)", ctx.release_tag)
         ctx.release_version = match.group("version")
-        click.secho(
-            f"Package version: {ctx.release_version}.",
-        )
+        click.secho(f"Package version: {ctx.release_version}.")
+
 
 def get_release_notes(ctx: TagContext) -> None:
     click.secho("> Grabbing the release notes.")
@@ -85,9 +87,7 @@ def get_release_notes(ctx: TagContext) -> None:
     else:
         changelog_path = "CHANGELOG.md"
     changelog = ctx.github.get_contents(
-        ctx.upstream_repo,
-        changelog_path,
-        ref=ctx.release_pr["merge_commit_sha"],
+        ctx.upstream_repo, changelog_path, ref=ctx.release_pr["merge_commit_sha"]
     ).decode("utf-8")
 
     match = re.search(
@@ -154,14 +154,11 @@ def tag(ctx: TagContext = None) -> TagContext:
 
     create_release(ctx)
 
-    if "google-cloud-python" in ctx.upstream_repo:   
-        ctx.kokoro_job_name = (
-            f"cloud-devrel/client-libraries/google-cloud-python/release/{ctx.package_name}"
-        )
+    if "google-cloud-python" in ctx.upstream_repo:
+        ctx.kokoro_job_name = f"cloud-devrel/client-libraries/google-cloud-python/release/{ctx.package_name}"
     else:
-        repo_name = ctx.upstream_repo.split('/')[1]
-        ctx.kokoro_job_name = (
-            f"cloud-devrel/client-libraries/{repo_name}/release")
+        repo_name = ctx.upstream_repo.split("/")[1]
+        ctx.kokoro_job_name = f"cloud-devrel/client-libraries/{repo_name}/release"
     releasetool.commands.common.publish_via_kokoro(ctx)
 
     if ctx.interactive:

@@ -68,7 +68,11 @@ def _detect_language():
     if os.path.exists("package.json"):
         return "nodejs"
     elif os.path.exists("setup.py"):
-        if os.path.exists("releasetool") or os.path.exists("synthtool") or os.path.exists("docuploader"):
+        if (
+            os.path.exists("releasetool")
+            or os.path.exists("synthtool")
+            or os.path.exists("docuploader")
+        ):
             return "python-tool"
         else:
             return "python"
