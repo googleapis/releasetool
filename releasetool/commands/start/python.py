@@ -186,7 +186,6 @@ def update_setup_py(ctx: Context) -> None:
 def create_release_commit(ctx: Context) -> None:
     """Create a release commit."""
     click.secho("> Comitting changes", fg="cyan")
-    # TODO: don't include package name in non-monorepo
     if ctx.monorepo:
         commit_msg = f"Release {ctx.package_name} {ctx.release_version}"
     else:
