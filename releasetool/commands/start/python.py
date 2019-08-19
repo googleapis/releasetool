@@ -14,6 +14,8 @@
 
 import getpass
 import os
+import re
+import subprocess
 import textwrap
 from typing import Optional, Sequence
 
@@ -44,31 +46,51 @@ class Context(releasetool.commands.common.GitHubContext):
     release_version: Optional[str] = None
     release_branch: Optional[str] = None
     pull_request: Optional[dict] = None
+    monorepo: bool = False  # true only when releasing from google-cloud-python
 
 
 def determine_package_name(ctx: Context) -> None:
     click.secho("> Figuring out the package name.", fg="cyan")
-    ctx.package_name = os.path.basename(os.getcwd())
+    if ctx.monorepo:
+        ctx.package_name = os.path.basename(os.getcwd())
+    else:
+        ctx.package_name = subprocess.check_output(
+            ["python", "setup.py", "--name"]
+        ).decode("utf-8")
+
     click.secho(f"Looks like we're releasing {ctx.package_name}.")
 
 
-def find_last_release_tag(tags: Sequence[str], package_name: str) -> Optional[str]:
-    package_names = [package_name, package_name.replace("_", "-")]
-    candidates = [tag for tag in tags if tag.rsplit("-")[0] in package_names]
+def find_last_release_tag(tags: Sequence[str], package_name: str, monorepo: bool) -> Optional[str]:
+    commitish = None
+    if monorepo:
+        # tags look like storage-1.2.3
+        package_names = [package_name, package_name.replace("_", "-")]
+        candidates = [tag for tag in tags if tag.rsplit("-")[0] in package_names]
 
-    if candidates:
-        return candidates[0]
+        if candidates:
+            commitish = candidates[0]
+            version = commitish.rsplit("-").pop()
+    else:
+        # tags look like v1.2.3 or 1.2.3
+        candidates = [tag for tag in tags if re.match("v?(\d+\.\d+\.\d+)", tag)]
+        if candidates:
+            commitish = candidates[0]
+            version = commitish.split("v").pop()
+
+    if commitish:
+        return commitish, version
     return None
 
 
 def determine_last_release(ctx: Context) -> None:
     click.secho("> Figuring out what the last release was.", fg="cyan")
     tags = releasetool.git.list_tags()
-    candidate = find_last_release_tag(tags, ctx.package_name)
 
-    if candidate:
-        ctx.last_release_committish = candidate
-        ctx.last_release_version = candidate.rsplit("-").pop()
+    candidate = find_last_release_tag(tags, ctx.package_name, ctx.monorepo)
+    if candidate is not None:
+        ctx.last_release_committish = candidate[0]
+        ctx.last_release_version = candidate[1]
 
     else:
         click.secho(
@@ -127,7 +149,10 @@ def determine_release_version(ctx: Context) -> None:
 
 
 def create_release_branch(ctx) -> None:
-    ctx.release_branch = f"release-{ctx.package_name}-{ctx.release_version}"
+    if ctx.monorepo:
+        ctx.release_branch = f"release-{ctx.package_name}-{ctx.release_version}"
+    else:
+        ctx.release_branch = f"release-v{ctx.release_version}"
     click.secho(f"> Creating branch {ctx.release_branch}", fg="cyan")
     return releasetool.git.checkout_create_branch(ctx.release_branch)
 
@@ -153,7 +178,7 @@ def update_setup_py(ctx: Context) -> None:
     click.secho("> Updating setup.py.", fg="cyan")
     releasetool.filehelpers.replace(
         "setup.py",
-        r"version = (['\"])(.+?)['\"]",
+        r"version\w*=\w*(['\"])(.+?)['\"]",
         f"version = \\g<1>{ctx.release_version}\\g<1>",
     )
 
@@ -161,9 +186,14 @@ def update_setup_py(ctx: Context) -> None:
 def create_release_commit(ctx: Context) -> None:
     """Create a release commit."""
     click.secho("> Comitting changes", fg="cyan")
+    # TODO: don't include package name in non-monorepo
+    if ctx.monorepo:
+        commit_msg = f"Release {ctx.package_name} {ctx.release_version}"
+    else:
+        commit_msg = f"Release v{ctx.release_version}"
     releasetool.git.commit(
         ["CHANGELOG.md", "setup.py"],
-        f"Release {ctx.package_name} {ctx.release_version}",
+        commit_msg,
     )
 
 
@@ -180,10 +210,15 @@ def create_release_pr(ctx: Context, autorelease: bool = True) -> None:
     else:
         head = f"{ctx.origin_user}:{ctx.release_branch}"
 
+    if ctx.monorepo:
+        pr_title = f"Release {ctx.package_name} {ctx.release_version}"
+    else:
+        pr_title = f"Release v{ctx.release_version}"
+
     ctx.pull_request = ctx.github.create_pull_request(
         ctx.upstream_repo,
         head=head,
-        title=f"Release {ctx.package_name} {ctx.release_version}",
+        title=pr_title,
         body="This pull request was generated using releasetool.",
     )
 
@@ -201,6 +236,10 @@ def start() -> None:
     click.secho(f"o/ Hey, {getpass.getuser()}, let's release some stuff!", fg="magenta")
 
     releasetool.commands.common.setup_github_context(ctx)
+
+    if "google-cloud-python" in ctx.origin_repo:
+        ctx.monorepo = True
+
     determine_package_name(ctx)
     determine_last_release(ctx)
     gather_changes(ctx)
@@ -211,7 +250,6 @@ def start() -> None:
     update_setup_py(ctx)
     create_release_commit(ctx)
     push_release_branch(ctx)
-    # TODO: Confirm?
     create_release_pr(ctx)
 
     click.secho(f"\\o/ All done!", fg="magenta")
