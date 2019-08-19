@@ -64,7 +64,6 @@ def determine_release_tag(ctx: TagContext) -> None:
 
 def determine_package_name_and_version(ctx: TagContext) -> None:
     click.secho("> Determining the package name and version.", fg="cyan")
-    #TODO: change tag parsing from branch name
     if "google-cloud-python" in ctx.upstream_repo:
         match = re.match(r"(?P<name>.+?)-(?P<version>\d+?\.\d+?(\.\d+)+)", ctx.release_tag)
         ctx.package_name = match.group("name")
@@ -76,14 +75,18 @@ def determine_package_name_and_version(ctx: TagContext) -> None:
         match = re.match(r"(.+)?(?P<version>\d+?\.\d+?(\.\d+)+)", ctx.release_tag)
         ctx.release_version = match.group("version")
         click.secho(
-            f"Package name: {ctx.package_name}, "f"package version: {ctx.release_version}."
+            f"Package version: {ctx.release_version}.",
         )
 
 def get_release_notes(ctx: TagContext) -> None:
     click.secho("> Grabbing the release notes.")
+    if "google-cloud-python" in ctx.upstream_repo:
+        changelog_path = f"{ctx.package_name}/CHANGELOG.md"
+    else:
+        changelog_path = "CHANGELOG.md"
     changelog = ctx.github.get_contents(
         ctx.upstream_repo,
-        f"{ctx.package_name}/CHANGELOG.md",
+        changelog_path,
         ref=ctx.release_pr["merge_commit_sha"],
     ).decode("utf-8")
 
@@ -151,7 +154,6 @@ def tag(ctx: TagContext = None) -> TagContext:
 
     create_release(ctx)
 
-    # TODO: change kokoro job name - construct from repo name
     if "google-cloud-python" in ctx.upstream_repo:   
         ctx.kokoro_job_name = (
             f"cloud-devrel/client-libraries/google-cloud-python/release/{ctx.package_name}"
