@@ -27,8 +27,8 @@ def mut():
 @pytest.mark.parametrize(
     "setup_py_contents,release_version,expected",
     [
-        ("version = '1.0.0'\n", "1.1.0", "version = '1.1.0'\n"),
-        ('version = "1.0.0"\n', "1.1.0", 'version = "1.1.0"\n'),
+        ("version = '1.0.0'\n", "1.0.0", "version = '1.0.0'\n"),
+        ('version = "1.0.0"\n', "1.0.0", 'version = "1.0.0"\n'),
     ],
 )
 def test_update_setup_py_sets_version(
@@ -89,5 +89,5 @@ def test_update_setup_py_sets_version(
     ],
 )
 def find_last_release_tag(mut, tags, package_name, expected):
-    candidate = mut.find_last_release_tag(tags, package_name)
+    candidate = mut.find_last_release_tag(tags, package_name, monorepo=True)
     assert candidate == expected
