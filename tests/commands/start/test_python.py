@@ -89,5 +89,5 @@ def test_update_setup_py_sets_version(
     ],
 )
 def find_last_release_tag(mut, tags, package_name, expected):
-    candidate = mut.find_last_release_tag(tags, package_name, monorepo=True)
+    candidate = mut.find_last_release_tag(tags, package_name)
     assert candidate == expected
