@@ -155,7 +155,9 @@ def tag(ctx: TagContext = None) -> TagContext:
     if "google-cloud-python" in ctx.upstream_repo:
         ctx.kokoro_job_name = f"cloud-devrel/client-libraries/google-cloud-python/release/{ctx.package_name}"
     else:
-        ctx.kokoro_job_name = f"cloud-devrel/client-libraries/{ctx.upstream_repo}/release/release"
+        ctx.kokoro_job_name = (
+            f"cloud-devrel/client-libraries/{ctx.upstream_repo}/release/release"
+        )
     releasetool.commands.common.publish_via_kokoro(ctx)
 
     if ctx.interactive:
