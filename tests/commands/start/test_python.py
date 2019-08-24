@@ -27,8 +27,8 @@ def mut():
 @pytest.mark.parametrize(
     "setup_py_contents,release_version,expected",
     [
-        ("version = '1.0.0'\n", "1.0.0", "version = '1.0.0'\n"),
-        ('version = "1.0.0"\n', "1.0.0", 'version = "1.0.0"\n'),
+        ("version = '1.0.0'\n", "1.1.0", "version = '1.1.0'\n"),
+        ('version = "1.0.0"\n', "1.1.0", 'version = "1.1.0"\n'),
     ],
 )
 def test_update_setup_py_sets_version(
