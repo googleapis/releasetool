@@ -104,7 +104,6 @@ def get_release_notes(ctx: TagContext) -> None:
 def create_release(ctx: TagContext) -> None:
     click.secho("> Creating the release.")
 
-    # TODO: change name of release notes
     if "google-cloud-python" in ctx.upstream_repo:
         release_name = f"google-cloud-{ctx.package_name} {ctx.release_version}"
     else:
@@ -153,12 +152,12 @@ def tag(ctx: TagContext = None) -> TagContext:
     get_release_notes(ctx)
 
     create_release(ctx)
-
     if "google-cloud-python" in ctx.upstream_repo:
         ctx.kokoro_job_name = f"cloud-devrel/client-libraries/google-cloud-python/release/{ctx.package_name}"
     else:
-        repo_name = ctx.upstream_repo.split("/")[1]
-        ctx.kokoro_job_name = f"cloud-devrel/client-libraries/python/{repo_name}/release"
+        ctx.kokoro_job_name = (
+            f"cloud-devrel/client-libraries/python/{ctx.upstream_repo}/release/release"
+        )
     releasetool.commands.common.publish_via_kokoro(ctx)
 
     if ctx.interactive:

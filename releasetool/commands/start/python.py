@@ -180,7 +180,7 @@ def update_setup_py(ctx: Context) -> None:
     click.secho("> Updating setup.py.", fg="cyan")
     releasetool.filehelpers.replace(
         "setup.py",
-        r"version\w*=\w*(['\"])(.+?)['\"]",
+        r"version\s*=\s*(['\"])(.+?)['\"]",
         f"version = \\g<1>{ctx.release_version}\\g<1>",
     )
 
