@@ -86,7 +86,16 @@ def _detect_language():
     return None
 
 
-_language_choices = ["python", "python-tool", "nodejs", "java", "ruby", "go", "php", "dotnet"]
+_language_choices = [
+    "python",
+    "python-tool",
+    "nodejs",
+    "java",
+    "ruby",
+    "go",
+    "php",
+    "dotnet",
+]
 
 
 def _language_option():
