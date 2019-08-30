@@ -79,10 +79,10 @@ def determine_package_name_and_version(ctx: TagContext) -> None:
 
 def get_release_notes(ctx: TagContext) -> None:
     click.secho("> Grabbing the release notes.", fg="cyan")
-    if f"{ctx.origin_user}/{ctx.package_name}" == ctx.upstream_repo:
-        changelog_file = "CHANGELOG.md"
-    else:
+    if "google-cloud-ruby" in ctx.upstream_repo:
         changelog_file = f"{ctx.package_name}/CHANGELOG.md"
+    else:
+        changelog_file = "CHANGELOG.md"
     changelog = ctx.github.get_contents(
         ctx.upstream_repo, changelog_file, ref=ctx.release_pr["merge_commit_sha"]
     ).decode("utf-8")
@@ -152,14 +152,16 @@ def tag(ctx: TagContext = None) -> TagContext:
     create_release(ctx)
 
     job_name = ctx.package_name.split("google-cloud-")[-1]
-    if f"{ctx.origin_user}/{ctx.package_name}" == ctx.upstream_repo:
-        ctx.kokoro_job_name = (
-            f"cloud-devrel/client-libraries/{ctx.package_name}/release"
-        )
-    else:
+
+    if "google-cloud-ruby" in ctx.upstream_repo:
         ctx.kokoro_job_name = (
             f"cloud-devrel/client-libraries/google-cloud-ruby/release/{job_name}"
         )
+    else:
+        ctx.kokoro_job_name = (
+            f"cloud-devrel/client-libraries/{ctx.package_name}/release"
+        )
+
     releasetool.commands.common.publish_via_kokoro(ctx)
 
     if ctx.interactive:
