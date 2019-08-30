@@ -44,7 +44,7 @@ def determine_release_pr(ctx: TagContext) -> None:
     ctx.release_pr = pulls[pull_idx - 1]
 
 
-def create_releases(ctx: TagContext) -> None:	
+def create_releases(ctx: TagContext) -> None:
     click.secho("> Creating the release.")
 
     commitish = ctx.release_pr["merge_commit_sha"]
@@ -60,7 +60,7 @@ def create_releases(ctx: TagContext) -> None:
                 repository=ctx.upstream_repo,
                 tag_name=tag,
                 target_commitish=commitish,
-                name=tag
+                name=tag,
             )
             click.secho(f"Created release for {tag}")
             pr_comment = pr_comment + f"- Created release for {tag}\n"
@@ -75,13 +75,11 @@ def create_releases(ctx: TagContext) -> None:
     # This isn't a tag, but that's okay - it just needs to be a commitish for
     # Kokoro to build against.
     ctx.release_tag = commitish
-    ctx.kokoro_job_name = (
-        f"cloud-sharp/google-cloud-dotnet/gcp_windows/autorelease"
-    )
+    ctx.kokoro_job_name = f"cloud-sharp/google-cloud-dotnet/gcp_windows/autorelease"
     ctx.github.update_pull_labels(
         ctx.release_pr, add=["autorelease: tagged"], remove=["autorelease: pending"]
     )
-    releasetool.commands.common.publish_via_kokoro(ctx)    
+    releasetool.commands.common.publish_via_kokoro(ctx)
 
 
 # Note: unlike other languages, the .NET libraries may need multiple
@@ -91,7 +89,7 @@ def create_releases(ctx: TagContext) -> None:
 # ctx.release_tag to the commit we've tagged (as all tags will use the same commit).
 def tag(ctx: TagContext = None) -> TagContext:
     if not ctx:
-        ctx = TagContext()        
+        ctx = TagContext()
 
     if ctx.interactive:
         click.secho(f"o/ Hey, {getpass.getuser()}, let's tag a release!", fg="magenta")
