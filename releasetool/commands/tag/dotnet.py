@@ -23,8 +23,6 @@ import releasetool.secrets
 import releasetool.commands.common
 from releasetool.commands.common import TagContext
 
-from typing import List
-
 RELEASE_LINE_PATTERN = r"- Release (.*) version (.*)"
 
 
@@ -56,11 +54,12 @@ def create_releases(ctx: TagContext) -> None:
             package = match.group(1)
             version = match.group(2)
             tag = package + "-" + version
-            release = ctx.github.create_release(
+            ctx.github.create_release(
                 repository=ctx.upstream_repo,
                 tag_name=tag,
                 target_commitish=commitish,
                 name=tag,
+                body=f"Package {package} version {version}",
             )
             click.secho(f"Created release for {tag}")
             pr_comment = pr_comment + f"- Created release for {tag}\n"
