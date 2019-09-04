@@ -32,6 +32,7 @@ import releasetool.commands.tag.nodejs
 import releasetool.commands.tag.java
 import releasetool.commands.tag.php
 import releasetool.commands.tag.ruby
+import releasetool.commands.tag.dotnet
 
 
 class _OptionPromptIfNone(click.Option):
@@ -80,10 +81,21 @@ def _detect_language():
         return "ruby"
     elif os.path.exists("pom.xml") or os.path.exists("build.gradle"):
         return "java"
+    elif os.path.exists("global.json"):
+        return "dotnet"
     return None
 
 
-_language_choices = ["python", "python-tool", "nodejs", "java", "ruby", "go", "php"]
+_language_choices = [
+    "python",
+    "python-tool",
+    "nodejs",
+    "java",
+    "ruby",
+    "go",
+    "php",
+    "dotnet",
+]
 
 
 def _language_option():
@@ -132,6 +144,8 @@ def tag(language):
         return releasetool.commands.tag.php.tag()
     if language == "ruby":
         return releasetool.commands.tag.ruby.tag()
+    if language == "dotnet":
+        return releasetool.commands.tag.dotnet.tag()
 
 
 @main.command(name="reset-config")
