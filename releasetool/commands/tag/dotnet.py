@@ -60,6 +60,8 @@ def create_releases(ctx: TagContext) -> None:
                 target_commitish=commitish,
                 name=tag,
                 body=f"Package {package} version {version}",
+                # Versions like "1.0.0-beta01" or "0.9.0" are prerelease
+                prerelease="-" in version or version.startswith("0."),
             )
             click.secho(f"Created release for {tag}")
             pr_comment = pr_comment + f"- Created release for {tag}\n"
