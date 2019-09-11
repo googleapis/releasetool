@@ -129,6 +129,7 @@ class GitHub:
         target_commitish: str,
         name: str,
         body: str,
+        prerelease: bool = False,
     ) -> dict:
         url = f"{self.GITHUB_ROOT}/repos/{repository}/releases"
         response = self.session.post(
@@ -138,6 +139,7 @@ class GitHub:
                 "target_commitish": target_commitish,
                 "name": name,
                 "body": body,
+                "prerelease": prerelease,
             },
         )
         response.raise_for_status()
