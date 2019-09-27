@@ -190,9 +190,9 @@ def create_release_commit(ctx: Context) -> None:
     """Create a release commit."""
     click.secho("> Comitting changes", fg="cyan")
     if ctx.monorepo:
-        commit_msg = f"Release {ctx.package_name} {ctx.release_version}"
+        commit_msg = f"chore({ctx.package_name}): release {ctx.release_version}"
     else:
-        commit_msg = f"Release v{ctx.release_version}"
+        commit_msg = f"chore: release v{ctx.release_version}"
     releasetool.git.commit(["CHANGELOG.md", "setup.py"], commit_msg)
 
 
@@ -210,9 +210,9 @@ def create_release_pr(ctx: Context, autorelease: bool = True) -> None:
         head = f"{ctx.origin_user}:{ctx.release_branch}"
 
     if ctx.monorepo:
-        pr_title = f"Release {ctx.package_name} {ctx.release_version}"
+        pr_title = f"chore({ctx.package_name}): release {ctx.release_version}"
     else:
-        pr_title = f"Release v{ctx.release_version}"
+        pr_title = f"chore: Release v{ctx.release_version}"
 
     ctx.pull_request = ctx.github.create_pull_request(
         ctx.upstream_repo,
