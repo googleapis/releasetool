@@ -16,6 +16,7 @@ import getpass
 import os
 import re
 import subprocess
+import sys
 import textwrap
 from typing import Optional, Sequence, Tuple
 
@@ -55,7 +56,7 @@ def determine_package_name(ctx: Context) -> None:
         ctx.package_name = os.path.basename(os.getcwd())
     else:
         ctx.package_name = subprocess.check_output(
-            ["python", "setup.py", "--name"]
+            [sys.executable, "setup.py", "--name"]
         ).decode("utf-8")
 
     click.secho(f"Looks like we're releasing {ctx.package_name}.")
