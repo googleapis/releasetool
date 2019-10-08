@@ -158,9 +158,7 @@ def tag(ctx: TagContext = None) -> TagContext:
             f"cloud-devrel/client-libraries/google-cloud-ruby/release/{job_name}"
         )
     else:
-        ctx.kokoro_job_name = (
-            f"cloud-devrel/client-libraries/{ctx.package_name}/release/{ctx.package_name}"
-        )
+        ctx.kokoro_job_name = f"cloud-devrel/client-libraries/{ctx.package_name}/release/{ctx.package_name}"
 
     releasetool.commands.common.publish_via_kokoro(ctx)
 
