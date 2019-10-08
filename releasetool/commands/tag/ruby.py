@@ -159,7 +159,7 @@ def tag(ctx: TagContext = None) -> TagContext:
         )
     else:
         ctx.kokoro_job_name = (
-            f"cloud-devrel/client-libraries/{ctx.package_name}/release"
+            f"cloud-devrel/client-libraries/{ctx.package_name}/release/{ctx.package_name}"
         )
 
     releasetool.commands.common.publish_via_kokoro(ctx)
