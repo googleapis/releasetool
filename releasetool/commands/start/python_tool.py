@@ -22,6 +22,32 @@ import releasetool.commands.start.python
 from releasetool.commands.start.python import Context
 
 
+def determine_last_release(ctx: Context) -> None:
+    click.secho("> Figuring out what the last release was.", fg="cyan")
+    tags = releasetool.git.list_tags()
+    import pdb; pdb.set_trace()
+    # releases previously looked like synthtool-2019.10.17
+    # going forward, the format will be v2019.10.17
+    candidates = [tag for tag in tags if tag.startswith("v") or tag.startswith(ctx.origin_repo.split('/')[1])]
+
+    if candidates:
+        ctx.last_release_committish = candidates[0]
+        # strip the leading 'v'
+        ctx.last_release_version = candidates[0].lstrip("v")
+
+    else:
+        click.secho(
+            f"I couldn't figure out the last release for {ctx.package_name}, "
+            "so I'm assuming this is the first release. Can you tell me "
+            "which git rev/sha to start the changelog at?",
+            fg="yellow",
+        )
+        ctx.last_release_committish = click.prompt("Committish")
+        ctx.last_release_version = "0.0.0"
+
+    click.secho(f"The last release was {ctx.last_release_version}.")
+
+
 def determine_release_version(ctx: Context) -> None:
     ctx.release_version = (
         datetime.datetime.now(datetime.timezone.utc)
@@ -47,7 +73,7 @@ def start() -> None:
 
     releasetool.commands.common.setup_github_context(ctx)
     releasetool.commands.start.python.determine_package_name(ctx)
-    releasetool.commands.start.python.determine_last_release(ctx)
+    determine_last_release(ctx)
     releasetool.commands.start.python.gather_changes(ctx)
     releasetool.commands.common.edit_release_notes(ctx)
     determine_release_version(ctx)
