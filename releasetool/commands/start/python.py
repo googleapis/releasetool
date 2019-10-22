@@ -128,6 +128,9 @@ def determine_release_version(ctx: Context) -> None:
 
     if parsed_version == [0, 0, 0]:
         ctx.release_version = "0.1.0"
+        if not click.confirm(f"Release {ctx.release_version}?", default=True):
+            version = click.prompt("What version should we release?")
+            ctx.release_version = version
         return
 
     selection = click.prompt(
