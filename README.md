@@ -29,7 +29,7 @@ To start the process of releasing use `releasetool start` from the directory of
 the client you want to publish, for example:
 
 ```
-git clone git@github.com:GoogleCloudPlatform/google-cloud-python.git
+git clone git@github.com:googleapis/google-cloud-python.git
 cd google-cloud-python
 cd bigquery
 releasetool start
