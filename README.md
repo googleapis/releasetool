@@ -14,9 +14,10 @@ in such a way that it could easily be used for other languages.
 
 We recommend following [this guide](https://docs.python-guide.org/starting/installation/#installation-guides) for installing both Python 3 and pip. 
 
+
 Install releasetool using pip:
 ```
-python3 -m pip install --user --upgrade gcp-releasetool
+python3 -m pip install --user --upgrade git+https://github.com/googleapis/releasetool.git
 ```
 
 ## Usage
