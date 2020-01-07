@@ -20,7 +20,7 @@ import re
 from typing import Tuple
 
 import releasetool.github
-from nodejs_docs_only import releasetool.tag.nodejs
+from releasetool.commands.tag.nodejs import nodejs_docs_only
 
 def figure_out_github_token(github_token: str) -> str:
     # This script is designed to run in Kokoro. There's several sources where
