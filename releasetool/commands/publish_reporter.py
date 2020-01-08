@@ -20,6 +20,7 @@ import re
 from typing import Tuple
 
 import releasetool.github
+from releasetool.commands.tag.nodejs import nodejs_docs_only
 
 
 def figure_out_github_token(github_token: str) -> str:
@@ -118,6 +119,12 @@ def finish(github_token: str, pr: str, status: bool, details: str) -> None:
         owner, repo, number = extract_pr_details(pr)
     except ValueError:
         print("Invalid PR number, returning.")
+        return
+
+    # TODO: we may eventually want to add additional labels, e.g.,
+    # autorelease: docs, autorelease: docs-failed, as of right now our
+    # monitoring detects publication failures (not doc publish failures).
+    if f"{owner}/{repo}" in nodejs_docs_only:
         return
 
     if status:
