@@ -25,12 +25,13 @@ import releasetool.commands.common
 from releasetool.commands.common import TagContext
 
 # repos that use a GitHub app for publication, but should still have
-# tagging and reference docs uploaded: 
+# tagging and reference docs uploaded:
 nodejs_docs_only = [
-    'googleapis/nodejs-datacatalog',
-    'googleapis/nodejs-secret-manager',
-    'googleapis/gaxios'
+    "googleapis/nodejs-datacatalog",
+    "googleapis/nodejs-secret-manager",
+    "googleapis/gaxios",
 ]
+
 
 def determine_release_pr(ctx: TagContext) -> None:
     click.secho(
@@ -85,6 +86,7 @@ def determine_kokoro_job_name(ctx: TagContext) -> None:
         ctx.kokoro_job_name = (
             f"cloud-devrel/client-libraries/nodejs/release/{ctx.upstream_repo}/docs"
         )
+
 
 def get_release_notes(ctx: TagContext) -> None:
     click.secho("> Grabbing the release notes.")
