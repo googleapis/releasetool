@@ -28,6 +28,7 @@ from releasetool.commands.common import TagContext
 # tagging and reference docs uploaded:
 nodejs_docs_only = [
     "googleapis/nodejs-datacatalog",
+    "googleapis/nodejs-recommender",
     "googleapis/nodejs-secret-manager",
     "googleapis/gaxios",
 ]
