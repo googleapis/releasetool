@@ -27,6 +27,7 @@ from releasetool.commands.common import TagContext
 # repos that use a GitHub app for publication, but should still have
 # tagging and reference docs uploaded:
 nodejs_docs_only = [
+    "googleapis/nodejs-billing-budgets",
     "googleapis/nodejs-datacatalog",
     "googleapis/nodejs-recommender",
     "googleapis/nodejs-secret-manager",
