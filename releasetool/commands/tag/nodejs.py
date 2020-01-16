@@ -32,6 +32,7 @@ nodejs_docs_only = [
     "googleapis/nodejs-recommender",
     "googleapis/nodejs-secret-manager",
     "googleapis/gaxios",
+    "googleapis/google-api-nodejs-client"
 ]
 
 
