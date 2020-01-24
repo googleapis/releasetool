@@ -91,7 +91,9 @@ def get_release_notes(ctx: TagContext) -> None:
     ).decode("utf-8")
 
     match = re.search(
-        r"#{2,3}[\s\W]+?" + ctx.release_version + r"*?\n(?P<notes>.+?)(\Z|\n#{2,3}\W*?\d)",
+        r"#{2,3}[\s\W]+?"
+        + ctx.release_version
+        + r"*?\n(?P<notes>.+?)(\Z|\n#{2,3}\W*?\d)",
         changelog,
         re.DOTALL | re.MULTILINE,
     )
