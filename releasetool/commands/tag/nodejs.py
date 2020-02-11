@@ -34,6 +34,7 @@ nodejs_docs_only = [
     "googleapis/gaxios",
     "googleapis/google-api-nodejs-client",
     "googleapis/nodejs-monitoring-dashboards",
+    "googleapis/nodejs-bigquery-storage",
 ]
 
 
