@@ -29,6 +29,7 @@ from releasetool.commands.common import TagContext
 nodejs_docs_only = [
     "googleapis/nodejs-billing-budgets",
     "googleapis/nodejs-datacatalog",
+    "googleapis/nodejs-game-servers",
     "googleapis/nodejs-recommender",
     "googleapis/nodejs-secret-manager",
     "googleapis/gaxios",
