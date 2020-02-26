@@ -24,20 +24,6 @@ import releasetool.secrets
 import releasetool.commands.common
 from releasetool.commands.common import TagContext
 
-# repos that use a GitHub app for publication, but should still have
-# tagging and reference docs uploaded:
-nodejs_docs_only = [
-    "googleapis/nodejs-billing-budgets",
-    "googleapis/nodejs-datacatalog",
-    "googleapis/nodejs-game-servers",
-    "googleapis/nodejs-recommender",
-    "googleapis/nodejs-secret-manager",
-    "googleapis/gaxios",
-    "googleapis/google-api-nodejs-client",
-    "googleapis/nodejs-monitoring-dashboards",
-    "googleapis/nodejs-bigquery-storage",
-]
-
 
 def determine_release_pr(ctx: TagContext) -> None:
     click.secho(
@@ -84,14 +70,9 @@ def determine_package_version(ctx: TagContext) -> None:
 
 
 def determine_kokoro_job_name(ctx: TagContext) -> None:
-    if ctx.upstream_repo in nodejs_docs_only:
-        ctx.kokoro_job_name = (
-            f"cloud-devrel/client-libraries/nodejs/release/{ctx.upstream_repo}/docs"
-        )
-    else:
-        ctx.kokoro_job_name = (
-            f"cloud-devrel/client-libraries/nodejs/release/{ctx.upstream_repo}/publish"
-        )
+    ctx.kokoro_job_name = (
+        f"cloud-devrel/client-libraries/nodejs/release/{ctx.upstream_repo}/docs"
+    )
 
 
 def get_release_notes(ctx: TagContext) -> None:

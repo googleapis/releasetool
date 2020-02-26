@@ -20,7 +20,6 @@ import re
 from typing import Tuple
 
 import releasetool.github
-from releasetool.commands.tag.nodejs import nodejs_docs_only
 
 
 def figure_out_github_token(github_token: str) -> str:
@@ -105,7 +104,9 @@ def start(github_token: str, pr: str) -> None:
     gh.create_pull_request_comment(f"{owner}/{repo}", number, message)
 
 
-def finish(github_token: str, pr: str, status: bool, details: str) -> None:
+def finish(
+    github_token: str, pr: str, status: bool, details: str, language: str
+) -> None:
     """Reports the completion of a publication job to GitHub."""
     github_token = figure_out_github_token(github_token)
 
@@ -121,10 +122,10 @@ def finish(github_token: str, pr: str, status: bool, details: str) -> None:
         print("Invalid PR number, returning.")
         return
 
-    # TODO: we may eventually want to add additional labels, e.g.,
-    # autorelease: docs, autorelease: docs-failed, as of right now our
-    # monitoring detects publication failures (not doc publish failures).
-    if f"{owner}/{repo}" in nodejs_docs_only:
+    # For node.js, publication is handled by a GitHub Application. We still kick
+    # off an autorelease job that publishes docs, but it should not remove
+    # the "autorelease: tagged" label:
+    if language == "nodejs":
         return
 
     if status:
