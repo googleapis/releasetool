@@ -165,13 +165,8 @@ def publish_reporter_start(github_token: str, pr: str):
 @click.option("--pr", envvar="AUTORELEASE_PR", default=None)
 @click.option("--status", type=bool, default=True)
 @click.option("--details", envvar="PUBLISH_DETAILS", default=None)
-@_language_option()
-def publish_reporter_finish(
-    github_token: str, pr: str, status: bool, details: str, language: str
-):
-    releasetool.commands.publish_reporter.finish(
-        github_token, pr, status, details, language
-    )
+def publish_reporter_finish(github_token: str, pr: str, status: bool, details: str):
+    releasetool.commands.publish_reporter.finish(github_token, pr, status, details)
 
 
 @main.command(name="publish-reporter-script")

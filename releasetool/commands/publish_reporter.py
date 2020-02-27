@@ -104,9 +104,7 @@ def start(github_token: str, pr: str) -> None:
     gh.create_pull_request_comment(f"{owner}/{repo}", number, message)
 
 
-def finish(
-    github_token: str, pr: str, status: bool, details: str, language: str
-) -> None:
+def finish(github_token: str, pr: str, status: bool, details: str) -> None:
     """Reports the completion of a publication job to GitHub."""
     github_token = figure_out_github_token(github_token)
 
@@ -120,12 +118,6 @@ def finish(
         owner, repo, number = extract_pr_details(pr)
     except ValueError:
         print("Invalid PR number, returning.")
-        return
-
-    # For node.js, publication is handled by a GitHub Application. We still kick
-    # off an autorelease job that publishes docs, but it should not remove
-    # the "autorelease: tagged" label:
-    if language == "nodejs":
         return
 
     if status:
