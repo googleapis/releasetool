@@ -23,7 +23,7 @@ import releasetool.secrets
 import releasetool.commands.common
 from releasetool.commands.common import TagContext
 
-RELEASE_LINE_PATTERN = r"- Release (.*) version (.*)"
+RELEASE_LINE_PATTERN = r"^(?:- )?Release (.*) version (.*)"
 
 
 def determine_release_pr(ctx: TagContext) -> None:
@@ -46,9 +46,11 @@ def create_releases(ctx: TagContext) -> None:
     click.secho("> Creating the release.")
 
     commitish = ctx.release_pr["merge_commit_sha"]
-    lines = ctx.release_pr["body"].splitlines()
+    title = ctx.release_pr["title"]
+    body_lines = ctx.release_pr["body"].splitlines()
+    all_lines = [title] + body_lines
     pr_comment = ""
-    for line in lines:
+    for line in all_lines:
         match = re.search(RELEASE_LINE_PATTERN, line)
         if match is not None:
             package = match.group(1)
