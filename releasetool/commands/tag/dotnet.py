@@ -60,8 +60,12 @@ def create_releases(ctx: TagContext) -> None:
                 repository=ctx.upstream_repo,
                 tag_name=tag,
                 target_commitish=commitish,
-                name=tag,
-                body=f"Package {package} version {version}",
+                name=f"{package} version {version}",
+                # TODO: either reformat the message as we do in TagReleases,
+                # or make sure we create the PR with an "already-formatted"
+                # body. (The latter is probably simpler, and will make the
+                # PR easier to read anyway.)
+                body=ctx.release_pr["body"],
                 # Versions like "1.0.0-beta01" or "0.9.0" are prerelease
                 prerelease="-" in version or version.startswith("0."),
             )
