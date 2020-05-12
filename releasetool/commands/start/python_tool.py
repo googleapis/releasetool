@@ -59,4 +59,4 @@ def start() -> None:
     # TODO: Confirm?
     releasetool.commands.start.python.create_release_pr(ctx)
 
-    click.secho(f"\\o/ All done!", fg="magenta")
+    click.secho("\\o/ All done!", fg="magenta")

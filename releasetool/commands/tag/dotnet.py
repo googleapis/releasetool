@@ -23,7 +23,7 @@ import releasetool.secrets
 import releasetool.commands.common
 from releasetool.commands.common import TagContext
 
-RELEASE_LINE_PATTERN = r"^(?:- )?Release (.*) version (.*)"
+RELEASE_LINE_PATTERN = r"^(?:- )?Release ([^ ]*) version (.*)"
 
 
 def determine_release_pr(ctx: TagContext) -> None:
@@ -82,7 +82,7 @@ def create_releases(ctx: TagContext) -> None:
     # This isn't a tag, but that's okay - it just needs to be a commitish for
     # Kokoro to build against.
     ctx.release_tag = commitish
-    ctx.kokoro_job_name = f"cloud-sharp/google-cloud-dotnet/gcp_windows/autorelease"
+    ctx.kokoro_job_name = "cloud-sharp/google-cloud-dotnet/gcp_windows/autorelease"
     ctx.github.update_pull_labels(
         ctx.release_pr, add=["autorelease: tagged"], remove=["autorelease: pending"]
     )

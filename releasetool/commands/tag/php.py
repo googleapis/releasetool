@@ -33,6 +33,6 @@ def tag(ctx: TagContext = None) -> TagContext:
     releasetool.commands.tag.nodejs.create_release(ctx)
 
     if ctx.interactive:
-        click.secho(f"\\o/ All done!", fg="magenta")
+        click.secho("\\o/ All done!", fg="magenta")
 
     return ctx
