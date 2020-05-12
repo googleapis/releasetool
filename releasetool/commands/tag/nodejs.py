@@ -176,6 +176,6 @@ def tag(ctx: TagContext = None) -> TagContext:
     releasetool.commands.common.publish_via_kokoro(ctx)
 
     if ctx.interactive:
-        click.secho(f"\\o/ All done!", fg="magenta")
+        click.secho("\\o/ All done!", fg="magenta")
 
     return ctx

@@ -127,7 +127,7 @@ def setup_github_context(
 
 
 def edit_release_notes(ctx: GitHubContext) -> None:
-    click.secho(f"> Opening your editor to finalize release notes.", fg="cyan")
+    click.secho("> Opening your editor to finalize release notes.", fg="cyan")
     release_notes = (
         datetime.datetime.now(datetime.timezone.utc)
         .astimezone(tz.gettz("US/Pacific"))
@@ -175,7 +175,7 @@ def publish_via_kokoro(ctx: TagContext) -> None:
         pyperclip.copy(ctx.release_tag)
 
         click.secho(
-            f"> Trigger the Kokoro build with the commitish below to publish to PyPI. The commitish has been copied to the clipboard.",
+            "> Trigger the Kokoro build with the commitish below to publish to PyPI. The commitish has been copied to the clipboard.",
             fg="cyan",
         )
 

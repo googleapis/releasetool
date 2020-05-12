@@ -25,7 +25,7 @@ from releasetool.commands.tag import python
 def get_release_notes(ctx: TagContext) -> None:
     click.secho("> Grabbing the release notes.")
     changelog = ctx.github.get_contents(
-        ctx.upstream_repo, f"CHANGELOG.md", ref=ctx.release_pr["merge_commit_sha"]
+        ctx.upstream_repo, "CHANGELOG.md", ref=ctx.release_pr["merge_commit_sha"]
     ).decode("utf-8")
 
     match = re.search(
@@ -91,6 +91,6 @@ def tag(ctx: TagContext = None) -> TagContext:
     releasetool.commands.common.publish_via_kokoro(ctx)
 
     if ctx.interactive:
-        click.secho(f"\\o/ All done!", fg="magenta")
+        click.secho("\\o/ All done!", fg="magenta")
 
     return ctx

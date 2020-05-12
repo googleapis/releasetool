@@ -307,7 +307,7 @@ def gather_changes(ctx: Context) -> None:
 
 def determine_release_version(ctx: Context) -> None:
     """Determines the release version for release tagging"""
-    click.secho(f"> Now it's time to pick a release version!", fg="cyan")
+    click.secho("> Now it's time to pick a release version!", fg="cyan")
     release_notes = textwrap.indent(ctx.release_notes, "\t")
     click.secho(f"Here's the release notes you wrote:\n\n{release_notes}\n")
 
@@ -408,4 +408,4 @@ def start() -> None:
     create_release_branch(ctx)
     create_release_pr(ctx)
 
-    click.secho(f"\\o/ All done!", fg="magenta")
+    click.secho("\\o/ All done!", fg="magenta")

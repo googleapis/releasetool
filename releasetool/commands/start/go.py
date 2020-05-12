@@ -116,13 +116,13 @@ def determine_last_release(ctx: Context) -> None:
 def gather_changes(ctx: Context) -> None:
     click.secho(f"> Gathering changes since {ctx.last_release_version}", fg="cyan")
     ctx.changes = releasetool.git.summary_log(
-        from_=ctx.last_release_committish, to=f"origin/master"
+        from_=ctx.last_release_committish, to="origin/master"
     )
     click.secho(f"Cool, {len(ctx.changes)} changes found.")
 
 
 def determine_release_version(ctx: Context) -> None:
-    click.secho(f"> Now it's time to pick a release version!", fg="cyan")
+    click.secho("> Now it's time to pick a release version!", fg="cyan")
     release_notes = textwrap.indent(ctx.release_notes, "\t")
     click.secho(f"Here's the release notes you wrote:\n\n{release_notes}\n")
 
@@ -190,13 +190,13 @@ def create_release_commit(ctx: Context) -> None:
 
 
 def create_release_cl(ctx: Context) -> None:
-    click.secho(f"> Creating release CL.", fg="cyan")
+    click.secho("> Creating release CL.", fg="cyan")
     revs = click.prompt("reviewers (comma-separated)", default="deklerk,jba")
     subprocess.check_output(["git", "codereview", "mail", "-r", revs, "HEAD"])
 
 
 def edit_release_notes(ctx: Context) -> None:
-    click.secho(f"> Opening your editor to finalize release notes.", fg="cyan")
+    click.secho("> Opening your editor to finalize release notes.", fg="cyan")
     release_notes = (
         datetime.datetime.now(datetime.timezone.utc)
         .astimezone(tz.gettz("US/Pacific"))
@@ -242,4 +242,4 @@ def start() -> None:
     create_release_commit(ctx)
     create_release_cl(ctx)
 
-    click.secho(f"\\o/ All done!", fg="magenta")
+    click.secho("\\o/ All done!", fg="magenta")

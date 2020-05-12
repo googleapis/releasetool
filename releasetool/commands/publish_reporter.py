@@ -99,7 +99,7 @@ def start(github_token: str, pr: str) -> None:
     if build_url:
         message = f"The release build has started, the log can be viewed [here]({build_url}). :sunflower:"
     else:
-        message = f"The release build has started, but the build log URL could not be determined. :broken_heart:"
+        message = "The release build has started, but the build log URL could not be determined. :broken_heart:"
 
     gh.create_pull_request_comment(f"{owner}/{repo}", number, message)
 
