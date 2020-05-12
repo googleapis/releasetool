@@ -55,7 +55,7 @@ class Context(releasetool.commands.common.GitHubContext):
 def determine_package_name(ctx: Context) -> None:
     click.secho("> Figuring out the package name.", fg="cyan")
     ctx.package_name = os.path.basename(os.getcwd())
-    click.secho("Looks like we're releasing {ctx.package_name}.")
+    click.secho(f"Looks like we're releasing {ctx.package_name}.")
 
 
 def gather_tags(ctx: Context) -> None:
