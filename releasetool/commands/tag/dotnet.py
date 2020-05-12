@@ -23,7 +23,7 @@ import releasetool.secrets
 import releasetool.commands.common
 from releasetool.commands.common import TagContext
 
-RELEASE_LINE_PATTERN = r"^(?:- )?Release (.*) version (.*)"
+RELEASE_LINE_PATTERN = r"^(?:- )?Release ([^ ]*) version (.*)"
 
 
 def determine_release_pr(ctx: TagContext) -> None:
