@@ -56,7 +56,7 @@ def determine_release_tag(ctx: TagContext) -> None:
             f"head ref {head_ref}."
         )
         ctx.release_tag = click.prompt(
-            "What should the release tag be (for example, storage-1.2.3)?"
+            "What should the release tag be (for example, v1.2.3)?"
         )
 
     click.secho(f"Release tag is {ctx.release_tag}.")
@@ -64,36 +64,29 @@ def determine_release_tag(ctx: TagContext) -> None:
 
 def determine_package_name_and_version(ctx: TagContext) -> None:
     click.secho("> Determining the package name and version.", fg="cyan")
-    if "google-cloud-python" in ctx.upstream_repo:
-        match = re.match(
-            r"(?P<name>.+?)-(?P<version>\d+?\.\d+?(\.\d+)+)", ctx.release_tag
-        )
-        ctx.package_name = match.group("name")
-        ctx.release_version = match.group("version")
-        click.secho(
-            f"Package name: {ctx.package_name}, "
-            f"package version: {ctx.release_version}."
-        )
-    else:
-        match = re.match(r"(.+)?(?P<version>\d+?\.\d+?(\.\d+)+)", ctx.release_tag)
-        ctx.release_version = match.group("version")
-        click.secho(f"Package version: {ctx.release_version}.")
+
+    match = re.match(r"(.+)?(?P<version>\d+?\.\d+?(\.\d+)+)", ctx.release_tag)
+    ctx.release_version = match.group("version")
+    click.secho(f"Package version: {ctx.release_version}.")
 
 
 def get_release_notes(ctx: TagContext) -> None:
     click.secho("> Grabbing the release notes.")
-    if "google-cloud-python" in ctx.upstream_repo:
-        changelog_path = f"{ctx.package_name}/CHANGELOG.md"
-    else:
-        changelog_path = "CHANGELOG.md"
+
+    changelog_path = "CHANGELOG.md"
     changelog = ctx.github.get_contents(
         ctx.upstream_repo, changelog_path, ref=ctx.release_pr["merge_commit_sha"]
     ).decode("utf-8")
 
+    _get_latest_release_notes(ctx, changelog)
+
+
+def _get_latest_release_notes(ctx: TagContext, changelog: str):
+    # the 'v' prefix is not used in the conventional-changelog templates
+    # used in automated CHANGELOG generation:
+    version = re.sub(r"^v", "", ctx.release_version)
     match = re.search(
-        r"#{2,3}[\s\W]+?"
-        + ctx.release_version
-        + r"*?\n(?P<notes>.+?)(\Z|\n#{2,3}\W*?\d)",
+        rf"## v?\[?{version}[^\n]*\n(?P<notes>.+?)(\n##\s|\n### \[?[0-9]+\.|\Z)",
         changelog,
         re.DOTALL | re.MULTILINE,
     )
@@ -106,10 +99,7 @@ def get_release_notes(ctx: TagContext) -> None:
 def create_release(ctx: TagContext) -> None:
     click.secho("> Creating the release.")
 
-    if "google-cloud-python" in ctx.upstream_repo:
-        release_name = f"google-cloud-{ctx.package_name} {ctx.release_version}"
-    else:
-        release_name = f"v{ctx.release_version}"
+    release_name = f"v{ctx.release_version}"
     ctx.github_release = ctx.github.create_release(
         repository=ctx.upstream_repo,
         tag_name=ctx.release_tag,
@@ -154,10 +144,8 @@ def tag(ctx: TagContext = None) -> TagContext:
     get_release_notes(ctx)
 
     create_release(ctx)
-    if "google-cloud-python" in ctx.upstream_repo:
-        ctx.kokoro_job_name = f"cloud-devrel/client-libraries/google-cloud-python/release/{ctx.package_name}"
-    else:
-        ctx.kokoro_job_name = (
+
+    ctx.kokoro_job_name = (
             f"cloud-devrel/client-libraries/python/{ctx.upstream_repo}/release/release"
         )
     releasetool.commands.common.publish_via_kokoro(ctx)
