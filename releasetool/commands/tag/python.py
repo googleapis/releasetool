@@ -62,11 +62,10 @@ def determine_release_tag(ctx: TagContext) -> None:
     click.secho(f"Release tag is {ctx.release_tag}.")
 
 
-def determine_package_name_and_version(ctx: TagContext) -> None:
-    click.secho("> Determining the package name and version.", fg="cyan")
-
-    match = re.match(r"(.+)?(?P<version>\d+?\.\d+?(\.\d+)+)", ctx.release_tag)
-    ctx.release_version = match.group("version")
+def determine_package_version(ctx: TagContext) -> None:
+    click.secho("> Determining the package version.", fg="cyan")
+    # strip the leading 'v' from the tag
+    ctx.release_version = re.sub(r"^v", "", ctx.release_tag)
     click.secho(f"Package version: {ctx.release_version}.")
 
 
@@ -82,11 +81,8 @@ def get_release_notes(ctx: TagContext) -> None:
 
 
 def _get_latest_release_notes(ctx: TagContext, changelog: str):
-    # the 'v' prefix is not used in the conventional-changelog templates
-    # used in automated CHANGELOG generation:
-    version = re.sub(r"^v", "", ctx.release_version)
     match = re.search(
-        rf"## v?\[?{version}[^\n]*\n(?P<notes>.+?)(\n##\s|\n### \[?[0-9]+\.|\Z)",
+        rf"## v?\[?{ctx.release_version}[^\n]*\n(?P<notes>.+?)(\n##\s|\n### \[?[0-9]+\.|\Z)",
         changelog,
         re.DOTALL | re.MULTILINE,
     )
@@ -134,7 +130,7 @@ def tag(ctx: TagContext = None) -> TagContext:
         determine_release_pr(ctx)
 
     determine_release_tag(ctx)
-    determine_package_name_and_version(ctx)
+    determine_package_version(ctx)
 
     # If the release already exists, don't do anything
     if releasetool.commands.common.release_exists(ctx):
