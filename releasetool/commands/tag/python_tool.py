@@ -76,7 +76,7 @@ def tag(ctx: TagContext = None) -> TagContext:
         python.determine_release_pr(ctx)
 
     python.determine_release_tag(ctx)
-    python.determine_package_name_and_version(ctx)
+    python.determine_package_version(ctx)
 
     # If the release already exists, don't do anything
     if releasetool.commands.common.release_exists(ctx):
