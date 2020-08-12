@@ -27,6 +27,7 @@ from releasetool.commands.common import TagContext
 # repos that still use kokoro for publication:
 nodejs_handle_publish = [
     "googleapis/google-api-nodejs-client",
+    "googleapis/nodejs-logging"
 ]
 
 
