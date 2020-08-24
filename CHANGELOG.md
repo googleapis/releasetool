@@ -4,6 +4,13 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+### [1.0.1](https://www.github.com/googleapis/releasetool/compare/v1.0.0...v1.0.1) (2020-08-24)
+
+
+### Bug Fixes
+
+* swallow exceptions to the GitHub proxy so we don't show the url ([#257](https://www.github.com/googleapis/releasetool/issues/257)) ([616a8a8](https://www.github.com/googleapis/releasetool/commit/616a8a86062bf2ef50ae5e0fcf78d8f34fe62ad2))
+
 ## 2019.06.14
 
 06-14-2019 09:09 PDT
@@ -359,4 +366,3 @@
 ## 0.1.0
 
 Initial release
-
