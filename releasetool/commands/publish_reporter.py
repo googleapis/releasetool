@@ -18,6 +18,7 @@ import os
 import pkgutil
 import re
 from typing import Tuple
+from requests import HTTPError
 
 import releasetool.github
 
@@ -101,7 +102,11 @@ def start(github_token: str, pr: str) -> None:
     else:
         message = "The release build has started, but the build log URL could not be determined. :broken_heart:"
 
-    gh.create_pull_request_comment(f"{owner}/{repo}", number, message)
+    try:
+        gh.create_pull_request_comment(f"{owner}/{repo}", number, message)
+    except HTTPError as e:
+        # wrap exception so we don't show the proxy url
+        raise Exception(f"Error commenting on PR: {e.response.status_code}")
 
 
 def finish(github_token: str, pr: str, status: bool, details: str) -> None:
@@ -130,11 +135,18 @@ def finish(github_token: str, pr: str, status: bool, details: str) -> None:
     if details:
         message += f"\n{details}"
 
-    gh.create_pull_request_comment(f"{owner}/{repo}", number, message)
+    try:
+        gh.create_pull_request_comment(f"{owner}/{repo}", number, message)
+    except HTTPError as e:
+        # wrap exception so we don't show the proxy url
+        raise Exception(f"Error commenting on PR: {e.response.status_code}")
 
-    pull = gh.get_pull_request(f"{owner}/{repo}", number)
-
-    gh.update_pull_labels(pull, add=labels, remove=["autorelease: tagged"])
+    try:
+        pull = gh.get_pull_request(f"{owner}/{repo}", number)
+        gh.update_pull_labels(pull, add=labels, remove=["autorelease: tagged"])
+    except HTTPError as e:
+        # wrap exception so we don't show the proxy url
+        raise Exception(f"Error updating lables on PR: {e.response.status_code}")
 
 
 def script():
