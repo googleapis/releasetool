@@ -4,6 +4,13 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+### [1.0.2](https://www.github.com/googleapis/releasetool/compare/v1.0.1...v1.0.2) (2020-08-24)
+
+
+### Bug Fixes
+
+* correct version in setup.py ([#260](https://www.github.com/googleapis/releasetool/issues/260)) ([f81af0a](https://www.github.com/googleapis/releasetool/commit/f81af0a87c9a2a733e52ab28676fc667570dbe3b))
+
 ### [1.0.1](https://www.github.com/googleapis/releasetool/compare/v1.0.0...v1.0.1) (2020-08-24)
 
 
