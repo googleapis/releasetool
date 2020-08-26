@@ -35,3 +35,6 @@ class PublishReporter(unittest.TestCase):
                     "abc123", "http://example.com", True, ""
                 )
             assert "magic github proxy api key is required" in str(err.value)
+
+    # TODO: use requests_mock to flesh out more thorough tests
+    # see: https://github.com/googleapis/synthtool/blob/8cf6d2834ad14318e64429c3b94f6443ae83daf9/tests/test_language_java.py#L69-L76
