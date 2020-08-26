@@ -22,7 +22,9 @@ import requests
 
 _GITHUB_ROOT: str = "https://api.github.com"
 _GITHUB_UI_ROOT: str = "https://github.com"
-_MAGIC_GITHUB_PROXY_ROOT: str = "https://magic-github-proxy.endpoints.devrel-prod.cloud.goog"
+_MAGIC_GITHUB_PROXY_ROOT: str = (
+    "https://magic-github-proxy.endpoints.devrel-prod.cloud.goog"
+)
 
 
 def _find_devrel_api_key() -> str:

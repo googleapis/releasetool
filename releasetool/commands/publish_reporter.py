@@ -135,6 +135,7 @@ def finish(github_token: str, pr: str, status: bool, details: str) -> None:
     if details:
         message += f"\n{details}"
 
+
 # TODO(busunkim): re-enable commenting once auth issues are resolved
 # https://github.com/googleapis/releasetool/pulls
 #     try:
