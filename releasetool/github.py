@@ -18,7 +18,7 @@ import os
 import re
 import time
 
-from typing import cast, List, Sequence, Union
+from typing import List, Sequence, Union
 
 import jwt
 import requests
@@ -68,25 +68,24 @@ def _find_devrel_api_key() -> str:
 
 
 class GitHubToken:
-    def __init__(self, token: Union[str, dict]):
-        self.auth_type = "Bearer"
-        # If a dictionary is provided for token, assume it
-        # contains app_id, installation, private_key, such that we
-        # can fetch a JWT:
-        if type(token) is dict:
-            self.auth_type = "token"
-            token_dict = cast(dict, token)
-            self.token = get_installation_access_token(
-                token_dict["app_id"],
-                token_dict["installation_id"],
-                token_dict["private_key"],
-            )
+    def __init__(self, token: str, auth_type: str):
+        self.auth_type = auth_type
+        self.token = token
 
     def get_auth_type(self) -> str:
         return self.auth_type
 
     def get_token(self) -> str:
         return self.token
+
+    @staticmethod
+    def token_from_dict(token: dict):
+        access_token = get_installation_access_token(
+            token["app_id"],
+            token["installation_id"],
+            token["private_key"],
+        )
+        return GitHubToken(access_token, 'token')
 
 
 def get_installation_access_token(
