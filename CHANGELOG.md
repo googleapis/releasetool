@@ -4,6 +4,13 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+## [1.1.0](https://www.github.com/googleapis/releasetool/compare/v1.0.2...v1.1.0) (2020-08-26)
+
+
+### Features
+
+* add support for GitHub  JWT auth ([#262](https://www.github.com/googleapis/releasetool/issues/262)) ([ff891a4](https://www.github.com/googleapis/releasetool/commit/ff891a41001f95ed10046adf252bad3bb1b289a8))
+
 ### [1.0.2](https://www.github.com/googleapis/releasetool/compare/v1.0.1...v1.0.2) (2020-08-24)
 
 
