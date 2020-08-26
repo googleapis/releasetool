@@ -18,7 +18,7 @@ import os
 import re
 import time
 
-from typing import List, Sequence, Union
+from typing import cast, List, Sequence, Union
 
 import jwt
 import requests
@@ -124,7 +124,11 @@ def get_installation_access_token(
 
 
 class GitHub:
-    def __init__(self, token: GitHubToken, use_proxy: bool = False) -> None:
+    def __init__(self, maybe_token: Union[GitHubToken, str], use_proxy: bool = False) -> None:
+        if type(maybe_token) is str:
+            token = GitHubToken(cast(str, maybe_token), 'Bearer')
+        else:
+            token = cast(GitHubToken, maybe_token)
         self.session: requests.Session = requests.Session()
         self.GITHUB_ROOT = _GITHUB_ROOT
         self.session.headers.update(
