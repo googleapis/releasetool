@@ -27,6 +27,12 @@ from cryptography.hazmat.backends import default_backend
 
 _GITHUB_ROOT: str = "https://api.github.com"
 _GITHUB_UI_ROOT: str = "https://github.com"
+# TODO: remove references to magic proxy, once we have confirmed the JWT-based
+# approach is working well.
+#
+# magic-proxy provided similar functionality to installation-scoped access
+# tokens, by allowing a token to be generated scoped to a single repository,
+# with limited credentials.
 _MAGIC_GITHUB_PROXY_ROOT: str = (
     "https://magic-github-proxy.endpoints.devrel-prod.cloud.goog"
 )
