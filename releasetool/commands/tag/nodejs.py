@@ -24,12 +24,6 @@ import releasetool.secrets
 import releasetool.commands.common
 from releasetool.commands.common import TagContext
 
-# repos that still use kokoro for publication:
-nodejs_handle_publish = [
-    "googleapis/google-api-nodejs-client",
-    "googleapis/nodejs-logging",
-]
-
 
 def determine_release_pr(ctx: TagContext) -> None:
     click.secho(
@@ -76,14 +70,9 @@ def determine_package_version(ctx: TagContext) -> None:
 
 
 def determine_kokoro_job_name(ctx: TagContext) -> None:
-    if ctx.upstream_repo in nodejs_handle_publish:
-        ctx.kokoro_job_name = (
-            f"cloud-devrel/client-libraries/nodejs/release/{ctx.upstream_repo}/publish"
-        )
-    else:
-        ctx.kokoro_job_name = (
-            f"cloud-devrel/client-libraries/nodejs/release/{ctx.upstream_repo}/docs"
-        )
+    ctx.kokoro_job_name = (
+        f"cloud-devrel/client-libraries/nodejs/release/{ctx.upstream_repo}/publish"
+    )
 
 
 def get_release_notes(ctx: TagContext) -> None:
