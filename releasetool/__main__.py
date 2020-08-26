@@ -156,7 +156,20 @@ def reset_config():
 @main.command(name="publish-reporter-start")
 @click.option("--github_token", envvar="GITHUB_TOKEN", default=None)
 @click.option("--pr", envvar="AUTORELEASE_PR", default=None)
-def publish_reporter_start(github_token: str, pr: str):
+@click.option("--app_id_path", envvar="APP_ID_PATH", default=None)
+@click.option("--installation_id_path", envvar="INSTALLATION_ID_PATH", default=None)
+@click.option("--private_key_path", envvar="GITHUB_PRIVATE_KEY_PATH", default=None)
+def publish_reporter_start(
+    github_token: str,
+    pr: str,
+    app_id_path: str,
+    installation_id_path: str,
+    private_key_path: str,
+):
+    if app_id_path:
+        github_token = github_jwt_dict(
+            app_id_path, installation_id_path, private_key_path
+        )
     releasetool.commands.publish_reporter.start(github_token, pr)
 
 
@@ -165,8 +178,34 @@ def publish_reporter_start(github_token: str, pr: str):
 @click.option("--pr", envvar="AUTORELEASE_PR", default=None)
 @click.option("--status", type=bool, default=True)
 @click.option("--details", envvar="PUBLISH_DETAILS", default=None)
-def publish_reporter_finish(github_token: str, pr: str, status: bool, details: str):
+@click.option("--app_id_path", envvar="APP_ID_PATH", default=None)
+@click.option("--installation_id_path", envvar="INSTALLATION_ID_PATH", default=None)
+@click.option("--private_key_path", envvar="GITHUB_PRIVATE_KEY_PATH", default=None)
+def publish_reporter_finish(
+    github_token: str,
+    pr: str,
+    status: bool,
+    details: str,
+    app_id_path: str,
+    installation_id_path: str,
+    private_key_path: str,
+):
+    if app_id_path:
+        github_token = github_jwt_dict(
+            app_id_path, installation_id_path, private_key_path
+        )
     releasetool.commands.publish_reporter.finish(github_token, pr, status, details)
+
+
+def github_jwt_dict(app_id_path: str, installation_id_path: str, private_key_path: str):
+    """An app_id, installation_id, and private_key may be provided, rather
+    than a github_token. This dictionary of values is passed to publish_reporter
+    which exchanges them for a JWT."""
+    return {
+        "app_id": open(app_id_path, "r").read(),
+        "installation_id": open(installation_id_path, "r").read(),
+        "private_key": open(private_key_path, "r").read(),
+    }
 
 
 @main.command(name="publish-reporter-script")
