@@ -194,6 +194,9 @@ def publish_reporter_finish(
 
 
 def github_jwt_dict(app_id_path: str, installation_id_path: str, private_key_path: str):
+    """An app_id, installation_id, and private_key may be provided, rather
+    than a github_token. This dictionary of values is passed to publish_reporter
+    which exchanges them for a JWT."""
     return {
         "app_id": open(app_id_path, "r").read(),
         "installation_id": open(installation_id_path, "r").read(),

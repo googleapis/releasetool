@@ -70,7 +70,7 @@ class GitHubToken:
         if type(token) is dict:
             self.auth_type = "token"
             token_dict = cast(dict, token)
-            self.token = self.application_access_token(
+            self.token = get_installation_access_token(
                 token_dict["app_id"],
                 token_dict["installation_id"],
                 token_dict["private_key"],
@@ -82,36 +82,40 @@ class GitHubToken:
     def get_token(self) -> str:
         return self.token
 
-    def application_access_token(
-        self, app_id: str, installation_id: str, private_key_str: str
-    ) -> str:
-        time_since_epoch_in_seconds = int(time.time())
-        # see: https://developer.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app
-        payload = {
-            "iat": time_since_epoch_in_seconds,
-            "exp": time_since_epoch_in_seconds + (10 * 60),
-            "iss": app_id,
-        }
 
-        private_key_bytes = private_key_str.encode()
-        private_key = default_backend().load_pem_private_key(private_key_bytes, None)
-        app_jwt = jwt.encode(payload, private_key, algorithm="RS256")
+def get_installation_access_token(
+    app_id: str, installation_id: str, private_key_str: str
+) -> str:
+    """Use GitHub API to exchange app_id, installation_id, and private_key
+    for an installation-specific access_token, see:
+    https://developer.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app
+    """
+    time_since_epoch_in_seconds = int(time.time())
+    payload = {
+        "iat": time_since_epoch_in_seconds,
+        "exp": time_since_epoch_in_seconds + (10 * 60),
+        "iss": app_id,
+    }
 
-        headers = {
-            "Authorization": "Bearer {}".format(app_jwt.decode()),
-            "Accept": "application/vnd.github.machine-man-preview+json",
-        }
+    private_key_bytes = private_key_str.encode()
+    private_key = default_backend().load_pem_private_key(private_key_bytes, None)
+    app_jwt = jwt.encode(payload, private_key, algorithm="RS256")
 
-        resp = requests.post(
-            "https://api.github.com/app/installations/{}/access_tokens".format(
-                installation_id
-            ),
-            headers=headers,
-        )
+    headers = {
+        "Authorization": "Bearer {}".format(app_jwt.decode()),
+        "Accept": "application/vnd.github.machine-man-preview+json",
+    }
 
-        if resp.status_code != 201:
-            raise Exception("Could exchange certificate for JWT.")
-        return json.loads(resp.content.decode())["token"]
+    resp = requests.post(
+        "https://api.github.com/app/installations/{}/access_tokens".format(
+            installation_id
+        ),
+        headers=headers,
+    )
+
+    if resp.status_code != 201:
+        raise Exception("Could exchange certificate for JWT.")
+    return json.loads(resp.content.decode())["token"]
 
 
 class GitHub:
