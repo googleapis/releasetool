@@ -72,7 +72,7 @@ class GitHubToken:
             token_dict = cast(dict, token)
             self.token = self.application_access_token(
                 token_dict["app_id"],
-                token_dict["installation"],
+                token_dict["installation_id"],
                 token_dict["private_key"],
             )
 
@@ -83,7 +83,7 @@ class GitHubToken:
         return self.token
 
     def application_access_token(
-        self, app_id: str, installation: str, private_key_str: str
+        self, app_id: str, installation_id: str, private_key_str: str
     ) -> str:
         time_since_epoch_in_seconds = int(time.time())
         # see: https://developer.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app
@@ -104,7 +104,7 @@ class GitHubToken:
 
         resp = requests.post(
             "https://api.github.com/installations/{}/access_tokens".format(
-                installation
+                installation_id
             ),
             headers=headers,
         )
