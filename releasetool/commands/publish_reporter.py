@@ -87,7 +87,9 @@ def start(github_token: Union[str, dict], pr: str) -> None:
         print("No github token or PR specified to report status to, returning.")
         return
 
-    gh = releasetool.github.GitHub(releasetool.github.GitHubToken(github_token), use_proxy=use_proxy)
+    gh = releasetool.github.GitHub(
+        releasetool.github.GitHubToken(github_token), use_proxy=use_proxy
+    )
 
     try:
         owner, repo, number = extract_pr_details(pr)
@@ -129,7 +131,9 @@ def finish(github_token: Union[str, dict], pr: str, status: bool, details: str) 
         print("No github token or PR specified to report status to, returning.")
         return
 
-    gh = releasetool.github.GitHub(releasetool.github.GitHubToken(github_token), use_proxy=use_proxy)
+    gh = releasetool.github.GitHub(
+        releasetool.github.GitHubToken(github_token), use_proxy=use_proxy
+    )
 
     try:
         owner, repo, number = extract_pr_details(pr)

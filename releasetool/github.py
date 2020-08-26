@@ -63,7 +63,7 @@ def _find_devrel_api_key() -> str:
 
 class GitHubToken:
     def __init__(self, token: Union[str, dict]):
-        self.auth_type = 'Bearer'
+        self.auth_type = "Bearer"
         # If a dictionary is provided for token, assume it
         # contains app_id, installation, private_key, such that we
         # can fetch a JWT:

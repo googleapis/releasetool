@@ -167,7 +167,9 @@ def publish_reporter_start(
     private_key_path: str,
 ):
     if app_id_path:
-        github_token = github_jwt_dict(app_id_path, installation_id_path, private_key_path)
+        github_token = github_jwt_dict(
+            app_id_path, installation_id_path, private_key_path
+        )
     releasetool.commands.publish_reporter.start(github_token, pr)
 
 
@@ -189,7 +191,9 @@ def publish_reporter_finish(
     private_key_path: str,
 ):
     if app_id_path:
-        github_token = github_jwt_dict(app_id_path, installation_id_path, private_key_path)
+        github_token = github_jwt_dict(
+            app_id_path, installation_id_path, private_key_path
+        )
     releasetool.commands.publish_reporter.finish(github_token, pr, status, details)
 
 
