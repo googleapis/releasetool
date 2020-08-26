@@ -84,7 +84,7 @@ def start(github_token_raw: Union[str, dict], pr: str) -> None:
             cast(dict, github_token_raw)
         )
     else:
-        github_token_raw = figure_out_github_token(cast(str, github_token))
+        github_token_raw = figure_out_github_token(cast(str, github_token_raw))
         github_token = releasetool.github.GitHubToken(github_token_raw, "Bearer")
 
     if not github_token or not pr:
@@ -132,8 +132,8 @@ def finish(
             cast(dict, github_token_raw)
         )
     else:
-        github_token_raw = figure_out_github_token(cast(str, github_token))
-        releasetool.github.GitHubToken(github_token_raw, "Bearer")
+        github_token_raw = figure_out_github_token(cast(str, github_token_raw))
+        github_token = releasetool.github.GitHubToken(github_token_raw, "Bearer")
 
     if not github_token or not pr:
         print("No github token or PR specified to report status to, returning.")
