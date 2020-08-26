@@ -17,7 +17,7 @@
 import os
 import pkgutil
 import re
-from typing import cast, Any, Tuple
+from typing import cast, Tuple, Union
 from requests import HTTPError
 
 import releasetool.github
@@ -73,7 +73,7 @@ def extract_pr_details(pr) -> Tuple[str, str, str]:
     return match.group("owner"), match.group("repo"), match.group("number")
 
 
-def start(github_token: Any, pr: str) -> None:
+def start(github_token: Union[str, dict], pr: str) -> None:
     """Reports the start of a publication job to GitHub."""
     # If we are passed a dictionary for github_token, assume we are
     # retrieveing a JWT, and do not use magic proxy:
@@ -115,7 +115,7 @@ def start(github_token: Any, pr: str) -> None:
         raise Exception(f"Error commenting on PR: {e.response.status_code}")
 
 
-def finish(github_token: Any, pr: str, status: bool, details: str) -> None:
+def finish(github_token: Union[str, dict], pr: str, status: bool, details: str) -> None:
     """Reports the completion of a publication job to GitHub."""
     # If we are passed a dictionary for github_token, assume we are
     # retrieveing a JWT, and do not use magic proxy:

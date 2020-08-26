@@ -18,7 +18,7 @@ import os
 import re
 import time
 
-from typing import cast, Any, List, Sequence, Union
+from typing import cast, List, Sequence, Union
 
 import jwt
 import requests
@@ -62,7 +62,7 @@ def _find_devrel_api_key() -> str:
 
 
 class GitHub:
-    def __init__(self, token: Any, use_proxy: bool = False) -> None:
+    def __init__(self, token: Union[str, dict], use_proxy: bool = False) -> None:
         auth_type = "Bearer"
         token_str = cast(str, token)
         # If a dictionary is provided for token, assume it
