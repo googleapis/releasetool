@@ -24,7 +24,9 @@ class PublishReporter(unittest.TestCase):
         os.environ["KOKORO_KEYSTORE_DIR"] = "./"
         try:
             with pytest.raises(Exception) as err:
-                releasetool.commands.publish_reporter.start("abc123", "http://example.com")
+                releasetool.commands.publish_reporter.start(
+                    "abc123", "http://example.com"
+                )
             assert "magic github proxy api key is required" in str(err.value)
         finally:
             os.environ["KOKORO_KEYSTORE_DIR"] = original
