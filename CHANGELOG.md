@@ -4,6 +4,14 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+### [1.1.1](https://www.github.com/googleapis/releasetool/compare/v1.1.0...v1.1.1) (2020-08-26)
+
+
+### Bug Fixes
+
+* **nodejs:** move back to autorelease for publishes ([#267](https://www.github.com/googleapis/releasetool/issues/267)) ([a693434](https://www.github.com/googleapis/releasetool/commit/a693434d9dfe34d59d5197761d780785391f3eca))
+* continue to accept string token ([#266](https://www.github.com/googleapis/releasetool/issues/266)) ([21fc63a](https://www.github.com/googleapis/releasetool/commit/21fc63a2ea17215bf96dff9f15146af304d5af80))
+
 ## [1.1.0](https://www.github.com/googleapis/releasetool/compare/v1.0.2...v1.1.0) (2020-08-26)
 
 
