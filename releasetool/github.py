@@ -15,6 +15,7 @@
 import base64
 import os
 import re
+from requests import HTTPError
 from typing import List, Sequence, Union
 
 import requests
@@ -185,8 +186,14 @@ class GitHub:
     ) -> dict:
         repo_url = f"{self.GITHUB_ROOT}/repos/{repository}"
         url = f"{repo_url}/issues/{pull_request_number}/comments"
-        response = self.session.post(url, json={"body": comment})
-        response.raise_for_status()
+        # TODO(busunkim): Use raise_for_status once auth issues are resolved
+        # https://github.com/googleapis/releasetool/pull/262
+        try:
+            response = self.session.post(url, json={"body": comment})
+        except HTTPError as e:
+            # wrap exception so we don't show the proxy url
+            raise Exception(f"Error commenting on PR: {e.response.status_code}")
+        # response.raise_for_status()
         return response.json()
 
     def get_release(self, repository: str, tag_name: str) -> dict:
