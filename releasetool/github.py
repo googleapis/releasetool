@@ -103,7 +103,7 @@ class GitHubToken:
         }
 
         resp = requests.post(
-            "https://api.github.com/installations/{}/access_tokens".format(
+            "https://api.github.com/app/installations/{}/access_tokens".format(
                 installation_id
             ),
             headers=headers,
