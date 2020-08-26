@@ -85,7 +85,7 @@ class GitHubToken:
             token["installation_id"],
             token["private_key"],
         )
-        return GitHubToken(access_token, 'token')
+        return GitHubToken(access_token, "token")
 
 
 def get_installation_access_token(

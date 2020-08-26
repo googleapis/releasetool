@@ -104,7 +104,9 @@ def setup_github_context(
         "public_repo (https://github.com/settings/tokens)",
     )
 
-    ctx.github = releasetool.github.GitHub(releasetool.github.GitHubToken(github_token, 'Bearer'))
+    ctx.github = releasetool.github.GitHub(
+        releasetool.github.GitHubToken(github_token, "Bearer")
+    )
 
     _determine_origin(ctx)
     _determine_upstream(ctx, owners)

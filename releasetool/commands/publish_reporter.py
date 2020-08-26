@@ -80,10 +80,12 @@ def start(github_token_raw: Union[str, dict], pr: str) -> None:
     use_proxy = True
     if type(github_token_raw) is dict:
         use_proxy = False
-        github_token = releasetool.github.GitHubToken.token_from_dict(cast(dict, github_token_raw))
+        github_token = releasetool.github.GitHubToken.token_from_dict(
+            cast(dict, github_token_raw)
+        )
     else:
         github_token_raw = figure_out_github_token(cast(str, github_token))
-        github_token = releasetool.github.GitHubToken(github_token_raw, 'Bearer')
+        github_token = releasetool.github.GitHubToken(github_token_raw, "Bearer")
 
     if not github_token or not pr:
         print("No github token or PR specified to report status to, returning.")
@@ -117,17 +119,21 @@ def start(github_token_raw: Union[str, dict], pr: str) -> None:
         raise Exception(f"Error commenting on PR: {e.response.status_code}")
 
 
-def finish(github_token_raw: Union[str, dict], pr: str, status: bool, details: str) -> None:
+def finish(
+    github_token_raw: Union[str, dict], pr: str, status: bool, details: str
+) -> None:
     """Reports the completion of a publication job to GitHub."""
     # If we are passed a dictionary for github_token, assume we are
     # retrieveing a JWT, and do not use magic proxy:
     use_proxy = True
     if type(github_token_raw) is dict:
         use_proxy = False
-        github_token = releasetool.github.GitHubToken.token_from_dict(cast(dict, github_token_raw))
+        github_token = releasetool.github.GitHubToken.token_from_dict(
+            cast(dict, github_token_raw)
+        )
     else:
         github_token_raw = figure_out_github_token(cast(str, github_token))
-        releasetool.github.GitHubToken(github_token_raw, 'Bearer')
+        releasetool.github.GitHubToken(github_token_raw, "Bearer")
 
     if not github_token or not pr:
         print("No github token or PR specified to report status to, returning.")
