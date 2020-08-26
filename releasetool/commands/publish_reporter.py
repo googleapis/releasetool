@@ -135,18 +135,20 @@ def finish(github_token: str, pr: str, status: bool, details: str) -> None:
     if details:
         message += f"\n{details}"
 
-    try:
-        gh.create_pull_request_comment(f"{owner}/{repo}", number, message)
-    except HTTPError as e:
-        # wrap exception so we don't show the proxy url
-        raise Exception(f"Error commenting on PR: {e.response.status_code}")
+# TODO(busunkim): re-enable commenting once auth issues are resolved
+# https://github.com/googleapis/releasetool/pulls
+#     try:
+#         gh.create_pull_request_comment(f"{owner}/{repo}", number, message)
+#     except HTTPError as e:
+#         # wrap exception so we don't show the proxy url
+#         raise Exception(f"Error commenting on PR: {e.response.status_code}")
 
-    try:
-        pull = gh.get_pull_request(f"{owner}/{repo}", number)
-        gh.update_pull_labels(pull, add=labels, remove=["autorelease: tagged"])
-    except HTTPError as e:
-        # wrap exception so we don't show the proxy url
-        raise Exception(f"Error updating lables on PR: {e.response.status_code}")
+#     try:
+#         pull = gh.get_pull_request(f"{owner}/{repo}", number)
+#         gh.update_pull_labels(pull, add=labels, remove=["autorelease: tagged"])
+#     except HTTPError as e:
+#         # wrap exception so we don't show the proxy url
+#         raise Exception(f"Error updating lables on PR: {e.response.status_code}")
 
 
 def script():
