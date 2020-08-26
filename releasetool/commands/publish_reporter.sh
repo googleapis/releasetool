@@ -14,10 +14,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-if [ -f "$KOKORO_GFILE_DIR/secret_manager/releasetool-publish-reporter-app" ]; then
-    export APP_ID_PATH="$KOKORO_GFILE_DIR/secret_manager/releasetool-publish-reporter-app"
-    export INSTALLATION_ID_PATH="$KOKORO_GFILE_DIR/secret_manager/releasetool-publish-reporter-googleapis-installation"
-    export GITHUB_PRIVATE_KEY_PATH="$KOKORO_GFILE_DIR/secret_manager/releasetool-publish-reporter-pem"
+if [ -f "${KOKORO_GFILE_DIR}/secret_manager/releasetool-publish-reporter-app" ]; then
+    export APP_ID_PATH="${KOKORO_GFILE_DIR}/secret_manager/releasetool-publish-reporter-app"
+    export INSTALLATION_ID_PATH="${KOKORO_GFILE_DIR}/secret_manager/releasetool-publish-reporter-googleapis-installation"
+    export GITHUB_PRIVATE_KEY_PATH="${KOKORO_GFILE_DIR}/secret_manager/releasetool-publish-reporter-pem"
 else
     echo 'could not load GitHub installation credentials'
 fi
