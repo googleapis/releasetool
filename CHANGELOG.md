@@ -4,6 +4,13 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+### [1.1.3](https://www.github.com/googleapis/releasetool/compare/v1.1.2...v1.1.3) (2020-08-26)
+
+
+### Bug Fixes
+
+* **build:** fix permissions for publish reporter ([#272](https://www.github.com/googleapis/releasetool/issues/272)) ([638ca66](https://www.github.com/googleapis/releasetool/commit/638ca6628b419e185ac2204739bb513c9f38c3e5))
+
 ### [1.1.2](https://www.github.com/googleapis/releasetool/compare/v1.1.1...v1.1.2) (2020-08-26)
 
 
