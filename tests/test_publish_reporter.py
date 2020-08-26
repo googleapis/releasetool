@@ -21,16 +21,18 @@ import releasetool.commands.publish_reporter
 class PublishReporter(unittest.TestCase):
     def test_publish_reporter_start_devrel_api_key(self):
         original = os.environ.get("KOKORO_KEYSTORE_DIR", "")
-        os.environ["KOKORO_KEYSTORE_DIR"] = './'
+        os.environ["KOKORO_KEYSTORE_DIR"] = "./"
         with pytest.raises(Exception) as err:
-            releasetool.commands.publish_reporter.start('abc123', 'http://example.com')
+            releasetool.commands.publish_reporter.start("abc123", "http://example.com")
         os.environ["KOKORO_KEYSTORE_DIR"] = original
         assert "magic github proxy api key is required" in str(err.value)
 
     def test_publish_reporter_finish_devrel_api_key(self):
         original = os.environ.get("KOKORO_KEYSTORE_DIR", "")
-        os.environ["KOKORO_KEYSTORE_DIR"] = './'
+        os.environ["KOKORO_KEYSTORE_DIR"] = "./"
         with pytest.raises(Exception) as err:
-            releasetool.commands.publish_reporter.finish('abc123', 'http://example.com', True, '')
+            releasetool.commands.publish_reporter.finish(
+                "abc123", "http://example.com", True, ""
+            )
         os.environ["KOKORO_KEYSTORE_DIR"] = original
         assert "magic github proxy api key is required" in str(err.value)
