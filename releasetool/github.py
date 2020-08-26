@@ -13,11 +13,16 @@
 # limitations under the License.
 
 import base64
+import json
 import os
 import re
-from typing import List, Sequence, Union
+import time
 
+from typing import cast, Any, List, Sequence, Union
+
+import jwt
 import requests
+from cryptography.hazmat.backends import default_backend
 
 
 _GITHUB_ROOT: str = "https://api.github.com"
@@ -55,13 +60,27 @@ def _find_devrel_api_key() -> str:
 
 
 class GitHub:
-    def __init__(self, token: str, use_proxy: bool = False) -> None:
+    def __init__(self, token: Any, use_proxy: bool = False) -> None:
+        auth_type = 'Bearer'
+        token_str = cast(str, token)
+        # If a dictionary is provided for token, assume it
+        # contains app_id, installation, private_key, such that we
+        # can fetch a JWT:
+        if type(token) is dict:
+            auth_type = 'token'
+            token_dict = cast(dict, token)
+            token_str = self.application_access_token(
+                token_dict['app_id'],
+                token_dict['installation'],
+                token_dict['private_key']
+            )
+
         self.session: requests.Session = requests.Session()
         self.GITHUB_ROOT = _GITHUB_ROOT
         self.session.headers.update(
             {
                 "Accept": "application/vnd.github.v3+json",
-                "Authorization": f"Bearer {token}",
+                "Authorization": f"{auth_type} {token_str}",
             }
         )
 
@@ -69,6 +88,33 @@ class GitHub:
             self.GITHUB_ROOT = _MAGIC_GITHUB_PROXY_ROOT
             # To use the proxy, we need an api key for the magic github proxy.
             self.session.params = {"key": _find_devrel_api_key()}
+
+    def application_access_token(self, app_id: str, installation: str, private_key_str: str) -> str:
+        time_since_epoch_in_seconds = int(time.time())
+        # see: https://developer.github.com/apps/building-github-apps/authenticating-with-github-apps/#authenticating-as-a-github-app
+        payload = {
+            'iat': time_since_epoch_in_seconds,
+            'exp': time_since_epoch_in_seconds + (10 * 60),
+            'iss': app_id
+        }
+
+        private_key_bytes = private_key_str.encode()
+        private_key = default_backend().load_pem_private_key(private_key_bytes, None)
+        app_jwt = jwt.encode(payload, private_key, algorithm='RS256')
+
+        headers = {
+            "Authorization":
+            "Bearer {}".format(app_jwt.decode()),
+            "Accept": "application/vnd.github.machine-man-preview+json"
+        }
+
+        resp = requests.post(
+            'https://api.github.com/installations/{}/access_tokens'.format(installation),
+            headers=headers)
+
+        if resp.status_code != 201:
+            raise Exception("Could exchange certificate for JWT.")
+        return json.loads(resp.content.decode())['token']
 
     def list_pull_requests(
         self, repository: str, state: str = None, merged: bool = True

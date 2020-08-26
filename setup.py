@@ -22,8 +22,10 @@ dependencies = [
     "requests",
     "attrs",
     "click",
+    "cryptography",
     "keyring",
     "packaging",
+    "pyjwt",
     "pyperclip",
     "python-dateutil",
 ]

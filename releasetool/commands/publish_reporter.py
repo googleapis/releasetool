@@ -17,7 +17,7 @@
 import os
 import pkgutil
 import re
-from typing import Tuple
+from typing import cast, Any, Tuple
 from requests import HTTPError
 
 import releasetool.github
@@ -73,15 +73,21 @@ def extract_pr_details(pr) -> Tuple[str, str, str]:
     return match.group("owner"), match.group("repo"), match.group("number")
 
 
-def start(github_token: str, pr: str) -> None:
+def start(github_token: Any, pr: str) -> None:
     """Reports the start of a publication job to GitHub."""
-    github_token = figure_out_github_token(github_token)
+    # If we are passed a dictionary for github_token, assume we are
+    # retrieveing a JWT, and do not use magic proxy:
+    use_proxy = True
+    if type(github_token) is dict:
+        use_proxy = False
+    else:
+        github_token = figure_out_github_token(cast(str, github_token))
 
     if not github_token or not pr:
         print("No github token or PR specified to report status to, returning.")
         return
 
-    gh = releasetool.github.GitHub(github_token, use_proxy=True)
+    gh = releasetool.github.GitHub(github_token, use_proxy=use_proxy)
 
     try:
         owner, repo, number = extract_pr_details(pr)
@@ -109,15 +115,21 @@ def start(github_token: str, pr: str) -> None:
         raise Exception(f"Error commenting on PR: {e.response.status_code}")
 
 
-def finish(github_token: str, pr: str, status: bool, details: str) -> None:
+def finish(github_token: Any, pr: str, status: bool, details: str) -> None:
     """Reports the completion of a publication job to GitHub."""
-    github_token = figure_out_github_token(github_token)
+    # If we are passed a dictionary for github_token, assume we are
+    # retrieveing a JWT, and do not use magic proxy:
+    use_proxy = True
+    if type(github_token) is dict:
+        use_proxy = False
+    else:
+        github_token = figure_out_github_token(cast(str, github_token))
 
     if not github_token or not pr:
         print("No github token or PR specified to report status to, returning.")
         return
 
-    gh = releasetool.github.GitHub(github_token, use_proxy=True)
+    gh = releasetool.github.GitHub(github_token, use_proxy=use_proxy)
 
     try:
         owner, repo, number = extract_pr_details(pr)

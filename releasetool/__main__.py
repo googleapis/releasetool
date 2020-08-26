@@ -156,7 +156,12 @@ def reset_config():
 @main.command(name="publish-reporter-start")
 @click.option("--github_token", envvar="GITHUB_TOKEN", default=None)
 @click.option("--pr", envvar="AUTORELEASE_PR", default=None)
-def publish_reporter_start(github_token: str, pr: str):
+@click.option("--app_id_path", envvar="APP_ID", default=None)
+@click.option("--installation_path", envvar="INSTALLATION", default=None)
+@click.option("--private_key_path", envvar="GITHUB_PRIVATE_KEY", default=None)
+def publish_reporter_start(github_token: str, pr: str, app_id_path: str, installation_path: str, private_key_path: str):
+    if app_id_path:
+        github_token = github_jwt_dict(app_id_path, installation_path, private_key_path)
     releasetool.commands.publish_reporter.start(github_token, pr)
 
 
@@ -165,8 +170,21 @@ def publish_reporter_start(github_token: str, pr: str):
 @click.option("--pr", envvar="AUTORELEASE_PR", default=None)
 @click.option("--status", type=bool, default=True)
 @click.option("--details", envvar="PUBLISH_DETAILS", default=None)
-def publish_reporter_finish(github_token: str, pr: str, status: bool, details: str):
+@click.option("--app_id_path", envvar="APP_ID", default=None)
+@click.option("--installation_path", envvar="INSTALLATION", default=None)
+@click.option("--private_key_path", envvar="GITHUB_PRIVATE_KEY", default=None)
+def publish_reporter_finish(github_token: str, pr: str, status: bool, details: str, app_id_path: str, installation_path: str, private_key_path: str):
+    if app_id_path:
+        github_token = github_jwt_dict(app_id_path, installation_path, private_key_path)
     releasetool.commands.publish_reporter.finish(github_token, pr, status, details)
+
+
+def github_jwt_dict(app_id_path: str, installation_path: str, private_key_path: str):
+    return {
+        "app_id": open(app_id_path, 'r').read(),
+        "installation": open(installation_path, 'r').read(),
+        "private_key": open(private_key_path, 'r').read()
+    }
 
 
 @main.command(name="publish-reporter-script")
