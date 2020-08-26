@@ -159,7 +159,13 @@ def reset_config():
 @click.option("--app_id_path", envvar="APP_ID", default=None)
 @click.option("--installation_path", envvar="INSTALLATION", default=None)
 @click.option("--private_key_path", envvar="GITHUB_PRIVATE_KEY", default=None)
-def publish_reporter_start(github_token: str, pr: str, app_id_path: str, installation_path: str, private_key_path: str):
+def publish_reporter_start(
+    github_token: str,
+    pr: str,
+    app_id_path: str,
+    installation_path: str,
+    private_key_path: str,
+):
     if app_id_path:
         github_token = github_jwt_dict(app_id_path, installation_path, private_key_path)
     releasetool.commands.publish_reporter.start(github_token, pr)
@@ -173,7 +179,15 @@ def publish_reporter_start(github_token: str, pr: str, app_id_path: str, install
 @click.option("--app_id_path", envvar="APP_ID", default=None)
 @click.option("--installation_path", envvar="INSTALLATION", default=None)
 @click.option("--private_key_path", envvar="GITHUB_PRIVATE_KEY", default=None)
-def publish_reporter_finish(github_token: str, pr: str, status: bool, details: str, app_id_path: str, installation_path: str, private_key_path: str):
+def publish_reporter_finish(
+    github_token: str,
+    pr: str,
+    status: bool,
+    details: str,
+    app_id_path: str,
+    installation_path: str,
+    private_key_path: str,
+):
     if app_id_path:
         github_token = github_jwt_dict(app_id_path, installation_path, private_key_path)
     releasetool.commands.publish_reporter.finish(github_token, pr, status, details)
@@ -181,9 +195,9 @@ def publish_reporter_finish(github_token: str, pr: str, status: bool, details: s
 
 def github_jwt_dict(app_id_path: str, installation_path: str, private_key_path: str):
     return {
-        "app_id": open(app_id_path, 'r').read(),
-        "installation": open(installation_path, 'r').read(),
-        "private_key": open(private_key_path, 'r').read()
+        "app_id": open(app_id_path, "r").read(),
+        "installation": open(installation_path, "r").read(),
+        "private_key": open(private_key_path, "r").read(),
     }
 
 
