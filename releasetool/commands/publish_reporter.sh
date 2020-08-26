@@ -14,6 +14,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+export APP_ID_PATH="$KOKORO_GFILE_DIR/secret_manager/releasetool-publish-reporter-app"
+export INSTALLATION_ID_PATH="$KOKORO_GFILE_DIR/secret_manager/releasetool-publish-reporter-googleapis-installation"
+export GITHUB_PRIVATE_KEY_PATH="$KOKORO_GFILE_DIR/secret_manager/releasetool-publish-reporter-pem"
+
 # Install an exit hook to report status.
 releasetool_finish_report() {
     rv=$?
