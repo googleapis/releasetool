@@ -156,9 +156,9 @@ def reset_config():
 @main.command(name="publish-reporter-start")
 @click.option("--github_token", envvar="GITHUB_TOKEN", default=None)
 @click.option("--pr", envvar="AUTORELEASE_PR", default=None)
-@click.option("--app_id_path", envvar="APP_ID", default=None)
-@click.option("--installation_path", envvar="INSTALLATION", default=None)
-@click.option("--private_key_path", envvar="GITHUB_PRIVATE_KEY", default=None)
+@click.option("--app_id_path", envvar="APP_ID_PATH", default=None)
+@click.option("--installation_path", envvar="INSTALLATION_PATH", default=None)
+@click.option("--private_key_path", envvar="GITHUB_PRIVATE_KEY_PATH", default=None)
 def publish_reporter_start(
     github_token: str,
     pr: str,
@@ -176,9 +176,9 @@ def publish_reporter_start(
 @click.option("--pr", envvar="AUTORELEASE_PR", default=None)
 @click.option("--status", type=bool, default=True)
 @click.option("--details", envvar="PUBLISH_DETAILS", default=None)
-@click.option("--app_id_path", envvar="APP_ID", default=None)
-@click.option("--installation_path", envvar="INSTALLATION", default=None)
-@click.option("--private_key_path", envvar="GITHUB_PRIVATE_KEY", default=None)
+@click.option("--app_id_path", envvar="APP_ID_PATH", default=None)
+@click.option("--installation_path", envvar="INSTALLATION_PATH", default=None)
+@click.option("--private_key_path", envvar="GITHUB_PRIVATE_KEY_PATH", default=None)
 def publish_reporter_finish(
     github_token: str,
     pr: str,
