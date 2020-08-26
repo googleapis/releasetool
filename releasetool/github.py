@@ -61,35 +61,26 @@ def _find_devrel_api_key() -> str:
     return magic_github_proxy_key
 
 
-class GitHub:
-    def __init__(self, token: Union[str, dict], use_proxy: bool = False) -> None:
-        auth_type = "Bearer"
-        token_str = cast(str, token)
+class GitHubToken:
+    def __init__(self, token: Union[str, dict]):
+        self.auth_type = 'Bearer'
         # If a dictionary is provided for token, assume it
         # contains app_id, installation, private_key, such that we
         # can fetch a JWT:
         if type(token) is dict:
-            auth_type = "token"
+            self.auth_type = "token"
             token_dict = cast(dict, token)
-            token_str = self.application_access_token(
+            self.token = self.application_access_token(
                 token_dict["app_id"],
                 token_dict["installation"],
                 token_dict["private_key"],
             )
 
-        self.session: requests.Session = requests.Session()
-        self.GITHUB_ROOT = _GITHUB_ROOT
-        self.session.headers.update(
-            {
-                "Accept": "application/vnd.github.v3+json",
-                "Authorization": f"{auth_type} {token_str}",
-            }
-        )
+    def get_auth_type(self) -> str:
+        return self.auth_type
 
-        if use_proxy:
-            self.GITHUB_ROOT = _MAGIC_GITHUB_PROXY_ROOT
-            # To use the proxy, we need an api key for the magic github proxy.
-            self.session.params = {"key": _find_devrel_api_key()}
+    def get_token(self) -> str:
+        return self.token
 
     def application_access_token(
         self, app_id: str, installation: str, private_key_str: str
@@ -121,6 +112,23 @@ class GitHub:
         if resp.status_code != 201:
             raise Exception("Could exchange certificate for JWT.")
         return json.loads(resp.content.decode())["token"]
+
+
+class GitHub:
+    def __init__(self, token: GitHubToken, use_proxy: bool = False) -> None:
+        self.session: requests.Session = requests.Session()
+        self.GITHUB_ROOT = _GITHUB_ROOT
+        self.session.headers.update(
+            {
+                "Accept": "application/vnd.github.v3+json",
+                "Authorization": f"{token.get_auth_type()} {token.get_token()}",
+            }
+        )
+
+        if use_proxy:
+            self.GITHUB_ROOT = _MAGIC_GITHUB_PROXY_ROOT
+            # To use the proxy, we need an api key for the magic github proxy.
+            self.session.params = {"key": _find_devrel_api_key()}
 
     def list_pull_requests(
         self, repository: str, state: str = None, merged: bool = True

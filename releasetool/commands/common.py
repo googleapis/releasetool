@@ -103,7 +103,7 @@ def setup_github_context(
         "Please provide your GitHub API token with write:repo_hook and "
         "public_repo (https://github.com/settings/tokens)",
     )
-    ctx.github = releasetool.github.GitHub(github_token)
+    ctx.github = releasetool.github.GitHub(releasetool.github.GitHubToken(github_token))
 
     _determine_origin(ctx)
     _determine_upstream(ctx, owners)
