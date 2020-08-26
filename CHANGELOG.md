@@ -4,6 +4,13 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+### [1.1.2](https://www.github.com/googleapis/releasetool/compare/v1.1.1...v1.1.2) (2020-08-26)
+
+
+### Bug Fixes
+
+* referenced github_token rather than github_token_raw ([#270](https://www.github.com/googleapis/releasetool/issues/270)) ([2bb815a](https://www.github.com/googleapis/releasetool/commit/2bb815a00dfc96cc574fe1b714dc20b47a914698))
+
 ### [1.1.1](https://www.github.com/googleapis/releasetool/compare/v1.1.0...v1.1.1) (2020-08-26)
 
 
