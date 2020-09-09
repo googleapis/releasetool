@@ -1,0 +1,89 @@
+// Copyright 2018 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+// Protocol messages and service definition for Kokoro master API.
+// This has been heavily modified from the upstream source to just contain
+// the fields we need.
+// Source: https://cs.corp.google.com/piper///depot/google3/devtools/kokoro/api/proto/kokoro_api.proto
+
+syntax = "proto2";
+
+package devtools.kokoro.api.proto;
+
+// Request for new build of a job.
+message BuildRequest {
+  optional string full_job_name = 1;
+
+  // The specific revision to build. If not set, Jenkins will use whatever
+  // revision is latest when the build actually executes.
+  optional ScmRevision scm_revision = 3;
+
+  // The input file/directory paths for a kokoro build, they should be
+  // accessible by GoogleFile. Those files will be downloaded to src directory
+  // and available before build step starts.
+  repeated string input_file_paths = 4;
+
+  // Build parameters passed to job as environment variable key value pairs.
+  // Multiple env_vars blocks are allowed. See
+  // http://cs/piper///depot/google3/devtools/kokoro/config/proto/build.proto?type=cs&q=project:kokoro+file:build.proto+%22env_vars+%3D+6;%22
+  map<string, string> env_vars = 6;
+
+  // Keystore Resources to be fetched pre build. These will be downloaded to
+  // src/keystore directory and will be available before build starts.
+  // Resource with configID X and name Y will be placed at src/keystore/X_Y.
+  // optional .kokoro.FetchKeystore fetch_keystore = 7;
+
+  // Kokoro build config parameters key value pairs. The key is the variable in
+  // the build config and the value is the value that you want to replace the
+  // variable in the build config (string type only).
+  // Multiple build_params blocks are allowed. See build_params in
+  // https://cs.corp.google.com/piper///depot/google3/devtools/kokoro/config/proto/build.proto?dr=C&rcl=206864844&g=0&l=18
+  map<string, string> build_params = 12;
+
+  // next index: 13;
+}
+
+// Represents a specific revision in one of the supported SCM systems.
+message ScmRevision {
+  oneof scmrevision {
+    GithubScmRevision github_scm_revision = 4;
+  }
+}
+
+// Represents a specific revision in GitHub repository.
+message GithubScmRevision {
+  // Name of the scm that this revision belongs to. This name should be the same
+  // as multi_scm.github_scm.name
+  optional string name = 4;
+
+  optional string commit_sha = 1;
+
+  // Pull request number in GitHub. If this field is present, then commit_sha
+  // will be the commit in the pull request.
+  optional string pull_request_number = 2;
+
+  // The URL for the change in Github repository. This field will be populated
+  // in the build result, and will be ignored if it is specified in the query.
+  optional string repository_url = 3;
+
+  // Owner of the repository. If supplied, this field will override the owner
+  // field in job.proto.
+  optional string owner = 5;
+
+  // GitHub repository name. If supplied, this field will override the
+  // repository field in job.proto.
+  optional string repository = 6;
+
+  // next index: 7
+}

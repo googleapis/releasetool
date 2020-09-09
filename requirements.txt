@@ -1,0 +1,6 @@
+requests
+jinja2
+attrs
+protobuf
+google-auth
+git+git://github.com/GoogleCloudPlatform/releasetool.git@master#egg=gcp-releasetool
