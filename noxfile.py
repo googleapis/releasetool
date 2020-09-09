@@ -31,7 +31,6 @@ def lint(session):
         'mypy',
         '--no-strict-optional',
         '--ignore-missing-imports',
-        'autorelease', 
         'releasetool')
 
 

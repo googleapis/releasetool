@@ -15,7 +15,7 @@
 import base64
 import logging
 import os
-from typing import Dict, List, Sequence
+from typing import Dict, List, Sequence, Generator
 
 import requests
 from urllib3.util.retry import Retry
@@ -77,7 +77,7 @@ class GitHub:
         response.raise_for_status()
         return response.json()
 
-    def list_org_repos(self, org: str, type: str = None) -> Sequence[dict]:
+    def list_org_repos(self, org: str, type: str = None) -> Generator[dict, None, None]:
         url = f"{self.GITHUB_ROOT}/orgs/{org}/repos"
 
         while url:
@@ -90,7 +90,7 @@ class GitHub:
 
     def list_org_issues(
         self, org: str, filter: str = None, state: str = None, labels: str = None
-    ) -> Sequence[dict]:
+    ) -> Generator[dict, None, None]:
         url = f"{self.GITHUB_ROOT}/orgs/{org}/issues"
 
         # GitHub sometimes returns 5xx errors for this request.
@@ -105,7 +105,7 @@ class GitHub:
             )
             response.raise_for_status()
             if response.status_code >= 400:
-                logging.log(response.text)
+                logging.error(response.text)
             for item in response.json():
                 yield item
 
