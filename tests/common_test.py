@@ -15,10 +15,17 @@
 import json
 import os
 import pathlib
+import pytest
 import string
 
 from autorelease import github
 from autorelease.common import _determine_language, guess_language
+
+
+if not os.environ.get("GITHUB_TOKEN"):
+    pytest.skip(
+        "skipping tests that require a valid github token", allow_module_level=True
+    )
 
 
 def repo_name_to_test_name(repo_name: str) -> str:
