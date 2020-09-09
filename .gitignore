@@ -109,3 +109,6 @@ venv.bak/
 app
 installation
 pem
+
+# IDEs
+.vscode/

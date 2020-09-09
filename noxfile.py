@@ -18,19 +18,20 @@ import nox
 @nox.session(python='3.6')
 def blacken(session):
     session.install('black')
-    session.run('black', 'releasetool', 'tests')
+    session.run('black', 'autorelease', 'releasetool', 'tests')
 
 
 @nox.session(python='3.6')
 def lint(session):
     session.install('mypy', 'flake8', 'black')
     session.run('pip', 'install', '-e', '.')
-    session.run('black', '--check', 'releasetool', 'tests')
-    session.run('flake8', 'releasetool', 'tests')
+    session.run('black', '--check', 'autorelease', 'releasetool', 'tests')
+    session.run('flake8', 'autorelease', 'releasetool', 'tests')
     session.run(
         'mypy',
         '--no-strict-optional',
         '--ignore-missing-imports',
+        'autorelease', 
         'releasetool')
 
 

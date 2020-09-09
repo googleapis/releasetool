@@ -1,0 +1,73 @@
+# Copyright 2018 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+"""This module talks to Kokoro via Pub/Sub messages to devrel-prod.googleplex.com."""
+
+import base64
+
+from google.auth.transport import requests
+from google.oauth2 import service_account
+
+from protos import kokoro_api_pb2
+
+
+_DEVREL_PROD_KOKORO_TOPIC = (
+    "projects/google.com:devrel-library-tracker-prod/topics/kokoro"
+)
+
+
+def _send_pubsub_message(
+    session: requests.AuthorizedSession, topic: str, data: str
+) -> dict:
+    url = f"https://pubsub.googleapis.com/v1/{topic}:publish"
+    encoded_data = base64.b64encode(data.encode("utf-8"))
+
+    publish_request = {"messages": [{"data": encoded_data.decode("utf-8")}]}
+
+    resp = session.post(url, json=publish_request)
+    resp.raise_for_status()
+
+    return resp
+
+
+def _make_build_request(job_name: str, sha: str, env_vars: dict = None) -> str:
+    request = kokoro_api_pb2.BuildRequest(
+        full_job_name=job_name,
+        scm_revision=kokoro_api_pb2.ScmRevision(
+            github_scm_revision=kokoro_api_pb2.GithubScmRevision(commit_sha=sha)
+        ),
+    )
+
+    if env_vars:
+        for key, value in env_vars.items():
+            request.env_vars[key] = value
+
+    # Transform into a string for TextFormat. See:
+    # https://sites.google.com/a/google.com/protocol-buffers/user-docs/miscellaneous-howtos/text-format-examples
+    return str(request)
+
+
+def make_authorized_session(credentials_file: str) -> requests.AuthorizedSession:
+    credentials = service_account.Credentials.from_service_account_file(
+        credentials_file, scopes=["https://www.googleapis.com/auth/pubsub"]
+    )
+    session = requests.AuthorizedSession(credentials)
+    return session
+
+
+def trigger_build(
+    session: requests.AuthorizedSession, job_name: str, sha: str, env_vars: dict = None
+):
+    build_request = _make_build_request(job_name, sha, env_vars=env_vars)
+    _send_pubsub_message(session, _DEVREL_PROD_KOKORO_TOPIC, build_request)
