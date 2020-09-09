@@ -1797,7 +1797,7 @@ def test_guess_googleapis_docuploader():
 
 def test_guess_googleapis_releasetool():
     gh = github.GitHub(os.environ["GITHUB_TOKEN"])
-    assert "python_tool" == guess_language(gh, "googleapis/releasetool")
+    assert "python" == guess_language(gh, "googleapis/releasetool")
 
 
 def test_guess_googleapis_synthtool():
