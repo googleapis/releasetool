@@ -15,7 +15,7 @@
 
 set -eo pipefail
 
-cd ${KOKORO_ARTIFACTS_DIR}/git/releasetool
+cd ${KOKORO_ARTIFACTS_DIR}/github/releasetool
 
 # Upgrade the NPM version
 sudo npm install -g npm
