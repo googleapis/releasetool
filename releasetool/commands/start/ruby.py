@@ -209,16 +209,12 @@ def create_release_pr(ctx: Context, autorelease: bool = True) -> None:
         from_=ctx.last_release_committish, to=f"{ctx.upstream_name}/master"
     )
     log_html = f"<details><summary>Commits since previous release</summary><pre><code>{log}</code></pre></details>"
-    diff = releasetool.git.diff(
-        from_=ctx.last_release_committish, to=f"{ctx.upstream_name}/master"
-    )
-    diff_html = f"<details><summary>Code changes since previous release</summary>\n\n```diff\n{diff}\n```\n\n</details>"
 
     ctx.pull_request = ctx.github.create_pull_request(
         ctx.upstream_repo,
         head=head,
         title=f"Release {ctx.package_name} {ctx.release_version}",
-        body=f"{ctx.release_notes}\n\n{log_html}\n\n{diff_html}\n\nThis pull request was generated using releasetool.",
+        body=f"{ctx.release_notes}\n\n{log_html}\n\nThis pull request was generated using releasetool.",
     )
 
     if autorelease:
