@@ -4,6 +4,14 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+### [1.1.4](https://www.github.com/googleapis/releasetool/compare/v1.1.3...v1.1.4) (2020-09-21)
+
+
+### Bug Fixes
+
+* **ruby:** Cut problematic text from release PR body ([#277](https://www.github.com/googleapis/releasetool/issues/277)) ([9e39a71](https://www.github.com/googleapis/releasetool/commit/9e39a7191b2db48c4e8e485136990233c2a13bcf))
+* paths in kokoro build scripts ([#275](https://www.github.com/googleapis/releasetool/issues/275)) ([005e779](https://www.github.com/googleapis/releasetool/commit/005e779092b04b42d6cbb5c0ed188fabadcf97cc))
+
 ### [1.1.3](https://www.github.com/googleapis/releasetool/compare/v1.1.2...v1.1.3) (2020-08-26)
 
 
