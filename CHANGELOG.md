@@ -4,6 +4,19 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+## [1.2.0](https://www.github.com/googleapis/releasetool/compare/v1.1.3...v1.2.0) (2020-09-30)
+
+
+### Features
+
+* Allow the .NET autorelease process to work across multiple repositories ([c7e4bf8](https://www.github.com/googleapis/releasetool/commit/c7e4bf85495b0ebd86586546e78c8b8638b3d0a0))
+
+
+### Bug Fixes
+
+* **ruby:** Cut problematic text from release PR body ([#277](https://www.github.com/googleapis/releasetool/issues/277)) ([9e39a71](https://www.github.com/googleapis/releasetool/commit/9e39a7191b2db48c4e8e485136990233c2a13bcf))
+* paths in kokoro build scripts ([#275](https://www.github.com/googleapis/releasetool/issues/275)) ([005e779](https://www.github.com/googleapis/releasetool/commit/005e779092b04b42d6cbb5c0ed188fabadcf97cc))
+
 ### [1.1.3](https://www.github.com/googleapis/releasetool/compare/v1.1.2...v1.1.3) (2020-08-26)
 
 
