@@ -1,4 +1,3 @@
-
 #!/bin/bash
 
 # Copyright 2018 Google LLC
@@ -25,7 +24,7 @@ python3 -m releasetool publish-reporter-script > /tmp/publisher-script; source /
 
 # Move into the package, build the distribution and upload.
 cd github/releasetool
-TWINE_PASSWORD=$(cat "${KOKORO_KEYSTORE_DIR}/73713_google_cloud_pypi_password")
+TWINE_PASSWORD=$(cat "${KOKORO_GFILE_DIR}/google-cloud-pypi-password")
 
 # Ensure that we have the latest versions of Twine, Wheel, and Setuptools.
 python3 -m pip install --upgrade twine wheel setuptools
@@ -34,4 +33,4 @@ python3 -m pip install --upgrade twine wheel setuptools
 export PYTHONUNBUFFERED=1
 
 python3 setup.py sdist bdist_wheel
-twine upload --username gcloudpypi --password "${TWINE_PASSWORD}" dist/*
+twine upload --username __token__ --password "${TWINE_PASSWORD}" dist/*
