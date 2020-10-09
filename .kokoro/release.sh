@@ -22,15 +22,15 @@ set -eo pipefail
 python3 -m pip install github/releasetool
 python3 -m releasetool publish-reporter-script > /tmp/publisher-script; source /tmp/publisher-script
 
-
+# Move into the package, build the distribution and upload.
 cd github/releasetool
-TWINE_USERNAME=$(cat "${KOKORO_GFILE_DIR}/twine-username.txt")
-TWINE_PASSWORD=$(cat "${KOKORO_GFILE_DIR}/twine-password.txt")
+TWINE_PASSWORD=$(cat "${KOKORO_GFILE_DIR}/secret_manager/google-cloud-pypi-password")
+
+# Ensure that we have the latest versions of Twine, Wheel, and Setuptools.
+python3 -m pip install --upgrade twine wheel setuptools
 
 # Disable buffering, so that the logs stream through.
 export PYTHONUNBUFFERED=1
 
-python3 -m pip install --upgrade --quiet setuptools wheel twine
-
 python3 setup.py sdist bdist_wheel
-twine upload --username "${TWINE_USERNAME}" --password "${TWINE_PASSWORD}" dist/*
+twine upload --username __token__ --password "${TWINE_PASSWORD}" dist/*
