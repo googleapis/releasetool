@@ -1,4 +1,6 @@
+
 #!/bin/bash
+
 # Copyright 2018 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,9 +17,15 @@
 
 set -eo pipefail
 
-# Start the releasetool reporter
-python3 -m pip install gcp-releasetool
+# Enable the publish build reporter
+# Note: this installs from source since we're in the releasetool repo. Other projects
+# will need to use python3 -m pip install gcp-releasetool
+python3 -m pip install github/releasetool
 python3 -m releasetool publish-reporter-script > /tmp/publisher-script; source /tmp/publisher-script
+
+# Move into the package, build the distribution and upload.
+cd github/releasetool
+TWINE_PASSWORD=$(cat "${KOKORO_KEYSTORE_DIR}/73713_google_cloud_pypi_password")
 
 # Ensure that we have the latest versions of Twine, Wheel, and Setuptools.
 python3 -m pip install --upgrade twine wheel setuptools
@@ -25,8 +33,5 @@ python3 -m pip install --upgrade twine wheel setuptools
 # Disable buffering, so that the logs stream through.
 export PYTHONUNBUFFERED=1
 
-# Move into the package, build the distribution and upload.
-TWINE_PASSWORD=$(cat "${KOKORO_KEYSTORE_DIR}/73713_google_cloud_pypi_password")
-cd github/python-automl
 python3 setup.py sdist bdist_wheel
 twine upload --username gcloudpypi --password "${TWINE_PASSWORD}" dist/*
