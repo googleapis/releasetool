@@ -9,7 +9,7 @@ in such a way that it could easily be used for other languages.
 ## Installation
 
 **Requirements:**
-- Python 3.6 or Python 3.7
+- Python 3.6+
 - pip
 
 We recommend following [this guide](https://docs.python-guide.org/starting/installation/#installation-guides) for installing both Python 3 and pip. 
@@ -17,7 +17,7 @@ We recommend following [this guide](https://docs.python-guide.org/starting/insta
 
 Install releasetool using pip:
 ```
-python3 -m pip install --user --upgrade git+https://github.com/googleapis/releasetool.git
+python3 -m pip install gcp-releasetool
 ```
 
 ## Usage
