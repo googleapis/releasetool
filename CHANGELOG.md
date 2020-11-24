@@ -4,6 +4,19 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+### [1.2.1](https://www.github.com/googleapis/releasetool/compare/v1.2.0...v1.2.1) (2020-11-24)
+
+
+### Bug Fixes
+
+* Make the .NET tagging regex stricter ([#290](https://www.github.com/googleapis/releasetool/issues/290)) ([7aebab9](https://www.github.com/googleapis/releasetool/commit/7aebab9d3399d3997c837131b3a90db05f52353b))
+* **nodejs:** semver digits are not optional ([#289](https://www.github.com/googleapis/releasetool/issues/289)) ([579a4e9](https://www.github.com/googleapis/releasetool/commit/579a4e94ea4ec05819ae03568046267fae6db28c))
+
+
+### Documentation
+
+* recommend installing from PyPI ([#285](https://www.github.com/googleapis/releasetool/issues/285)) ([c1729b7](https://www.github.com/googleapis/releasetool/commit/c1729b7198afe189fde11e2ec54373c895bfafff))
+
 ## [1.2.0](https://www.github.com/googleapis/releasetool/compare/v1.1.3...v1.2.0) (2020-09-30)
 
 
