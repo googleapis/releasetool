@@ -24,8 +24,8 @@ import releasetool.secrets
 import releasetool.commands.common
 from releasetool.commands.common import TagContext
 
-# repos that still use kokoro for publication:
-docs_only = [
+# Repos that have their publication process handled by GitHub actions:
+skip = [
     "googleapis/google-api-nodejs-client",
 ]
 
@@ -75,14 +75,9 @@ def determine_package_version(ctx: TagContext) -> None:
 
 
 def determine_kokoro_job_name(ctx: TagContext) -> None:
-    if ctx.upstream_repo in docs_only:
-        ctx.kokoro_job_name = (
-            f"cloud-devrel/client-libraries/nodejs/release/{ctx.upstream_repo}/docs"
-        )
-    else:
-        ctx.kokoro_job_name = (
-            f"cloud-devrel/client-libraries/nodejs/release/{ctx.upstream_repo}/publish"
-        )
+    ctx.kokoro_job_name = (
+        f"cloud-devrel/client-libraries/nodejs/release/{ctx.upstream_repo}/publish"
+    )
 
 
 def get_release_notes(ctx: TagContext) -> None:
@@ -161,6 +156,9 @@ def tag(ctx: TagContext = None) -> TagContext:
     if ctx.release_pr is None:
         determine_release_pr(ctx)
 
+    if ctx.upstream_repo in skip:
+        return ctx
+
     determine_release_tag(ctx)
     determine_package_version(ctx)
 
@@ -169,9 +167,8 @@ def tag(ctx: TagContext = None) -> TagContext:
         click.secho(f"{ctx.release_tag} already exists.", fg="magenta")
         return ctx
 
-    if ctx.upstream_repo not in docs_only:    
-        get_release_notes(ctx)
-        create_release(ctx)
+    get_release_notes(ctx)
+    create_release(ctx)
 
     determine_kokoro_job_name(ctx)
     releasetool.commands.common.publish_via_kokoro(ctx)
