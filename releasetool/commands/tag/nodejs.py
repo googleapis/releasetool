@@ -24,6 +24,11 @@ import releasetool.secrets
 import releasetool.commands.common
 from releasetool.commands.common import TagContext
 
+# Repos that have their publication process handled by GitHub actions:
+skip = [
+    "googleapis/google-api-nodejs-client",
+]
+
 
 def determine_release_pr(ctx: TagContext) -> None:
     click.secho(
@@ -150,6 +155,9 @@ def tag(ctx: TagContext = None) -> TagContext:
 
     if ctx.release_pr is None:
         determine_release_pr(ctx)
+
+    if ctx.upstream_repo in skip:
+        return ctx
 
     determine_release_tag(ctx)
     determine_package_version(ctx)
