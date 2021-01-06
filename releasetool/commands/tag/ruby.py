@@ -79,7 +79,10 @@ def determine_package_name_and_version(ctx: TagContext) -> None:
 
 def get_release_notes(ctx: TagContext) -> None:
     click.secho("> Grabbing the release notes.", fg="cyan")
-    if "google-cloud-ruby" in ctx.upstream_repo:
+    if (
+        "google-cloud-ruby" in ctx.upstream_repo
+        or "google-api-ruby-client" in ctx.upstream_repo
+    ):
         changelog_file = f"{ctx.package_name}/CHANGELOG.md"
     else:
         changelog_file = "CHANGELOG.md"
@@ -151,12 +154,13 @@ def tag(ctx: TagContext = None) -> TagContext:
 
     create_release(ctx)
 
-    job_name = ctx.package_name.split("google-cloud-")[-1]
-
     if "google-cloud-ruby" in ctx.upstream_repo:
+        job_name = ctx.package_name.split("google-cloud-")[-1]
         ctx.kokoro_job_name = (
             f"cloud-devrel/client-libraries/google-cloud-ruby/release/{job_name}"
         )
+    elif "google-api-ruby-client" in ctx.upstream_repo:
+        ctx.kokoro_job_name = f"cloud-devrel/client-libraries/google-api-ruby-client/release/{ctx.package_name}"
     else:
         ctx.kokoro_job_name = (
             f"cloud-devrel/client-libraries/{ctx.package_name}/release"
