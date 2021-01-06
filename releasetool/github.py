@@ -107,7 +107,7 @@ def get_installation_access_token(
     app_jwt = jwt.encode(payload, private_key, algorithm="RS256")
 
     headers = {
-        "Authorization": "Bearer {}".format(app_jwt.decode()),
+        "Authorization": "Bearer {}".format(app_jwt),
         "Accept": "application/vnd.github.machine-man-preview+json",
     }
 
