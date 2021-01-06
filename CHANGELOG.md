@@ -4,6 +4,13 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+## [1.4.0](https://www.github.com/googleapis/releasetool/compare/v1.3.0...v1.4.0) (2021-01-06)
+
+
+### Features
+
+* **ruby:** Support releases of split ruby apiary packages ([#295](https://www.github.com/googleapis/releasetool/issues/295)) ([0b61bd0](https://www.github.com/googleapis/releasetool/commit/0b61bd0c5396e437f67878b62ec332d8603ace78))
+
 ## [1.3.0](https://www.github.com/googleapis/releasetool/compare/v1.2.0...v1.3.0) (2021-01-05)
 
 
