@@ -4,6 +4,13 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+### [1.4.1](https://www.github.com/googleapis/releasetool/compare/v1.4.0...v1.4.1) (2021-01-27)
+
+
+### Bug Fixes
+
+* treat docuploader as a python repo ([#298](https://www.github.com/googleapis/releasetool/issues/298)) ([34b0666](https://www.github.com/googleapis/releasetool/commit/34b066654d97ec5decf2c07669ab5cfea0faa2a0))
+
 ## [1.4.0](https://www.github.com/googleapis/releasetool/compare/v1.3.0...v1.4.0) (2021-01-06)
 
 
