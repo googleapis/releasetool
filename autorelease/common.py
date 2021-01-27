@@ -60,7 +60,7 @@ _SILVER_LANGUAGE_NAMES = {
 
 def guess_language(gh: GitHub, repo_full_name: str) -> str:
     special_cases = {
-        # 2 special cases inherited from the original determine_language() code.
+        # 1 special case inherited from the original determine_language() code.
         "googleapis/synthtool": "python_tool",
         # 2 more special cases where the most prevalent language is not the same as
         # what was declared in the old repos.json.
