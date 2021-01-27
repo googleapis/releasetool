@@ -22,7 +22,7 @@ from autorelease.github import GitHub
 def _determine_language(
     fetch_repos_json: Callable[[], str], repo_full_name: str
 ) -> str:
-    python_tools = ["synthtool", "docuploader"]
+    python_tools = ["synthtool"]
 
     if repo_full_name.split("/")[1] in python_tools:
         return "python_tool"
@@ -60,8 +60,7 @@ _SILVER_LANGUAGE_NAMES = {
 
 def guess_language(gh: GitHub, repo_full_name: str) -> str:
     special_cases = {
-        # 3 special cases inherited from the original determine_language() code.
-        "googleapis/docuploader": "python_tool",
+        # 2 special cases inherited from the original determine_language() code.
         "googleapis/synthtool": "python_tool",
         # 2 more special cases where the most prevalent language is not the same as
         # what was declared in the old repos.json.
