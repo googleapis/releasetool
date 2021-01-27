@@ -52,7 +52,6 @@ def test_determine_language():
     python_tools_repo_names = [
         "googleapis/releasetool",
         "googleapis/synthtool",
-        "googleapis/docuploader",
     ]
 
     repo_names = python_tools_repo_names + [repo["repo"] for repo in repos]
@@ -1799,7 +1798,7 @@ def test_guess_googleapis_sample_tester():
 
 def test_guess_googleapis_docuploader():
     gh = github.GitHub(os.environ["GITHUB_TOKEN"])
-    assert "python_tool" == guess_language(gh, "googleapis/docuploader")
+    assert "python" == guess_language(gh, "googleapis/docuploader")
 
 
 def test_guess_googleapis_releasetool():
