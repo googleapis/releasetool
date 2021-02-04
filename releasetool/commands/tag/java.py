@@ -134,17 +134,19 @@ def tag(ctx: TagContext = None) -> TagContext:
     # delegate releaase tagging to release-please
     default_branch = ctx.release_pr["base"]["ref"]
     repo = ctx.release_pr["base"]["repo"]["full_name"]
-    subprocess.check_call([
-        'release-please',
-        f'--token={ctx.token}',
-        f'--default-branch={default_branch}',
-        f'--release-type=java-yoshi',
-        f'--bump-minor-pre-major=true',
-        f'--repo-url={repo}',
-        '--debug',
-        '--package-name=',
-        'github-release',
-    ])
+    subprocess.check_call(
+        [
+            "release-please",
+            f"--token={ctx.token}",
+            f"--default-branch={default_branch}",
+            f"--release-type=java-yoshi",
+            f"--bump-minor-pre-major=true",
+            f"--repo-url={repo}",
+            "--debug",
+            "--package-name=",
+            "github-release",
+        ]
+    )
     if ctx.interactive:
         click.secho("\\o/ All done!", fg="magenta")
 
