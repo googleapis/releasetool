@@ -137,14 +137,13 @@ def tag(ctx: TagContext = None) -> TagContext:
     subprocess.check_call(
         [
             "release-please",
+            "github-release",
             f"--token={ctx.token}",
             f"--default-branch={default_branch}",
             "--release-type=java-yoshi",
             "--bump-minor-pre-major=true",
             f"--repo-url={repo}",
-            "--debug",
             "--package-name=",
-            "github-release",
         ]
     )
     if ctx.interactive:
