@@ -14,6 +14,7 @@
 
 import getpass
 import re
+import subprocess
 
 import click
 
@@ -130,20 +131,21 @@ def tag(ctx: TagContext = None) -> TagContext:
     if ctx.github is None:
         releasetool.commands.common.setup_github_context(ctx)
 
-    if ctx.release_pr is None:
-        determine_release_pr(ctx)
-
-    determine_release_tag(ctx)
-    determine_package_name_and_version(ctx)
-
-    # If the release already exists, don't do anything
-    if releasetool.commands.common.release_exists(ctx):
-        click.secho(f"{ctx.release_tag} already exists.", fg="magenta")
-        return ctx
-
-    get_release_notes(ctx)
-    create_release(ctx)
-
+    # delegate releaase tagging to release-please
+    default_branch = ctx.release_pr["base"]["ref"]
+    repo = ctx.release_pr["base"]["repo"]["full_name"]
+    subprocess.check_call(
+        [
+            "release-please",
+            "github-release",
+            f"--token={ctx.token}",
+            f"--default-branch={default_branch}",
+            "--release-type=java-yoshi",
+            "--bump-minor-pre-major=true",
+            f"--repo-url={repo}",
+            "--package-name=",
+        ]
+    )
     if ctx.interactive:
         click.secho("\\o/ All done!", fg="magenta")
 
