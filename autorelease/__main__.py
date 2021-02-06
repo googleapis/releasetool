@@ -25,7 +25,7 @@ _KEYSTORE_GITHUB_TOKEN_LOCATION = "73713_yoshi-automation-github-key"
 def _determine_github_token(github_token):
     """Automatically use the GitHub token provided by Keystore if needed."""
     if github_token is not None:
-        return github_token
+        return
 
     if "KOKORO_KEYSTORE_DIR" in os.environ:
         filename = os.path.join(
