@@ -53,7 +53,6 @@ class TagContext(GitHubContext):
     github_release: Optional[dict] = None
     kokoro_job_name: Optional[str] = None
     fusion_url: Optional[str] = None
-    token: Optional[str] = None
 
 
 def _determine_origin(ctx: GitHubContext) -> None:
