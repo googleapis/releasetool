@@ -12,46 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from releasetool.commands.tag.java import _parse_release_notes, _parse_release_tag
+from releasetool.commands.tag.java import _parse_release_tag
 
-RELEASETOOL_PR_DESCRIPTION = """
-This pull request was generated using releasetool.
-
-Some release notes here
+RELEASE_PLEASE_OUTPUT = """
+✔ creating release v1.20.0
+✔ Created release: https://github.com/googleapis/java-bigtable/releases/tag/v1.20.0.
+✔ adding comment to https://github.com/googleapis/java-bigtable/issue/610
+✔ adding label autorelease: tagged to https://github.com/googleapis/java-bigtable/pull/610
+✔ removing label autorelease: pending from 610
 """
-
-RELEASE_PLEASE_PR_DESCRIPTION = """
-:robot: I have created a release \\*beep\\* \\*boop\\*
----
-Some release notes here
----
-
-
-This PR was generated with [Release Please](https://github.com/googleapis/release-please).
-"""
-
-
-def test_releasetool_release_notes():
-    """
-    Releasetool creates a PR with a specific lead in
-    """
-    expected = "Some release notes here"
-    assert _parse_release_notes(RELEASETOOL_PR_DESCRIPTION) == expected
-
-
-def test_release_please_release_notes():
-    """
-    release-please creates a PR with a specific lead in
-    """
-    expected = "Some release notes here"
-    assert _parse_release_notes(RELEASE_PLEASE_PR_DESCRIPTION) == expected
 
 
 def test_releasetool_release_tag():
-    expected = "v1.2.3"
-    assert _parse_release_tag("release-google-cloud-java-v1.2.3") == expected
-
-
-def test_release_please_release_tag():
-    expected = "v1.2.3"
-    assert _parse_release_tag("release-v1.2.3") == expected
+    expected = "v1.20.0"
+    assert _parse_release_tag(RELEASE_PLEASE_OUTPUT) == expected
