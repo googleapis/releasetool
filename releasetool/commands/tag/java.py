@@ -48,14 +48,8 @@ def tag(ctx: TagContext = None) -> TagContext:
     repo = ctx.release_pr["base"]["repo"]["full_name"]
 
     with tempfile.NamedTemporaryFile("w+t", delete=False) as fp:
-        print(len(ctx.token))
         fp.write(ctx.token)
         token_file = fp.name
-        print(token_file)
-
-    subprocess.check_call(
-        ["wc", "-c", token_file]
-    )
 
     output = subprocess.check_output(
         [
@@ -73,8 +67,6 @@ def tag(ctx: TagContext = None) -> TagContext:
     )
 
     ctx.release_tag = _parse_release_tag(output.decode("utf-8"))
-    print(ctx.release_tag)
-
     repo_short_name = ctx.upstream_repo.split("/")[-1]
     ctx.kokoro_job_name = (
         f"cloud-devrel/client-libraries/java/{repo_short_name}/release/stage"
