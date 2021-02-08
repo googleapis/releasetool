@@ -56,6 +56,8 @@ def process_issue(kokoro_session, gh: github.GitHub, issue: dict, result) -> Non
 
     # Determine language.
     lang = common.guess_language(gh, pull["base"]["repo"]["full_name"])
+    if lang != "java":
+        return
 
     # Run releasetool tag for the PR.
     ctx = run_releasetool_tag(lang, gh, pull)

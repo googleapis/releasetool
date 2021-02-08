@@ -51,20 +51,22 @@ def tag(ctx: TagContext = None) -> TagContext:
         fp.write(ctx.token)
         token_file = fp.name
 
-    output = subprocess.check_output(
-        [
-            "npx",
-            "release-please",
-            "github-release",
-            f"--token={token_file}",
-            f"--default-branch={default_branch}",
-            "--release-type=java-yoshi",
-            "--bump-minor-pre-major=true",
-            f"--repo-url={repo}",
-            "--package-name=",
-        ]
-    )
+        output = subprocess.check_output(
+            [
+                "npx",
+                "release-please",
+                "github-release",
+                f"--token={token_file}",
+                f"--default-branch={default_branch}",
+                "--release-type=java-yoshi",
+                "--bump-minor-pre-major=true",
+                f"--repo-url={repo}",
+                "--package-name=",
+            ]
+        )
+
     ctx.release_tag = _parse_release_tag(output.decode("utf-8"))
+    print(ctx.release_tag)
 
     repo_short_name = ctx.upstream_repo.split("/")[-1]
     ctx.kokoro_job_name = (
