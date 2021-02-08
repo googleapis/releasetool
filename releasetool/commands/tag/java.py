@@ -50,6 +50,7 @@ def tag(ctx: TagContext = None) -> TagContext:
     with tempfile.NamedTemporaryFile("w+") as fp:
         fp.write(ctx.token)
         token_file = fp.name
+        print(token_file)
 
         output = subprocess.check_output(
             [
@@ -62,6 +63,7 @@ def tag(ctx: TagContext = None) -> TagContext:
                 "--bump-minor-pre-major=true",
                 f"--repo-url={repo}",
                 "--package-name=",
+                "--debug",
             ]
         )
 
