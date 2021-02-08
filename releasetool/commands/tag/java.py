@@ -138,7 +138,7 @@ def tag(ctx: TagContext = None) -> TagContext:
     with tempfile.NamedTemporaryFile("w+") as fp:
         fp.write(ctx.token)
         token_file = fp.name
-        
+
     subprocess.check_call(
         [
             "npx",
