@@ -48,6 +48,7 @@ def tag(ctx: TagContext = None) -> TagContext:
     repo = ctx.release_pr["base"]["repo"]["full_name"]
 
     with tempfile.NamedTemporaryFile("w+") as fp:
+        print(len(ctx.token))
         fp.write(ctx.token)
         token_file = fp.name
         print(token_file)
