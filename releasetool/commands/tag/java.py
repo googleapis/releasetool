@@ -52,6 +52,10 @@ def tag(ctx: TagContext = None) -> TagContext:
         token_file = fp.name
         print(token_file)
 
+        subprocess.check_call(
+            ["wc", "-c", token_file]
+        )
+
         output = subprocess.check_output(
             [
                 "npx",
