@@ -15,7 +15,7 @@
 import getpass
 import re
 import subprocess
-
+import tempfile
 import click
 
 import releasetool.circleci
@@ -134,12 +134,17 @@ def tag(ctx: TagContext = None) -> TagContext:
     # delegate releaase tagging to release-please
     default_branch = ctx.release_pr["base"]["ref"]
     repo = ctx.release_pr["base"]["repo"]["full_name"]
+
+    with tempfile.NamedTemporaryFile("w+") as fp:
+        fp.write(ctx.token)
+        token_file = fp.name
+
     subprocess.check_call(
         [
             "npx",
             "release-please",
             "github-release",
-            f"--token={ctx.token}",
+            f"--token={token_file}",
             f"--default-branch={default_branch}",
             "--release-type=java-yoshi",
             "--bump-minor-pre-major=true",
