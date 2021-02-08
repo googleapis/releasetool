@@ -47,7 +47,7 @@ def tag(ctx: TagContext = None) -> TagContext:
     default_branch = ctx.release_pr["base"]["ref"]
     repo = ctx.release_pr["base"]["repo"]["full_name"]
 
-    with tempfile.NamedTemporaryFile("w+") as fp:
+    with tempfile.NamedTemporaryFile("w+t", delete=False) as fp:
         print(len(ctx.token))
         fp.write(ctx.token)
         token_file = fp.name
