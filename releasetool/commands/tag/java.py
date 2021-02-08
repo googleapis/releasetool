@@ -52,24 +52,24 @@ def tag(ctx: TagContext = None) -> TagContext:
         token_file = fp.name
         print(token_file)
 
-        subprocess.check_call(
-            ["wc", "-c", token_file]
-        )
+    subprocess.check_call(
+        ["wc", "-c", token_file]
+    )
 
-        output = subprocess.check_output(
-            [
-                "npx",
-                "release-please",
-                "github-release",
-                f"--token={token_file}",
-                f"--default-branch={default_branch}",
-                "--release-type=java-yoshi",
-                "--bump-minor-pre-major=true",
-                f"--repo-url={repo}",
-                "--package-name=",
-                "--debug",
-            ]
-        )
+    output = subprocess.check_output(
+        [
+            "npx",
+            "release-please",
+            "github-release",
+            f"--token={token_file}",
+            f"--default-branch={default_branch}",
+            "--release-type=java-yoshi",
+            "--bump-minor-pre-major=true",
+            f"--repo-url={repo}",
+            "--package-name=",
+            "--debug",
+        ]
+    )
 
     ctx.release_tag = _parse_release_tag(output.decode("utf-8"))
     print(ctx.release_tag)
