@@ -85,9 +85,6 @@ def main(args) -> reporter.Reporter:
     try:
         issues = gh.list_org_issues(
             org=org,
-            # Get all issues. By default, GitHub only returns issues assigned to
-            # the authenticated user.
-            filter="all",
             # Must be merged ("closed").
             state="closed",
             # Must be labeled with "autorelease: pending"

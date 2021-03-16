@@ -19,6 +19,7 @@ from typing import Dict, List, Sequence, Generator
 
 import requests
 from urllib3.util.retry import Retry
+from urllib.parse import quote
 
 _GITHUB_ROOT: str = "https://api.github.com"
 _MAGIC_GITHUB_PROXY_ROOT: str = (
@@ -89,10 +90,15 @@ class GitHub:
             url = response.links.get("next", {}).get("url")
 
     def list_org_issues(
-        self, org: str, filter: str = None, state: str = None, labels: str = None
+        self, org: str, state: str = None, labels: str = None
     ) -> Generator[dict, None, None]:
-        url = f"{self.GITHUB_ROOT}/orgs/{org}/issues"
-
+        url = (
+            f"{self.GITHUB_ROOT}/search/issues?q=org:{quote(org)}+state:{quote(state)}"
+        )
+        if labels:
+            # Note: GitHub query API expects label to be enclosed in quotes:
+            quotedLabels = '"' + labels + '"'
+            url += f"+label:{quote(quotedLabels)}"
         # GitHub sometimes returns 5xx errors for this request.
         # Retry after 500, 502 response up to 4 times.
         max_retries = Retry(status=4, status_forcelist=[500, 502])
@@ -100,13 +106,11 @@ class GitHub:
         self.session.mount(url, adapter)
 
         while url:
-            response = self.session.get(
-                url, params=dict(filter=filter, state=state, labels=labels)
-            )
+            response = self.session.get(url)
             response.raise_for_status()
             if response.status_code >= 400:
                 logging.error(response.text)
-            for item in response.json():
+            for item in response.json()["items"]:
                 yield item
 
             url = response.links.get("next", {}).get("url")
