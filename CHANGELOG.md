@@ -4,6 +4,23 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+### [1.4.1](https://www.github.com/googleapis/releasetool/compare/v1.4.0...v1.4.1) (2021-03-16)
+
+
+### Bug Fixes
+
+* **build:** use trampoline/docker for autorelease job ([#302](https://www.github.com/googleapis/releasetool/issues/302)) ([da7972c](https://www.github.com/googleapis/releasetool/commit/da7972c5c69da6bc1f8e9bb80718eebb15a3c9f1))
+* **java:** fix Kokoro job triggering ([#305](https://www.github.com/googleapis/releasetool/issues/305)) ([e68b90d](https://www.github.com/googleapis/releasetool/commit/e68b90d7cce9d2f478845dcfee4342e860dd44f0))
+* **java:** use release-please for java tagging ([#303](https://www.github.com/googleapis/releasetool/issues/303)) ([58a17d5](https://www.github.com/googleapis/releasetool/commit/58a17d5271de8a88950b3012408a50367808a2fe))
+* **java:** use token file for release-please ([#304](https://www.github.com/googleapis/releasetool/issues/304)) ([19ca380](https://www.github.com/googleapis/releasetool/commit/19ca380986690c501342ee6f183381c0768df5c4))
+* switch to using search API for finding merged release PRs ([#306](https://www.github.com/googleapis/releasetool/issues/306)) ([19cb029](https://www.github.com/googleapis/releasetool/commit/19cb0291ccd4a2f54f70c28fc9abbe739c8f28f3))
+* treat docuploader as a python repo ([#298](https://www.github.com/googleapis/releasetool/issues/298)) ([34b0666](https://www.github.com/googleapis/releasetool/commit/34b066654d97ec5decf2c07669ab5cfea0faa2a0))
+
+
+### Reverts
+
+* "refactor(java): delegate tagging to release-please" ([#301](https://www.github.com/googleapis/releasetool/issues/301)) ([d646a1b](https://www.github.com/googleapis/releasetool/commit/d646a1bdd7c17c0882f8df087cb73fd7d4c7d740))
+
 ## [1.4.0](https://www.github.com/googleapis/releasetool/compare/v1.3.0...v1.4.0) (2021-01-06)
 
 
