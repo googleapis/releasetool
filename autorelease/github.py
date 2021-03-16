@@ -92,9 +92,7 @@ class GitHub:
     def list_org_issues(
         self, org: str, state: str = None, labels: str = None
     ) -> Generator[dict, None, None]:
-        url = (
-            f"{self.GITHUB_ROOT}/search/issues?q=org:{quote(org)}+state:{quote(state)}+archived:false"
-        )
+        url = f"{self.GITHUB_ROOT}/search/issues?q=org:{quote(org)}+state:{quote(state)}+archived:false"
         if labels:
             # Note: GitHub query API expects label to be enclosed in quotes:
             quotedLabels = '"' + labels + '"'
