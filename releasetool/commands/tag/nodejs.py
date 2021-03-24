@@ -23,10 +23,13 @@ import releasetool.github
 import releasetool.secrets
 import releasetool.commands.common
 from releasetool.commands.common import TagContext
+import subprocess
+import tempfile
 
 # Repos that have their publication process handled by GitHub actions:
-skip = [
+manifest_release = [
     "googleapis/google-api-nodejs-client",
+    "googleapis/repo-automation-bots",
 ]
 
 
@@ -107,25 +110,50 @@ def _get_latest_release_notes(ctx: TagContext, changelog: str):
 def create_release(ctx: TagContext) -> None:
     click.secho("> Creating the release.")
 
-    ctx.github_release = ctx.github.create_release(
-        repository=ctx.upstream_repo,
-        tag_name=ctx.release_version,
-        target_commitish=ctx.release_pr["merge_commit_sha"],
-        name=f"{ctx.release_version}",
-        body=ctx.release_notes,
-    )
+    if ctx.upstream_repo in manifest_release:
+        # delegate releaase tagging to release-please
+        default_branch = ctx.release_pr["base"]["ref"]
+        repo = ctx.release_pr["base"]["repo"]["full_name"]
 
-    release_location_string = f"Release is at {ctx.github_release['html_url']}"
-    click.secho(release_location_string)
-    click.secho("CI will handle publishing the package to npm.")
+        with tempfile.NamedTemporaryFile("w+t", delete=False) as fp:
+            fp.write(ctx.token)
+            token_file = fp.name
 
-    ctx.github.create_pull_request_comment(
-        ctx.upstream_repo, ctx.release_pr["number"], release_location_string
-    )
+        subprocess.check_output(
+            [
+                # TODO(sofisl): remove pinning to a specific version
+                # once we've tested:
+                "npx@11.3.0-candidate.0",
+                "release-please",
+                "manifest-release",
+                f"--token={token_file}",
+                f"--default-branch={default_branch}",
+                f"--repo-url={repo}",
+                "--debug",
+            ]
+        )
+    else:
+        # TODO(sofisl): move the non-manifest release to release-please too
+        # for consistency:
+        ctx.github_release = ctx.github.create_release(
+            repository=ctx.upstream_repo,
+            tag_name=ctx.release_version,
+            target_commitish=ctx.release_pr["merge_commit_sha"],
+            name=f"{ctx.release_version}",
+            body=ctx.release_notes,
+        )
 
-    ctx.github.update_pull_labels(
-        ctx.release_pr, add=["autorelease: tagged"], remove=["autorelease: pending"]
-    )
+        release_location_string = f"Release is at {ctx.github_release['html_url']}"
+        click.secho(release_location_string)
+        click.secho("CI will handle publishing the package to npm.")
+
+        ctx.github.create_pull_request_comment(
+            ctx.upstream_repo, ctx.release_pr["number"], release_location_string
+        )
+
+        ctx.github.update_pull_labels(
+            ctx.release_pr, add=["autorelease: tagged"], remove=["autorelease: pending"]
+        )
 
 
 def wait_on_circle(ctx: TagContext) -> None:
@@ -155,9 +183,6 @@ def tag(ctx: TagContext = None) -> TagContext:
 
     if ctx.release_pr is None:
         determine_release_pr(ctx)
-
-    if ctx.upstream_repo in skip:
-        return ctx
 
     determine_release_tag(ctx)
     determine_package_version(ctx)
