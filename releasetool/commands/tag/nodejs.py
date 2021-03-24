@@ -184,17 +184,18 @@ def tag(ctx: TagContext = None) -> TagContext:
     if ctx.release_pr is None:
         determine_release_pr(ctx)
 
-    determine_release_tag(ctx)
-    determine_package_version(ctx)
+    # If using manifest release, the manifest releaser determines
+    # release tag, version, and release notes:
+    if ctx.upstream_repo not in manifest_release:
+        determine_release_tag(ctx)
+        determine_package_version(ctx)
+        # If the release already exists, don't do anything
+        if releasetool.commands.common.release_exists(ctx):
+            click.secho(f"{ctx.release_tag} already exists.", fg="magenta")
+            return ctx
+        get_release_notes(ctx)
 
-    # If the release already exists, don't do anything
-    if releasetool.commands.common.release_exists(ctx):
-        click.secho(f"{ctx.release_tag} already exists.", fg="magenta")
-        return ctx
-
-    get_release_notes(ctx)
     create_release(ctx)
-
     determine_kokoro_job_name(ctx)
     releasetool.commands.common.publish_via_kokoro(ctx)
 
