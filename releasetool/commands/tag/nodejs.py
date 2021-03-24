@@ -194,6 +194,12 @@ def tag(ctx: TagContext = None) -> TagContext:
             click.secho(f"{ctx.release_tag} already exists.", fg="magenta")
             return ctx
         get_release_notes(ctx)
+    else:
+        # If using mono-release strategy, fallback to using the primary
+        # branch as the staging area for a publish.
+        # TODO(bcoe/chingor13): what are the ramifications of this,
+        # if a publish is delayed significantly.
+        ctx.release_tag = 'main'
 
     create_release(ctx)
     determine_kokoro_job_name(ctx)

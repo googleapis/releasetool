@@ -184,8 +184,7 @@ def publish_via_kokoro(ctx: TagContext) -> None:
         )
 
     click.secho(f"Kokoro build URL:\t\t{click.style(ctx.fusion_url, underline=True)}")
-    if ctx.release_tag:
-        click.secho(f"Commitish:\t{click.style(ctx.release_tag, bold=True)}")
+    click.secho(f"Commitish:\t{click.style(ctx.release_tag, bold=True)}")
 
     if ctx.interactive:
         if click.confirm("Would you like to go the Kokoro build page?", default=True):
