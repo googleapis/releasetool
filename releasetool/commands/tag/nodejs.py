@@ -23,6 +23,8 @@ import releasetool.github
 import releasetool.secrets
 import releasetool.commands.common
 from releasetool.commands.common import TagContext
+import subprocess
+import tempfile
 
 # Repos that have their publication process handled by GitHub actions:
 manifest_release = [
@@ -116,7 +118,7 @@ def create_release(ctx: TagContext) -> None:
             fp.write(ctx.token)
             token_file = fp.name
 
-        output = subprocess.check_output(
+        subprocess.check_output(
             [
                 # TODO(sofisl): remove pinning to a specific version
                 # once we've tested:
