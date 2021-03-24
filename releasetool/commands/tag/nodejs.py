@@ -123,7 +123,7 @@ def create_release(ctx: TagContext) -> None:
             [
                 # TODO(sofisl): remove pinning to a specific version
                 # once we've tested:
-                "npx@11.3.0-candidate.0",
+                "npx",
                 "release-please",
                 "manifest-release",
                 f"--token={token_file}",
