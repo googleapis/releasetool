@@ -195,11 +195,9 @@ def tag(ctx: TagContext = None) -> TagContext:
             return ctx
         get_release_notes(ctx)
     else:
-        # If using mono-release strategy, fallback to using the primary
-        # branch as the staging area for a publish.
-        # TODO(bcoe/chingor13): what are the ramifications of this,
-        # if a publish is delayed significantly.
-        ctx.release_tag = "main"
+        # If using mono-release strategy, fallback to using sha from
+        # time of merge:
+        ctx.release_tag = ctx.release_pr["merge_commit_sha"]
 
     create_release(ctx)
     determine_kokoro_job_name(ctx)
