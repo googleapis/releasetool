@@ -29,6 +29,7 @@ import tempfile
 # Repos that have their publication process handled by GitHub actions:
 manifest_release = [
     "googleapis/google-api-nodejs-client",
+    "googleapis/repo-automation-bots",
 ]
 
 
