@@ -111,7 +111,7 @@ def create_release(ctx: TagContext) -> None:
     click.secho("> Creating the release.")
 
     if ctx.upstream_repo in manifest_release:
-        # delegate releaase tagging to release-please
+        # delegate release tagging to release-please
         default_branch = ctx.release_pr["base"]["ref"]
         repo = ctx.release_pr["base"]["repo"]["full_name"]
 
@@ -133,14 +133,16 @@ def create_release(ctx: TagContext) -> None:
             ]
         )
     else:
-        # TODO(sofisl): move the non-manifest release to release-please too
-        # for consistency:
-        ctx.github_release = ctx.github.create_release(
-            repository=ctx.upstream_repo,
-            tag_name=ctx.release_version,
-            target_commitish=ctx.release_pr["merge_commit_sha"],
-            name=f"{ctx.release_version}",
-            body=ctx.release_notes,
+        subprocess.check_output(
+            [
+                "npx",
+                "release-please",
+                "github-release",
+                f"--package-name={ctx.release_version}"
+                f"--token={token_file}",
+                f"--repo-url={repo}",
+                "--debug",
+            ]
         )
 
         release_location_string = f"Release is at {ctx.github_release['html_url']}"
