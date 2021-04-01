@@ -113,11 +113,10 @@ def create_release(ctx: TagContext) -> None:
     repo = ctx.release_pr["base"]["repo"]["full_name"]
     with tempfile.NamedTemporaryFile("w+t", delete=False) as fp:
         fp.write(ctx.token)
-        token_file = fp.name  
-          
+        token_file = fp.name
+
     if ctx.upstream_repo in manifest_release:
         # delegate release tagging to release-please
-
 
         subprocess.check_output(
             [
