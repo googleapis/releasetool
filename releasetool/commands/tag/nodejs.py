@@ -109,20 +109,18 @@ def _get_latest_release_notes(ctx: TagContext, changelog: str):
 
 def create_release(ctx: TagContext) -> None:
     click.secho("> Creating the release.")
-
+    default_branch = ctx.release_pr["base"]["ref"]
+    repo = ctx.release_pr["base"]["repo"]["full_name"]
+    with tempfile.NamedTemporaryFile("w+t", delete=False) as fp:
+        fp.write(ctx.token)
+        token_file = fp.name  
+          
     if ctx.upstream_repo in manifest_release:
         # delegate release tagging to release-please
-        default_branch = ctx.release_pr["base"]["ref"]
-        repo = ctx.release_pr["base"]["repo"]["full_name"]
 
-        with tempfile.NamedTemporaryFile("w+t", delete=False) as fp:
-            fp.write(ctx.token)
-            token_file = fp.name
 
         subprocess.check_output(
             [
-                # TODO(sofisl): remove pinning to a specific version
-                # once we've tested:
                 "npx",
                 "release-please",
                 "manifest-release",
@@ -138,10 +136,8 @@ def create_release(ctx: TagContext) -> None:
                 "npx",
                 "release-please",
                 "github-release",
-                f"--package-name={ctx.release_version}"
                 f"--token={token_file}",
                 f"--repo-url={repo}",
-                "--debug",
             ]
         )
 
