@@ -20,6 +20,10 @@ def kokoro_job_name(upstream_repo: str, package_name: str) -> Union[str, None]:
     return None
 
 
+def package_name(pull: dict) -> Union[str, None]:
+    return None
+
+
 def tag(ctx: TagContext = None) -> TagContext:
     # PHP just needs a release to be tagged on GitHub.
     # Tagging logic is the same as NodeJs.

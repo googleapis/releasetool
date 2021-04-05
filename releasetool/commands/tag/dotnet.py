@@ -105,6 +105,10 @@ def kokoro_job_name(upstream_repo: str, package_name: str) -> Union[str, None]:
     return None
 
 
+def package_name(pull: dict) -> Union[str, None]:
+    return None
+
+
 # Note: unlike other languages, the .NET libraries may need multiple
 # tags for a single release PR, usually for dependent APIs, e.g.
 # Google.Cloud.Spanner.Data depending on Google.Cloud.Spanner.V1.

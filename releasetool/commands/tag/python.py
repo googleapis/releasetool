@@ -130,6 +130,10 @@ def kokoro_job_name(upstream_repo: str, package_name: str) -> Union[str, None]:
     return f"cloud-devrel/client-libraries/python/{upstream_repo}/release/release"
 
 
+def package_name(pull: dict) -> Union[str, None]:
+    return None
+
+
 def tag(ctx: TagContext = None) -> TagContext:
     if not ctx:
         ctx = TagContext()

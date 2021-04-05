@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from releasetool.commands.tag.ruby import kokoro_job_name
+from releasetool.commands.tag.ruby import kokoro_job_name, package_name
 
 
 def test_kokoro_job_name():
@@ -36,3 +36,8 @@ def test_kokoro_job_name_apiary():
         job_name
         == "cloud-devrel/client-libraries/google-api-ruby-client/release/youtube"
     )
+
+
+def test_package_name():
+    name = package_name({"head": {"ref": "release-storage-v1.2.3"}})
+    assert name == "storage"

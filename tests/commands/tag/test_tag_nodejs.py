@@ -12,7 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from releasetool.commands.tag.nodejs import _get_latest_release_notes, kokoro_job_name
+from releasetool.commands.tag.nodejs import (
+    _get_latest_release_notes,
+    kokoro_job_name,
+    package_name,
+)
 from releasetool.commands.common import TagContext
 
 fixture_old_style_changelog = """
@@ -189,3 +193,8 @@ def test_kokoro_job_name():
         job_name
         == "cloud-devrel/client-libraries/nodejs/release/upstream-owner/upstream-repo/publish"
     )
+
+
+def test_package_name():
+    name = package_name({"head": {"ref": "release-storage-v1.2.3"}})
+    assert name is None
