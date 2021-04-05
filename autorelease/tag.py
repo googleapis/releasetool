@@ -23,6 +23,16 @@ from autorelease import reporter
 
 import releasetool.github
 
+LANGUAGE_ALLOWLIST = [
+    "dotnet",
+    "java",
+    "nodejs",
+    "php",
+    "python_tool",
+    "python",
+    "ruby",
+]
+
 
 def run_releasetool_tag(lang: str, gh: github.GitHub, pull: dict) -> None:
     """Runs releasetool tag using external config."""
@@ -56,6 +66,13 @@ def process_issue(kokoro_session, gh: github.GitHub, issue: dict, result) -> Non
 
     # Determine language.
     lang = common.guess_language(gh, pull["base"]["repo"]["full_name"])
+
+    # As part of the migration to release-please tagging, cross-reference the
+    # language against an allowlist to allow migrating language-by-language.
+    if lang not in LANGUAGE_ALLOWLIST:
+        result.skipped = True
+        result.print(f"Language {lang} not in allowlist, skipping.")
+        return
 
     # Run releasetool tag for the PR.
     ctx = run_releasetool_tag(lang, gh, pull)
