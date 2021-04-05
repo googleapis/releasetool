@@ -14,6 +14,7 @@
 
 import getpass
 import re
+from typing import Union
 
 import click
 
@@ -89,6 +90,19 @@ def create_releases(ctx: TagContext) -> None:
         ctx.release_pr, add=["autorelease: tagged"], remove=["autorelease: pending"]
     )
     releasetool.commands.common.publish_via_kokoro(ctx)
+
+
+def kokoro_job_name(upstream_repo: str, package_name: str) -> Union[str, None]:
+    """Return the Kokoro job name.
+
+    Args:
+        upstream_repo (str): The GitHub repo in the form of https://api.github.com/repos/<owner>/<repo>
+        package_name (str): The name of package to release
+
+    Returns:
+        The name of the Kokoro job to trigger or None if there is no job to trigger
+    """
+    return None
 
 
 # Note: unlike other languages, the .NET libraries may need multiple

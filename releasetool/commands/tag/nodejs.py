@@ -14,6 +14,7 @@
 
 import getpass
 import re
+from typing import Union
 
 import click
 
@@ -75,12 +76,6 @@ def determine_package_version(ctx: TagContext) -> None:
     match = re.match(r"(?P<version>v?\d+\.\d+\.\d+)", ctx.release_tag)
     ctx.release_version = match.group("version")
     click.secho(f"package version: {ctx.release_version}.")
-
-
-def determine_kokoro_job_name(ctx: TagContext) -> None:
-    ctx.kokoro_job_name = (
-        f"cloud-devrel/client-libraries/nodejs/release/{ctx.upstream_repo}/publish"
-    )
 
 
 def get_release_notes(ctx: TagContext) -> None:
@@ -171,6 +166,19 @@ def wait_on_circle(ctx: TagContext) -> None:
         click.secho(f"CircleCI Build not found for tag {tag_name}...")
 
 
+def kokoro_job_name(upstream_repo: str, package_name: str) -> Union[str, None]:
+    """Return the Kokoro job name.
+
+    Args:
+        upstream_repo (str): The GitHub repo in the form of `<owner>/<repo>`
+        package_name (str): The name of package to release
+
+    Returns:
+        The name of the Kokoro job to trigger or None if there is no job to trigger
+    """
+    return f"cloud-devrel/client-libraries/nodejs/release/{upstream_repo}/publish"
+
+
 def tag(ctx: TagContext = None) -> TagContext:
     if not ctx:
         ctx = TagContext()
@@ -200,7 +208,7 @@ def tag(ctx: TagContext = None) -> TagContext:
         ctx.release_tag = ctx.release_pr["merge_commit_sha"]
 
     create_release(ctx)
-    determine_kokoro_job_name(ctx)
+    ctx.kokoro_job_name = kokoro_job_name(ctx.upstream_repo, ctx.package_name)
     releasetool.commands.common.publish_via_kokoro(ctx)
 
     if ctx.interactive:

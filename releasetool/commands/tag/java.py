@@ -17,6 +17,7 @@ import re
 import subprocess
 import tempfile
 import click
+from typing import Union
 
 import releasetool.circleci
 import releasetool.git
@@ -31,6 +32,20 @@ def _parse_release_tag(output: str) -> str:
     if match:
         return match[1]
     return None
+
+
+def kokoro_job_name(upstream_repo: str, package_name: str) -> Union[str, None]:
+    """Return the Kokoro job name.
+
+    Args:
+        upstream_repo (str): The GitHub repo in the form of `<owner>/<repo>`
+        package_name (str): The name of package to release
+
+    Returns:
+        The name of the Kokoro job to trigger or None if there is no job to trigger
+    """
+    repo_short_name = upstream_repo.split("/")[-1]
+    return f"cloud-devrel/client-libraries/java/{repo_short_name}/release/stage"
 
 
 def tag(ctx: TagContext = None) -> TagContext:
@@ -67,10 +82,7 @@ def tag(ctx: TagContext = None) -> TagContext:
     )
 
     ctx.release_tag = _parse_release_tag(output.decode("utf-8"))
-    repo_short_name = ctx.upstream_repo.split("/")[-1]
-    ctx.kokoro_job_name = (
-        f"cloud-devrel/client-libraries/java/{repo_short_name}/release/stage"
-    )
+    ctx.kokoro_job_name = kokoro_job_name(ctx.upstream_repo, ctx.package_name)
 
     if ctx.interactive:
         click.secho("\\o/ All done!", fg="magenta")
