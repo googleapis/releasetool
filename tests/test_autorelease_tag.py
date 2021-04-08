@@ -100,3 +100,25 @@ def test_process_issue_triggers_kokoro(run_releasetool_tag, trigger_build):
     tag.process_issue(Mock(), github, issue, Mock())
     run_releasetool_tag.assert_called_once()
     trigger_build.assert_called_once()
+
+
+@patch("autorelease.kokoro.trigger_build")
+@patch("autorelease.tag.run_releasetool_tag")
+def test_process_issue_skips_kokoro_if_no_job_name(run_releasetool_tag, trigger_build):
+    github = Mock()
+    github.get_url.return_value = {
+        "merged_at": "2021-01-01T09:00:00.000Z",
+        "base": {"repo": {"full_name": "googleapis/java-asset"}},
+        "html_url": "https://github.com/googleapis/java-asset/pulls/5",
+    }
+    context = Mock()
+    context.kokoro_job_name = None
+    context.release_tag = None
+    run_releasetool_tag.return_value = context
+    issue = {
+        "pull_request": {"url": "https://api.github.com/googleapis/java-asset/pull/5"},
+        "merged_at": "2021-01-01T09:00:00.000Z",
+    }
+    tag.process_issue(Mock(), github, issue, Mock())
+    run_releasetool_tag.assert_called_once()
+    trigger_build.assert_not_called()
