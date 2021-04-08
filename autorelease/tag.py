@@ -15,7 +15,6 @@
 """This module handles automatically running releasetool tag against all pending PRs."""
 
 import importlib
-from typing import List
 
 from autorelease import common, github, kokoro, reporter
 from releasetool.commands.common import TagContext

@@ -23,7 +23,7 @@ from autorelease import tag
 def test_no_issues(make_authorized_session, list_org_issues, process_issue):
     list_org_issues.return_value = []
 
-    reporter = tag.main("github-token", "kokoro-credentials")
+    tag.main("github-token", "kokoro-credentials")
     make_authorized_session.assert_called_once()
     process_issue.assert_not_called()
 
@@ -43,7 +43,7 @@ def test_processes_issues(make_authorized_session, list_org_issues, process_issu
         "title": "chore: release 1.0.0",
     }
     list_org_issues.side_effect = [[pr1, pr2]]
-    reporter = tag.main("github-token", "kokoro-credentials")
+    tag.main("github-token", "kokoro-credentials")
     list_org_issues.assert_any_call(
         org="googleapis", state="closed", labels="autorelease: pending"
     )
