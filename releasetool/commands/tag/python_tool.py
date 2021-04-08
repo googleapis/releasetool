@@ -14,6 +14,7 @@
 
 import getpass
 import re
+from typing import Union
 
 import click
 
@@ -62,6 +63,19 @@ def create_release(ctx: TagContext) -> None:
     )
 
 
+def kokoro_job_name(upstream_repo: str, package_name: str) -> Union[str, None]:
+    """Return the Kokoro job name.
+
+    Args:
+        upstream_repo (str): The GitHub repo in the form of `<owner>/<repo>`
+        package_name (str): The name of package to release
+
+    Returns:
+        The name of the Kokoro job to trigger or None if there is no job to trigger
+    """
+    return f"cloud-devrel/client-libraries/{package_name}/release"
+
+
 def tag(ctx: TagContext = None) -> TagContext:
     if not ctx:
         ctx = TagContext()
@@ -87,7 +101,7 @@ def tag(ctx: TagContext = None) -> TagContext:
 
     create_release(ctx)
 
-    ctx.kokoro_job_name = f"cloud-devrel/client-libraries/{ctx.package_name}/release"
+    ctx.kokoro_job_name = kokoro_job_name(ctx.upstream_repo, ctx.package_name)
     releasetool.commands.common.publish_via_kokoro(ctx)
 
     if ctx.interactive:

@@ -15,7 +15,7 @@
 import pytest
 import re
 
-from releasetool.commands.tag.dotnet import RELEASE_LINE_PATTERN
+from releasetool.commands.tag.dotnet import RELEASE_LINE_PATTERN, kokoro_job_name
 
 
 release_triggering_lines = [
@@ -54,3 +54,8 @@ def test_release_line_regex_not_matching(line):
     """
     match = re.search(RELEASE_LINE_PATTERN, line)
     assert match is None
+
+
+def test_kokoro_job_name():
+    job_name = kokoro_job_name("upstream-owner/upstream-repo", "some-package-name")
+    assert job_name is None
