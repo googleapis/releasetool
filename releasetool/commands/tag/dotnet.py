@@ -96,7 +96,7 @@ def kokoro_job_name(upstream_repo: str, package_name: str) -> Union[str, None]:
     """Return the Kokoro job name.
 
     Args:
-        upstream_repo (str): The GitHub repo in the form of https://api.github.com/repos/<owner>/<repo>
+        upstream_repo (str): The GitHub repo in the form of `<owner>/<repo>`
         package_name (str): The name of package to release
 
     Returns:
