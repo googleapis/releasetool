@@ -22,6 +22,7 @@ from autorelease import kokoro
 from autorelease import reporter
 
 LANGUAGE_ALLOWLIST = []
+ORGANIZATIONS_TO_SCAN = ["googleapis", "GoogleCloudPlatform"]
 
 
 def process_issue(kokoro_session, gh: github.GitHub, issue: dict, result) -> None:
@@ -74,44 +75,45 @@ def process_issue(kokoro_session, gh: github.GitHub, issue: dict, result) -> Non
     )
 
 
-def main(args) -> reporter.Reporter:
+def main(github_token, kokoro_credentials) -> reporter.Reporter:
     report = reporter.Reporter("autorelease.trigger")
     # TODO(busunkim): Use proxy once KMS setup is complete.
-    gh = github.GitHub(args.github_token, use_proxy=False)
-    kokoro_session = kokoro.make_authorized_session(args.kokoro_credentials)
+    gh = github.GitHub(github_token, use_proxy=False)
+    kokoro_session = kokoro.make_authorized_session(kokoro_credentials)
 
     # First, we need to get a list of all pull requests (GitHub calls these "issues")
-    # that are merged ("closed") and have the label "autorelease: pending".
-    org = "googleapis"
+    # that are merged ("closed") and have the label "autorelease: tagged".
     list_result = reporter.Result("list issues")
     report.add(list_result)
 
-    try:
-        issues = gh.list_org_issues(
-            org=org,
-            # Must be merged ("closed").
-            state="closed",
-            # Must be labeled with "autorelease: tagged"
-            labels="autorelease: tagged",
-        )
-
-        # Just in case any non-PRs got in here.
-        issues = [result for result in issues if "pull_request" in result]
-
-        # Print out our findings as a checkpoint.
-        list_result.print("Working set:")
-        for issue in issues:
-            list_result.print(
-                f" * {issue['title']}: {issue['pull_request']['html_url']}"
+    all_issues = []
+    for org in ORGANIZATIONS_TO_SCAN:
+        try:
+            issues = gh.list_org_issues(
+                org=org,
+                # Must be merged ("closed").
+                state="closed",
+                # Must be labeled with "autorelease: pending"
+                labels="autorelease: tagged",
             )
 
-    # Exceptions while getting the list of pull requests constitutes a total failure.
-    except Exception as exc:
-        list_result.error = True
-        list_result.print(exc)
+            # Just in case any non-PRs got in here.
+            issues = [result for result in issues if "pull_request" in result]
+
+            all_issues.extend(issues)
+
+        # Exceptions while getting the list of pull requests constitutes a total failure.
+        except Exception as exc:
+            list_result.error = True
+            list_result.print(exc)
+
+    # Print out our findings as a checkpoint.
+    list_result.print("Working set:")
+    for issue in all_issues:
+        list_result.print(f" * {issue['title']}: {issue['pull_request']['html_url']}")
 
     # For each pull request, execute releasetool tag for it.
-    for issue in issues:
+    for issue in all_issues:
         result = reporter.Result(f"{issue['title']}")
         report.add(result)
         result.print(
