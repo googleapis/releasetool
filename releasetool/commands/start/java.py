@@ -39,6 +39,7 @@ VERSION_REPLACEMENT_FILENAMES = {
     "build.gradle": True,
     "dependencies.properties": True,
     "GoogleUtils.java": True,
+    "ClientVersion.java": True,
 }
 
 
