@@ -31,6 +31,7 @@ def run_releasetool_tag(lang: str, gh: github.GitHub, pull: dict) -> None:
     ctx.interactive = False
     # TODO(busunkim): Use proxy once KMS setup is complete.
     ctx.github = releasetool.github.GitHub(gh.token, use_proxy=False)
+    ctx.token = gh.token
     ctx.upstream_repo = pull["base"]["repo"]["full_name"]
     ctx.release_pr = pull
     return language_module.tag(ctx)
@@ -84,9 +85,6 @@ def main(args) -> reporter.Reporter:
     try:
         issues = gh.list_org_issues(
             org=org,
-            # Get all issues. By default, GitHub only returns issues assigned to
-            # the authenticated user.
-            filter="all",
             # Must be merged ("closed").
             state="closed",
             # Must be labeled with "autorelease: pending"

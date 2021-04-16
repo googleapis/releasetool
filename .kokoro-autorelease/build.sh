@@ -17,20 +17,17 @@ set -eo pipefail
 
 cd ${KOKORO_ARTIFACTS_DIR}/github/releasetool
 
-# Upgrade the NPM version
-sudo npm install -g npm
-
-# Kokoro currently uses 3.6.1
-pyenv global 3.6.1
+# Docker images currently uses 3.7.4
 
 # Disable buffering, so that the logs stream through.
 export PYTHONUNBUFFERED=1
 
-# Add github to known hosts.
-ssh-keyscan github.com >> ~/.ssh/known_hosts
-
 # The key for triggering Kokoro jobs is a Keystore resource, so it'll be here.
 export AUTORELEASE_KOKORO_CREDENTIALS=${KOKORO_KEYSTORE_DIR}/73713_kokoro_trigger_credentials
+
+# install release-please binary to do tagging
+npm i release-please
+npx release-please --version
 
 python3 -m pip install --quiet --user --upgrade -r requirements.txt
 python3 -m autorelease --report sponge_log.xml ${AUTORELEASE_COMMAND}

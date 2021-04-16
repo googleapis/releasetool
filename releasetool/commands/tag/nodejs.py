@@ -14,6 +14,7 @@
 
 import getpass
 import re
+from typing import Union
 
 import click
 
@@ -23,10 +24,13 @@ import releasetool.github
 import releasetool.secrets
 import releasetool.commands.common
 from releasetool.commands.common import TagContext
+import subprocess
+import tempfile
 
 # Repos that have their publication process handled by GitHub actions:
-skip = [
+manifest_release = [
     "googleapis/google-api-nodejs-client",
+    "googleapis/repo-automation-bots",
 ]
 
 
@@ -74,12 +78,6 @@ def determine_package_version(ctx: TagContext) -> None:
     click.secho(f"package version: {ctx.release_version}.")
 
 
-def determine_kokoro_job_name(ctx: TagContext) -> None:
-    ctx.kokoro_job_name = (
-        f"cloud-devrel/client-libraries/nodejs/release/{ctx.upstream_repo}/publish"
-    )
-
-
 def get_release_notes(ctx: TagContext) -> None:
     click.secho("> Grabbing the release notes.")
     changelog = ctx.github.get_contents(
@@ -107,25 +105,50 @@ def _get_latest_release_notes(ctx: TagContext, changelog: str):
 def create_release(ctx: TagContext) -> None:
     click.secho("> Creating the release.")
 
-    ctx.github_release = ctx.github.create_release(
-        repository=ctx.upstream_repo,
-        tag_name=ctx.release_version,
-        target_commitish=ctx.release_pr["merge_commit_sha"],
-        name=f"{ctx.release_version}",
-        body=ctx.release_notes,
-    )
+    if ctx.upstream_repo in manifest_release:
+        # delegate releaase tagging to release-please
+        default_branch = ctx.release_pr["base"]["ref"]
+        repo = ctx.release_pr["base"]["repo"]["full_name"]
 
-    release_location_string = f"Release is at {ctx.github_release['html_url']}"
-    click.secho(release_location_string)
-    click.secho("CI will handle publishing the package to npm.")
+        with tempfile.NamedTemporaryFile("w+t", delete=False) as fp:
+            fp.write(ctx.token)
+            token_file = fp.name
 
-    ctx.github.create_pull_request_comment(
-        ctx.upstream_repo, ctx.release_pr["number"], release_location_string
-    )
+        subprocess.check_output(
+            [
+                # TODO(sofisl): remove pinning to a specific version
+                # once we've tested:
+                "npx",
+                "release-please",
+                "manifest-release",
+                f"--token={token_file}",
+                f"--default-branch={default_branch}",
+                f"--repo-url={repo}",
+                "--debug",
+            ]
+        )
+    else:
+        # TODO(sofisl): move the non-manifest release to release-please too
+        # for consistency:
+        ctx.github_release = ctx.github.create_release(
+            repository=ctx.upstream_repo,
+            tag_name=ctx.release_version,
+            target_commitish=ctx.release_pr["merge_commit_sha"],
+            name=f"{ctx.release_version}",
+            body=ctx.release_notes,
+        )
 
-    ctx.github.update_pull_labels(
-        ctx.release_pr, add=["autorelease: tagged"], remove=["autorelease: pending"]
-    )
+        release_location_string = f"Release is at {ctx.github_release['html_url']}"
+        click.secho(release_location_string)
+        click.secho("CI will handle publishing the package to npm.")
+
+        ctx.github.create_pull_request_comment(
+            ctx.upstream_repo, ctx.release_pr["number"], release_location_string
+        )
+
+        ctx.github.update_pull_labels(
+            ctx.release_pr, add=["autorelease: tagged"], remove=["autorelease: pending"]
+        )
 
 
 def wait_on_circle(ctx: TagContext) -> None:
@@ -143,6 +166,19 @@ def wait_on_circle(ctx: TagContext) -> None:
         click.secho(f"CircleCI Build not found for tag {tag_name}...")
 
 
+def kokoro_job_name(upstream_repo: str, package_name: str) -> Union[str, None]:
+    """Return the Kokoro job name.
+
+    Args:
+        upstream_repo (str): The GitHub repo in the form of `<owner>/<repo>`
+        package_name (str): The name of package to release
+
+    Returns:
+        The name of the Kokoro job to trigger or None if there is no job to trigger
+    """
+    return f"cloud-devrel/client-libraries/nodejs/release/{upstream_repo}/publish"
+
+
 def tag(ctx: TagContext = None) -> TagContext:
     if not ctx:
         ctx = TagContext()
@@ -156,21 +192,23 @@ def tag(ctx: TagContext = None) -> TagContext:
     if ctx.release_pr is None:
         determine_release_pr(ctx)
 
-    if ctx.upstream_repo in skip:
-        return ctx
+    # If using manifest release, the manifest releaser determines
+    # release tag, version, and release notes:
+    if ctx.upstream_repo not in manifest_release:
+        determine_release_tag(ctx)
+        determine_package_version(ctx)
+        # If the release already exists, don't do anything
+        if releasetool.commands.common.release_exists(ctx):
+            click.secho(f"{ctx.release_tag} already exists.", fg="magenta")
+            return ctx
+        get_release_notes(ctx)
+    else:
+        # If using mono-release strategy, fallback to using sha from
+        # time of merge:
+        ctx.release_tag = ctx.release_pr["merge_commit_sha"]
 
-    determine_release_tag(ctx)
-    determine_package_version(ctx)
-
-    # If the release already exists, don't do anything
-    if releasetool.commands.common.release_exists(ctx):
-        click.secho(f"{ctx.release_tag} already exists.", fg="magenta")
-        return ctx
-
-    get_release_notes(ctx)
     create_release(ctx)
-
-    determine_kokoro_job_name(ctx)
+    ctx.kokoro_job_name = kokoro_job_name(ctx.upstream_repo, ctx.package_name)
     releasetool.commands.common.publish_via_kokoro(ctx)
 
     if ctx.interactive:

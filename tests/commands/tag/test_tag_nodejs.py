@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from releasetool.commands.tag.nodejs import _get_latest_release_notes
+from releasetool.commands.tag.nodejs import _get_latest_release_notes, kokoro_job_name
 from releasetool.commands.common import TagContext
 
 fixture_old_style_changelog = """
@@ -181,3 +181,11 @@ def test_extracts_appropriate_release_notes_when_prior_release_is_patch():
 * default temp directory to report directory ([#102](https://www.github.com/bcoe/c8/issues/102)) ([8602f4a](https://www.github.com/bcoe/c8/commit/8602f4a))
 * load .nycrc/.nycrc.json to simplify migration ([#100](https://www.github.com/bcoe/c8/issues/100)) ([bd7484f](https://www.github.com/bcoe/c8/commit/bd7484f))"""
     assert ctx.release_notes == expected
+
+
+def test_kokoro_job_name():
+    job_name = kokoro_job_name("upstream-owner/upstream-repo", "some-package-name")
+    assert (
+        job_name
+        == "cloud-devrel/client-libraries/nodejs/release/upstream-owner/upstream-repo/publish"
+    )
