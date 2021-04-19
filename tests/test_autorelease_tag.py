@@ -122,3 +122,52 @@ def test_process_issue_skips_kokoro_if_no_job_name(run_releasetool_tag, trigger_
     tag.process_issue(Mock(), github, issue, Mock())
     run_releasetool_tag.assert_called_once()
     trigger_build.assert_not_called()
+
+
+@patch("autorelease.tag.LANGUAGE_ALLOWLIST", ["java"])
+@patch("autorelease.tag.run_releasetool_tag")
+@patch("autorelease.github.GitHub.list_org_issues")
+@patch("autorelease.kokoro.make_authorized_session")
+def test_respects_allowlist(
+    make_authorized_session, list_org_issues, run_releasetool_tag
+):
+    pr1 = {
+        "base": {"ref": "abc123", "repo": {"full_name": "googleapis/java-asset"}},
+        "pull_request": {
+            "url": "https://api.github.com/repos/googleapis/java-asset/pull/123",
+            "html_url": "https://github.com/googleapis/java-asset",
+        },
+        "title": "chore: release 1.2.3",
+    }
+    pr2 = {
+        "base": {"ref": "def456", "repo": {"full_name": "googleapis/nodejs-container"}},
+        "pull_request": {
+            "url": "https://api.github.com/repos/googleapis/nodejs-container/pull/234",
+            "html_url": "https://github.com/nodejs/nodejs-container",
+        },
+        "title": "chore: release 1.0.0",
+    }
+    list_org_issues.side_effect = [[pr1, pr2]]
+    with requests_mock.Mocker() as m:
+        m.get(
+            "https://api.github.com/repos/googleapis/java-asset/pull/123",
+            json={
+                "merged_at": "2021-01-01T09:00:00.000Z",
+                "base": {"repo": {"full_name": "googleapis/java-asset"}},
+            },
+        )
+        m.get(
+            "https://api.github.com/repos/googleapis/nodejs-container/pull/234",
+            json={
+                "merged_at": "2021-01-01T09:00:00.000Z",
+                "base": {"repo": {"full_name": "googleapis/nodejs-container"}},
+            },
+        )
+        tag.main("github-token", "kokoro-credentials")
+    list_org_issues.assert_any_call(
+        org="googleapis", state="closed", labels="autorelease: pending"
+    )
+    list_org_issues.assert_any_call(
+        org="GoogleCloudPlatform", state="closed", labels="autorelease: pending"
+    )
+    assert run_releasetool_tag.call_count == 1
