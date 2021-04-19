@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import requests_mock
 from unittest.mock import patch, Mock
 
 from autorelease import tag
