@@ -16,7 +16,7 @@ import argparse
 import os
 import sys
 
-from autorelease import tag
+from autorelease import tag, trigger
 
 # TODO(busunkim): Fetch magictoken from KMS once KMS setup is complete.
 _KEYSTORE_GITHUB_TOKEN_LOCATION = "73713_yoshi-automation-github-key"
@@ -54,6 +54,16 @@ def main():
 
     if args.command == "tag":
         report = tag.main(args.github_token, args.kokoro_credentials)
+
+        if args.report:
+            report.write(args.report)
+
+        if report.failures:
+            sys.exit(2)
+        else:
+            return
+    elif args.command == "trigger":
+        report = trigger.main(args.github_token, args.kokoro_credentials)
 
         if args.report:
             report.write(args.report)
