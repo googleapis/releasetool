@@ -53,7 +53,7 @@ def main():
     args.github_token = _determine_github_token(args.github_token)
 
     if args.command == "tag":
-        report = tag.main(args)
+        report = tag.main(args.github_token, args.kokoro_credentials)
 
         if args.report:
             report.write(args.report)

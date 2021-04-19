@@ -14,6 +14,7 @@
 
 import getpass
 import re
+from typing import Union
 
 import click
 from requests import HTTPError
@@ -127,6 +128,25 @@ def create_release(ctx: TagContext) -> None:
     )
 
 
+def kokoro_job_name(upstream_repo: str, package_name: str) -> Union[str, None]:
+    """Return the Kokoro job name.
+
+    Args:
+        upstream_repo (str): The GitHub repo in the form of `<owner>/<repo>`
+        package_name (str): The name of package to release
+
+    Returns:
+        The name of the Kokoro job to trigger or None if there is no job to trigger
+    """
+    if "google-cloud-ruby" in upstream_repo:
+        job_name = package_name.split("google-cloud-")[-1]
+        return f"cloud-devrel/client-libraries/google-cloud-ruby/release/{job_name}"
+    elif "google-api-ruby-client" in upstream_repo:
+        return f"cloud-devrel/client-libraries/google-api-ruby-client/release/{package_name}"
+    else:
+        return f"cloud-devrel/client-libraries/{package_name}/release"
+
+
 def tag(ctx: TagContext = None) -> TagContext:
     if not ctx:
         ctx = TagContext()
@@ -153,18 +173,7 @@ def tag(ctx: TagContext = None) -> TagContext:
     get_release_notes(ctx)
 
     create_release(ctx)
-
-    if "google-cloud-ruby" in ctx.upstream_repo:
-        job_name = ctx.package_name.split("google-cloud-")[-1]
-        ctx.kokoro_job_name = (
-            f"cloud-devrel/client-libraries/google-cloud-ruby/release/{job_name}"
-        )
-    elif "google-api-ruby-client" in ctx.upstream_repo:
-        ctx.kokoro_job_name = f"cloud-devrel/client-libraries/google-api-ruby-client/release/{ctx.package_name}"
-    else:
-        ctx.kokoro_job_name = (
-            f"cloud-devrel/client-libraries/{ctx.package_name}/release"
-        )
+    ctx.kokoro_job_name = kokoro_job_name(ctx.upstream_repo, ctx.package_name)
 
     releasetool.commands.common.publish_via_kokoro(ctx)
 

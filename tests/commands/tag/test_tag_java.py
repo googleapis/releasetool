@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from releasetool.commands.tag.java import _parse_release_tag
+from releasetool.commands.tag.java import _parse_release_tag, kokoro_job_name
 
 RELEASE_PLEASE_OUTPUT = """
 ✔ creating release v1.20.0
@@ -26,3 +26,8 @@ RELEASE_PLEASE_OUTPUT = """
 def test_releasetool_release_tag():
     expected = "v1.20.0"
     assert _parse_release_tag(RELEASE_PLEASE_OUTPUT) == expected
+
+
+def test_kokoro_job_name():
+    job_name = kokoro_job_name("upstream-owner/upstream-repo", "some-package-name")
+    assert job_name == "cloud-devrel/client-libraries/java/upstream-repo/release/stage"

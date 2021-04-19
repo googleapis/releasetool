@@ -1,9 +1,23 @@
 import getpass
+from typing import Union
 
 import click
 
 import releasetool.commands.tag.nodejs
 from releasetool.commands.common import TagContext
+
+
+def kokoro_job_name(upstream_repo: str, package_name: str) -> Union[str, None]:
+    """Return the Kokoro job name.
+
+    Args:
+        upstream_repo (str): The GitHub repo in the form of `<owner>/<repo>`
+        package_name (str): The name of package to release
+
+    Returns:
+        The name of the Kokoro job to trigger or None if there is no job to trigger
+    """
+    return None
 
 
 def tag(ctx: TagContext = None) -> TagContext:
