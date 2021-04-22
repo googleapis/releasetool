@@ -16,10 +16,7 @@
 
 import importlib
 
-from autorelease import common
-from autorelease import github
-from autorelease import kokoro
-from autorelease import reporter
+from autorelease import common, github, kokoro, reporter
 
 LANGUAGE_ALLOWLIST = []
 ORGANIZATIONS_TO_SCAN = ["googleapis", "GoogleCloudPlatform"]
