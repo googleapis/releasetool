@@ -38,4 +38,5 @@ def lint(session):
 def test(session):
     session.install('pytest')
     session.run('pip', 'install', '-e', '.')
+    session.run('pip', 'install', 'requests_mock')
     session.run('pytest', 'tests', *session.posargs)

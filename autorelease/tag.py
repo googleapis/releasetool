@@ -20,6 +20,16 @@ from autorelease import common, github, kokoro, reporter
 from releasetool.commands.common import TagContext
 import releasetool.github
 
+LANGUAGE_ALLOWLIST = [
+    "dotnet",
+    "java",
+    "nodejs",
+    "php",
+    "python_tool",
+    "python",
+    "ruby",
+]
+
 
 ORGANIZATIONS_TO_SCAN = ["googleapis", "GoogleCloudPlatform"]
 
@@ -58,6 +68,13 @@ def process_issue(
 
     # Determine language.
     lang = common.guess_language(gh, pull["base"]["repo"]["full_name"])
+
+    # As part of the migration to release-please tagging, cross-reference the
+    # language against an allowlist to allow migrating language-by-language.
+    if lang not in LANGUAGE_ALLOWLIST:
+        result.skipped = True
+        result.print(f"Language {lang} not in allowlist, skipping.")
+        return
 
     # Run releasetool tag for the PR.
     ctx = run_releasetool_tag(lang, gh, pull)
