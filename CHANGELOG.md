@@ -4,6 +4,15 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+### [1.5.1](https://www.github.com/googleapis/releasetool/compare/v1.5.0...v1.5.1) (2021-04-26)
+
+
+### Bug Fixes
+
+* add allowlist for autorelease.tag command ([#312](https://www.github.com/googleapis/releasetool/issues/312)) ([065efad](https://www.github.com/googleapis/releasetool/commit/065efadd80582793a269491099a572f99f9a9525))
+* **ruby:** Trigger new Ruby release job from google-cloud-ruby ([#320](https://www.github.com/googleapis/releasetool/issues/320)) ([d813aa7](https://www.github.com/googleapis/releasetool/commit/d813aa713c6569c2aac3cd247bb689b19e31e984))
+* run autorelease tag against googleapis and GCP organizations ([#316](https://www.github.com/googleapis/releasetool/issues/316)) ([2463b15](https://www.github.com/googleapis/releasetool/commit/2463b15e0e30292e70a3a920553f579e1622f53e))
+
 ## [1.5.0](https://www.github.com/googleapis/releasetool/compare/v1.4.0...v1.5.0) (2021-03-24)
 
 
