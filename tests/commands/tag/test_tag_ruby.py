@@ -25,14 +25,13 @@ def test_kokoro_job_name_cloud():
         "googleapis/google-cloud-ruby", "google-cloud-video-intelligence"
     )
     assert (
-        job_name
-        == "cloud-devrel/client-libraries/google-cloud-ruby/release"
+        job_name == "cloud-devrel/client-libraries/google-cloud-ruby/release"
     )
 
 
 def test_kokoro_job_name_apiary():
-    job_name = kokoro_job_name("googleapis/google-api-ruby-client", "google-apis-core")
+    job_name = kokoro_job_name("googleapis/google-api-ruby-client", "youtube")
     assert (
         job_name
-        == "cloud-devrel/client-libraries/google-api-ruby-client/release/google-apis-core"
+        == "cloud-devrel/client-libraries/google-api-ruby-client/release/youtube"
     )
