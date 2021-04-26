@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""This module handles automatically running releasetool tag against all pending PRs."""
+"""This module handles triggering Kokoro release jobs for merged release pull requests."""
 
 import importlib
 
