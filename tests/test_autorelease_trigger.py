@@ -17,21 +17,25 @@ from unittest.mock import patch, Mock
 from autorelease import trigger
 
 
-@patch("autorelease.trigger.process_issue")
+@patch("autorelease.trigger.trigger_kokoro_build_for_pull_request")
 @patch("autorelease.github.GitHub.list_org_issues")
 @patch("autorelease.kokoro.make_authorized_session")
-def test_no_issues(make_authorized_session, list_org_issues, process_issue):
+def test_no_issues(
+    make_authorized_session, list_org_issues, trigger_kokoro_build_for_pull_request
+):
     list_org_issues.return_value = []
 
     trigger.main("github-token", "kokoro-credentials")
     make_authorized_session.assert_called_once()
-    process_issue.assert_not_called()
+    trigger_kokoro_build_for_pull_request.assert_not_called()
 
 
-@patch("autorelease.trigger.process_issue")
+@patch("autorelease.trigger.trigger_kokoro_build_for_pull_request")
 @patch("autorelease.github.GitHub.list_org_issues")
 @patch("autorelease.kokoro.make_authorized_session")
-def test_processes_issues(make_authorized_session, list_org_issues, process_issue):
+def test_processes_issues(
+    make_authorized_session, list_org_issues, trigger_kokoro_build_for_pull_request
+):
     pr1 = {
         "base": {"ref": "abc123", "repo": {"full_name": "googleapis/java-asset"}},
         "pull_request": {"html_url": "https://github.com/googleapis/java-asset"},
@@ -50,11 +54,11 @@ def test_processes_issues(make_authorized_session, list_org_issues, process_issu
     list_org_issues.assert_any_call(
         org="GoogleCloudPlatform", state="closed", labels="autorelease: tagged"
     )
-    assert process_issue.call_count == 2
+    assert trigger_kokoro_build_for_pull_request.call_count == 2
 
 
 @patch("autorelease.kokoro.trigger_build")
-def test_process_issue_skips_non_merged(trigger_build):
+def test_trigger_kokoro_build_for_pull_request_skips_non_merged(trigger_build):
     github = Mock()
     github.update_pull_labels = Mock()
     github.get_url.return_value = {
@@ -64,14 +68,14 @@ def test_process_issue_skips_non_merged(trigger_build):
     issue = {
         "pull_request": {"url": "https://api.github.com/googleapis/java-asset/pull/5"}
     }
-    trigger.process_issue(Mock(), github, issue, Mock())
+    trigger.trigger_kokoro_build_for_pull_request(Mock(), github, issue, Mock())
     github.update_pull_labels.assert_called_once()
     trigger_build.assert_not_called()
 
 
 @patch("autorelease.trigger.LANGUAGE_ALLOWLIST", ["java"])
 @patch("autorelease.kokoro.trigger_build")
-def test_process_issue_triggers_kokoro(trigger_build):
+def test_trigger_kokoro_build_for_pull_request_triggers_kokoro(trigger_build):
     github = Mock()
     github.get_url.return_value = {
         "merged_at": "2021-01-01T09:00:00.000Z",
@@ -84,13 +88,15 @@ def test_process_issue_triggers_kokoro(trigger_build):
         "merged_at": "2021-01-01T09:00:00.000Z",
     }
 
-    trigger.process_issue(Mock(), github, issue, Mock())
+    trigger.trigger_kokoro_build_for_pull_request(Mock(), github, issue, Mock())
     trigger_build.assert_called_once()
 
 
 @patch("autorelease.trigger.LANGUAGE_ALLOWLIST", [])
 @patch("autorelease.kokoro.trigger_build")
-def test_process_issue_skips_kokoro_if_not_in_allowlist(trigger_build):
+def test_trigger_kokoro_build_for_pull_request_skips_kokoro_if_not_in_allowlist(
+    trigger_build,
+):
     github = Mock()
     github.get_url.return_value = {
         "merged_at": "2021-01-01T09:00:00.000Z",
@@ -102,13 +108,15 @@ def test_process_issue_skips_kokoro_if_not_in_allowlist(trigger_build):
         "pull_request": {"url": "https://api.github.com/googleapis/java-asset/pull/5"},
         "merged_at": "2021-01-01T09:00:00.000Z",
     }
-    trigger.process_issue(Mock(), github, issue, Mock())
+    trigger.trigger_kokoro_build_for_pull_request(Mock(), github, issue, Mock())
     trigger_build.assert_not_called()
 
 
 @patch("autorelease.trigger.LANGUAGE_ALLOWLIST", ["php"])
 @patch("autorelease.kokoro.trigger_build")
-def test_process_issue_skips_kokoro_if_no_job_name(trigger_build):
+def test_trigger_kokoro_build_for_pull_request_skips_kokoro_if_no_job_name(
+    trigger_build,
+):
     github = Mock()
     github.get_url.return_value = {
         "merged_at": "2021-01-01T09:00:00.000Z",
@@ -121,5 +129,5 @@ def test_process_issue_skips_kokoro_if_no_job_name(trigger_build):
         },
         "merged_at": "2021-01-01T09:00:00.000Z",
     }
-    trigger.process_issue(Mock(), github, issue, Mock())
+    trigger.trigger_kokoro_build_for_pull_request(Mock(), github, issue, Mock())
     trigger_build.assert_not_called()

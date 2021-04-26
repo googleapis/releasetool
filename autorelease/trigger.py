@@ -22,7 +22,15 @@ LANGUAGE_ALLOWLIST = []
 ORGANIZATIONS_TO_SCAN = ["googleapis", "GoogleCloudPlatform"]
 
 
-def process_issue(kokoro_session, gh: github.GitHub, issue: dict, result) -> None:
+def trigger_kokoro_build_for_pull_request(
+    kokoro_session, gh: github.GitHub, issue: dict, result
+) -> None:
+    """Triggers the Kokoro job for a given pull request if possible.
+
+    If the pull request is not merged, remove the `autorelease: pending` label
+    and mark it as closed. Otherwise, determine the name of the Kokoro job
+    name and trigger a build.
+    """
     # Reify the "issue" into a full pull request object from github. This
     # is necessary because github gives us back an issue object, but it
     # doesn't contain all of the PR info.
@@ -118,7 +126,7 @@ def main(github_token, kokoro_credentials) -> reporter.Reporter:
         )
 
         try:
-            process_issue(kokoro_session, gh, issue, result)
+            trigger_kokoro_build_for_pull_request(kokoro_session, gh, issue, result)
         # Failing any one PR is fine, just record it in the log and continue.
         except Exception as exc:
             result.error = True
