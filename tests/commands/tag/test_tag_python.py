@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from releasetool.commands.tag.python import kokoro_job_name
+from releasetool.commands.tag.python import kokoro_job_name, package_name
 
 
 def test_kokoro_job_name():
@@ -21,3 +21,8 @@ def test_kokoro_job_name():
         job_name
         == "cloud-devrel/client-libraries/python/upstream-owner/upstream-repo/release/release"
     )
+
+
+def test_package_name():
+    name = package_name({"head": {"ref": "release-storage-v1.2.3"}})
+    assert name is None

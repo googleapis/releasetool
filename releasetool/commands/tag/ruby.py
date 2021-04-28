@@ -146,6 +146,16 @@ def kokoro_job_name(upstream_repo: str, package_name: str) -> Union[str, None]:
         return f"cloud-devrel/client-libraries/{package_name}/release"
 
 
+def package_name(pull: dict) -> Union[str, None]:
+    head_ref = pull["head"]["ref"]
+    click.secho(f"PR head ref is {head_ref}")
+    match = re.match(r"release-(.+)-v(\d+\.\d+\.\d+)", head_ref)
+    if match is None:
+        return None
+
+    return match.group(1)
+
+
 def tag(ctx: TagContext = None) -> TagContext:
     if not ctx:
         ctx = TagContext()

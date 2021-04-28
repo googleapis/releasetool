@@ -15,7 +15,11 @@
 import pytest
 import re
 
-from releasetool.commands.tag.dotnet import RELEASE_LINE_PATTERN, kokoro_job_name
+from releasetool.commands.tag.dotnet import (
+    RELEASE_LINE_PATTERN,
+    kokoro_job_name,
+    package_name,
+)
 
 
 release_triggering_lines = [
@@ -59,3 +63,8 @@ def test_release_line_regex_not_matching(line):
 def test_kokoro_job_name():
     job_name = kokoro_job_name("upstream-owner/upstream-repo", "some-package-name")
     assert job_name is None
+
+
+def test_package_name():
+    name = package_name({"head": {"ref": "release-storage-v1.2.3"}})
+    assert name is None
