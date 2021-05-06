@@ -14,8 +14,9 @@
 
 """This module handles triggering Kokoro release jobs for merged release pull requests."""
 
+import importlib
+
 from autorelease import common, github, kokoro, reporter
-from releasetool.commands import tag
 
 LANGUAGE_ALLOWLIST = ["java"]
 ORGANIZATIONS_TO_SCAN = ["googleapis", "GoogleCloudPlatform"]
@@ -56,7 +57,7 @@ def trigger_kokoro_build_for_pull_request(
         result.print(f"Language {lang} not in allowlist, skipping.")
         return
 
-    language_module = getattr(tag, lang)
+    language_module = importlib.import_module(f"releasetool.commands.tag.{lang}")
     package_name = language_module.package_name(pull)
     kokoro_job_name = language_module.kokoro_job_name(
         pull["base"]["repo"]["full_name"], package_name
