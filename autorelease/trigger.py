@@ -20,6 +20,7 @@ from autorelease import common, github, kokoro, reporter
 
 LANGUAGE_ALLOWLIST = ["java"]
 ORGANIZATIONS_TO_SCAN = ["googleapis", "GoogleCloudPlatform"]
+CREATED_AFTER = "2021-04-01"
 
 
 def trigger_kokoro_build_for_pull_request(
@@ -100,6 +101,8 @@ def main(github_token, kokoro_credentials) -> reporter.Reporter:
                 state="closed",
                 # Must be labeled with "autorelease: pending"
                 labels="autorelease: tagged",
+                # Only look at issues created recently
+                created_after=CREATED_AFTER,
             )
 
             # Just in case any non-PRs got in here.
