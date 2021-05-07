@@ -20,6 +20,9 @@ from autorelease import common, github, kokoro, reporter
 
 LANGUAGE_ALLOWLIST = ["java"]
 ORGANIZATIONS_TO_SCAN = ["googleapis", "GoogleCloudPlatform"]
+
+# Whenever we add new languages to the allowlist, update this value as
+# well to prevent trying to release old versions.
 CREATED_AFTER = "2021-04-01"
 
 
