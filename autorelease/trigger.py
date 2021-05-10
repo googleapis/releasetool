@@ -51,6 +51,13 @@ def trigger_kokoro_build_for_pull_request(
         )
         return
 
+    # If the Kokoro job has already been triggered, don't trigger again.
+    if "labels" in pull and any(
+        "name" in label and label["name"] == "autorelease: triggered"
+        for label in pull["labels"]
+    ):
+        return
+
     # Determine language.
     lang = common.guess_language(gh, pull["base"]["repo"]["full_name"])
 
@@ -82,6 +89,7 @@ def trigger_kokoro_build_for_pull_request(
         sha=sha,
         env_vars={"AUTORELEASE_PR": pull_request_url},
     )
+    gh.update_pull_labels(pull, add=["autorelease: triggered"])
 
 
 def main(github_token, kokoro_credentials) -> reporter.Reporter:

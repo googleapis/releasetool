@@ -96,6 +96,7 @@ def test_trigger_kokoro_build_for_pull_request_triggers_kokoro(trigger_build):
 
     trigger.trigger_kokoro_build_for_pull_request(Mock(), github, issue, Mock())
     trigger_build.assert_called_once()
+    github.update_pull_labels.assert_called_once()
 
 
 @patch("autorelease.trigger.LANGUAGE_ALLOWLIST", [])
@@ -128,6 +129,28 @@ def test_trigger_kokoro_build_for_pull_request_skips_kokoro_if_no_job_name(
         "merged_at": "2021-01-01T09:00:00.000Z",
         "base": {"repo": {"full_name": "googleapis/google-cloud-php"}},
         "html_url": "https://github.com/googleapis/google-cloud-php/pulls/5",
+    }
+    issue = {
+        "pull_request": {
+            "url": "https://api.github.com/googleapis/google-cloud-php/pull/5"
+        },
+        "merged_at": "2021-01-01T09:00:00.000Z",
+    }
+    trigger.trigger_kokoro_build_for_pull_request(Mock(), github, issue, Mock())
+    trigger_build.assert_not_called()
+
+
+@patch("autorelease.trigger.LANGUAGE_ALLOWLIST", ["php"])
+@patch("autorelease.kokoro.trigger_build")
+def test_trigger_kokoro_build_for_pull_request_skips_kokoro_if_already_triggered(
+    trigger_build,
+):
+    github = Mock()
+    github.get_url.return_value = {
+        "merged_at": "2021-01-01T09:00:00.000Z",
+        "base": {"repo": {"full_name": "googleapis/google-cloud-php"}},
+        "html_url": "https://github.com/googleapis/google-cloud-php/pulls/5",
+        "labels": [{"id": 12345, "name": "autorelease: triggered"}],
     }
     issue = {
         "pull_request": {
