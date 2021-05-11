@@ -4,6 +4,16 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+### [1.6.1](https://www.github.com/googleapis/releasetool/compare/v1.6.0...v1.6.1) (2021-05-11)
+
+
+### Bug Fixes
+
+* **deps:** lock click to 7.x ([#333](https://www.github.com/googleapis/releasetool/issues/333)) ([1cc456c](https://www.github.com/googleapis/releasetool/commit/1cc456c3457304a8301f64b03941f05648b96642))
+* limit autorelease trigger job to recent release PRs ([#328](https://www.github.com/googleapis/releasetool/issues/328)) ([3674d7c](https://www.github.com/googleapis/releasetool/commit/3674d7c94aa396925e5d7c5bf97d35563a112d2b))
+* only trigger Kokoro jobs once ([#331](https://www.github.com/googleapis/releasetool/issues/331)) ([83b0cae](https://www.github.com/googleapis/releasetool/commit/83b0caec767f8dc540f83f3e54c895d82901ea01))
+* revert to using importlib for dynamic module loading ([#326](https://www.github.com/googleapis/releasetool/issues/326)) ([56a75c8](https://www.github.com/googleapis/releasetool/commit/56a75c800875e7420405559f626683731e56fb5b))
+
 ## [1.6.0](https://www.github.com/googleapis/releasetool/compare/v1.5.0...v1.6.0) (2021-05-03)
 
 
