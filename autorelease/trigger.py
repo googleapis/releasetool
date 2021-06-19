@@ -18,7 +18,7 @@ import importlib
 
 from autorelease import common, github, kokoro, reporter
 
-LANGUAGE_ALLOWLIST = ["java"]
+LANGUAGE_ALLOWLIST = ["java", "nodejs"]
 ORGANIZATIONS_TO_SCAN = ["googleapis", "GoogleCloudPlatform"]
 
 # Whenever we add new languages to the allowlist, update this value as
