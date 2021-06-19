@@ -4,6 +4,31 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+### [1.6.1](https://www.github.com/googleapis/releasetool/compare/v1.6.0...v1.6.1) (2021-05-11)
+
+
+### Bug Fixes
+
+* **deps:** lock click to 7.x ([#333](https://www.github.com/googleapis/releasetool/issues/333)) ([1cc456c](https://www.github.com/googleapis/releasetool/commit/1cc456c3457304a8301f64b03941f05648b96642))
+* limit autorelease trigger job to recent release PRs ([#328](https://www.github.com/googleapis/releasetool/issues/328)) ([3674d7c](https://www.github.com/googleapis/releasetool/commit/3674d7c94aa396925e5d7c5bf97d35563a112d2b))
+* only trigger Kokoro jobs once ([#331](https://www.github.com/googleapis/releasetool/issues/331)) ([83b0cae](https://www.github.com/googleapis/releasetool/commit/83b0caec767f8dc540f83f3e54c895d82901ea01))
+* revert to using importlib for dynamic module loading ([#326](https://www.github.com/googleapis/releasetool/issues/326)) ([56a75c8](https://www.github.com/googleapis/releasetool/commit/56a75c800875e7420405559f626683731e56fb5b))
+
+## [1.6.0](https://www.github.com/googleapis/releasetool/compare/v1.5.0...v1.6.0) (2021-05-03)
+
+
+### Features
+
+* add autorelease.trigger command ([#314](https://www.github.com/googleapis/releasetool/issues/314)) ([9feb650](https://www.github.com/googleapis/releasetool/commit/9feb650c697784aad624c01c74e83510e585a63f))
+
+
+### Bug Fixes
+
+* add allowlist for autorelease.tag command ([#312](https://www.github.com/googleapis/releasetool/issues/312)) ([065efad](https://www.github.com/googleapis/releasetool/commit/065efadd80582793a269491099a572f99f9a9525))
+* **java:** allow java builds in autorelease.trigger ([#323](https://www.github.com/googleapis/releasetool/issues/323)) ([1f25b14](https://www.github.com/googleapis/releasetool/commit/1f25b14c5d2ba10924c4bf8e1eb4b3e3987b7468))
+* **ruby:** Trigger new Ruby release job from google-cloud-ruby ([#320](https://www.github.com/googleapis/releasetool/issues/320)) ([d813aa7](https://www.github.com/googleapis/releasetool/commit/d813aa713c6569c2aac3cd247bb689b19e31e984))
+* run autorelease tag against googleapis and GCP organizations ([#316](https://www.github.com/googleapis/releasetool/issues/316)) ([2463b15](https://www.github.com/googleapis/releasetool/commit/2463b15e0e30292e70a3a920553f579e1622f53e))
+
 ## [1.5.0](https://www.github.com/googleapis/releasetool/compare/v1.4.0...v1.5.0) (2021-03-24)
 
 

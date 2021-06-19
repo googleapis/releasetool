@@ -14,11 +14,16 @@
 
 """This module handles triggering Kokoro release jobs for merged release pull requests."""
 
+import importlib
+
 from autorelease import common, github, kokoro, reporter
-from releasetool.commands import tag
 
 LANGUAGE_ALLOWLIST = ["java"]
 ORGANIZATIONS_TO_SCAN = ["googleapis", "GoogleCloudPlatform"]
+
+# Whenever we add new languages to the allowlist, update this value as
+# well to prevent trying to release old versions.
+CREATED_AFTER = "2021-04-01"
 
 
 def trigger_kokoro_build_for_pull_request(
@@ -46,6 +51,13 @@ def trigger_kokoro_build_for_pull_request(
         )
         return
 
+    # If the Kokoro job has already been triggered, don't trigger again.
+    if "labels" in pull and any(
+        "name" in label and label["name"] == "autorelease: triggered"
+        for label in pull["labels"]
+    ):
+        return
+
     # Determine language.
     lang = common.guess_language(gh, pull["base"]["repo"]["full_name"])
 
@@ -56,7 +68,7 @@ def trigger_kokoro_build_for_pull_request(
         result.print(f"Language {lang} not in allowlist, skipping.")
         return
 
-    language_module = getattr(tag, lang)
+    language_module = importlib.import_module(f"releasetool.commands.tag.{lang}")
     package_name = language_module.package_name(pull)
     kokoro_job_name = language_module.kokoro_job_name(
         pull["base"]["repo"]["full_name"], package_name
@@ -77,6 +89,7 @@ def trigger_kokoro_build_for_pull_request(
         sha=sha,
         env_vars={"AUTORELEASE_PR": pull_request_url},
     )
+    gh.update_pull_labels(pull, add=["autorelease: triggered"])
 
 
 def main(github_token, kokoro_credentials) -> reporter.Reporter:
@@ -99,6 +112,8 @@ def main(github_token, kokoro_credentials) -> reporter.Reporter:
                 state="closed",
                 # Must be labeled with "autorelease: pending"
                 labels="autorelease: tagged",
+                # Only look at issues created recently
+                created_after=CREATED_AFTER,
             )
 
             # Just in case any non-PRs got in here.
