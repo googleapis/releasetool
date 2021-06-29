@@ -68,5 +68,4 @@ setuptools.setup(
     package_data={
         'autorelease': ['autorelease/*.j2']
     },
-    include_package_data=True,
 )
