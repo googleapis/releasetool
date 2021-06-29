@@ -32,6 +32,17 @@ def test_no_issues(
 
 @patch("autorelease.trigger.trigger_kokoro_build_for_pull_request")
 @patch("autorelease.github.GitHub.list_org_issues")
+@patch("autorelease.kokoro.make_adc_session")
+def test_adc(make_adc_session, list_org_issues, trigger_kokoro_build_for_pull_request):
+    list_org_issues.return_value = []
+
+    trigger.main("github-token", None)
+    make_adc_session.assert_called_once()
+    trigger_kokoro_build_for_pull_request.assert_not_called()
+
+
+@patch("autorelease.trigger.trigger_kokoro_build_for_pull_request")
+@patch("autorelease.github.GitHub.list_org_issues")
 @patch("autorelease.kokoro.make_authorized_session")
 def test_processes_issues(
     make_authorized_session, list_org_issues, trigger_kokoro_build_for_pull_request
