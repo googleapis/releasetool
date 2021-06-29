@@ -90,11 +90,15 @@ def process_issue(
         )
 
 
-def main(github_token, kokoro_credentials) -> reporter.Reporter:
+def main(github_token: str, kokoro_credentials: str) -> reporter.Reporter:
     report = reporter.Reporter("autorelease.tag")
     # TODO(busunkim): Use proxy once KMS setup is complete.
     gh = github.GitHub(github_token, use_proxy=False)
-    kokoro_session = kokoro.make_authorized_session(kokoro_credentials)
+
+    if kokoro_credentials:
+        kokoro_session = kokoro.make_authorized_session(kokoro_credentials)
+    else:
+        kokoro_session = kokoro.make_adc_session()
 
     # First, we need to get a list of all pull requests (GitHub calls these "issues")
     # that are merged ("closed") and have the label "autorelease: pending".

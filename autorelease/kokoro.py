@@ -18,6 +18,7 @@ import base64
 
 from google.auth.transport import requests
 from google.oauth2 import service_account
+import google.auth
 
 from protos import kokoro_api_pb2
 
@@ -59,8 +60,32 @@ def _make_build_request(job_name: str, sha: str, env_vars: dict = None) -> str:
 
 
 def make_authorized_session(credentials_file: str) -> requests.AuthorizedSession:
+    """Create a scoped, authorized requests session using a service account
+
+    Args:
+        credentials_file {str}: Path to service account file
+
+    Returns:
+        requests.AuthorizedSession: The authorized requests session
+    """
     credentials = service_account.Credentials.from_service_account_file(
         credentials_file, scopes=["https://www.googleapis.com/auth/pubsub"]
+    )
+    session = requests.AuthorizedSession(credentials)
+    return session
+
+
+def make_adc_session() -> requests.AuthorizedSession:
+    """Create a scoped, authorized requests session using ADC
+
+    Returns:
+        requests.AuthorizedSession: The authorized requests session
+
+    Raises:
+        DefaultCredentialsError if no credentials found
+    """
+    credentials, _ = google.auth.default(
+        scopes=["https://www.googleapis.com/auth/pubsub"]
     )
     session = requests.AuthorizedSession(credentials)
     return session
