@@ -23,7 +23,7 @@ def blacken(session):
 
 @nox.session(python='3.6')
 def lint(session):
-    session.install('mypy', 'flake8', 'black')
+    session.install('mypy==0.812', 'flake8', 'black')
     session.run('pip', 'install', '-e', '.')
     session.run('black', '--check', 'autorelease', 'releasetool', 'tests')
     session.run('flake8', 'autorelease', 'releasetool', 'tests')
