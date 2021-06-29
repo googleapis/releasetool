@@ -4,6 +4,13 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+### [1.6.2](https://www.github.com/googleapis/releasetool/compare/v1.6.1...v1.6.2) (2021-06-29)
+
+
+### Bug Fixes
+
+* include jinja template in released package ([#340](https://www.github.com/googleapis/releasetool/issues/340)) ([281cd20](https://www.github.com/googleapis/releasetool/commit/281cd2061ccb7e4ddb1b5575c6612cbbb607f213))
+
 ### [1.6.1](https://www.github.com/googleapis/releasetool/compare/v1.6.0...v1.6.1) (2021-05-11)
 
 
