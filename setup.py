@@ -65,4 +65,7 @@ setuptools.setup(
     entry_points={
         'console_scripts': scripts,
     },
+    package_data={
+        'autorelease': ['autorelease/*.j2']
+    },
 )
