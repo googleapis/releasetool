@@ -15,6 +15,8 @@
 """This module handles triggering Kokoro release jobs for merged release pull requests."""
 
 import importlib
+import re
+from typing import Tuple
 
 from autorelease import common, github, kokoro, reporter
 
@@ -90,6 +92,41 @@ def trigger_kokoro_build_for_pull_request(
         env_vars={"AUTORELEASE_PR": pull_request_url},
     )
     gh.update_pull_labels(pull, add=["autorelease: triggered"])
+
+
+def _parse_issue(pull_request_url: str) -> Tuple[str, int]:
+    match = re.match(".*github.com/(.*)/pull/(\\d+)", pull_request_url)
+    if match:
+        return match[1], match[2]
+    raise Exception(f"bad url format: {pull_request_url}")
+
+
+def trigger_single(
+    github_token: str, kokoro_credentials: str, pull_request_url: str
+) -> reporter.Reporter:
+    report = reporter.Reporter("autorelease.trigger")
+    # TODO(busunkim): Use proxy once KMS setup is complete.
+    gh = github.GitHub(github_token, use_proxy=False)
+
+    if kokoro_credentials:
+        kokoro_session = kokoro.make_authorized_session(kokoro_credentials)
+    else:
+        kokoro_session = kokoro.make_adc_session()
+
+    repository, number = _parse_issue(pull_request_url)
+    issue = gh.get_issue(repository, number)
+    result = reporter.Result(f"{issue['title']}")
+    report.add(result)
+    result.print(f"Processing {issue['title']}: {issue['pull_request']['html_url']}")
+
+    try:
+        trigger_kokoro_build_for_pull_request(kokoro_session, gh, issue, result)
+    # Failing any one PR is fine, just record it in the log and continue.
+    except Exception as exc:
+        result.error = True
+        result.print(f"{exc!r}")
+
+    return report
 
 
 def main(github_token: str, kokoro_credentials: str) -> reporter.Reporter:

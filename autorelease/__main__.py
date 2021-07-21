@@ -46,6 +46,7 @@ def main():
     parser.add_argument(
         "--kokoro-credentials", default=os.environ.get("AUTORELEASE_KOKORO_CREDENTIALS")
     )
+    parser.add_argument("--pull", default=None)
     parser.add_argument("command")
 
     args = parser.parse_args()
@@ -64,6 +65,20 @@ def main():
             return
     elif args.command == "trigger":
         report = trigger.main(args.github_token, args.kokoro_credentials)
+
+        if args.report:
+            report.write(args.report)
+
+        if report.failures:
+            sys.exit(2)
+        else:
+            return
+    elif args.command == "trigger-single":
+        if not args.pull:
+            raise Exception("missing required arg --pull")
+        report = trigger.trigger_single(
+            args.github_token, args.kokoro_credentials, args.pull
+        )
 
         if args.report:
             report.write(args.report)

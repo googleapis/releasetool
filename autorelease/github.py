@@ -178,6 +178,12 @@ class GitHub:
         response.raise_for_status()
         return base64.b64decode(response.json()["content"])
 
+    def get_issue(self, repository: str, number: int) -> dict:
+        url = f"{self.GITHUB_ROOT}/repos/{repository}/issues/{number}"
+        response = self.session.get(url)
+        response.raise_for_status()
+        return response.json()
+
     def list_files(self, repository: str, path: str, ref: str = None) -> Sequence[dict]:
         url = f"{self.GITHUB_ROOT}/repos/{repository}/contents/{path}"
         response = self.session.get(url, params={"ref": ref})
