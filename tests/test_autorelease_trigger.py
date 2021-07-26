@@ -212,7 +212,7 @@ def test_trigger_single(
             "AUTORELEASE_PR": "https://github.com/googleapis/java-trace/pull/1234"
         },
     )
-    update_pull_labels.assert_called_once()
+    update_pull_labels.assert_not_called()
 
 
 @patch("autorelease.kokoro.make_authorized_session")

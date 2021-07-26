@@ -29,7 +29,7 @@ CREATED_AFTER = "2021-04-01"
 
 
 def trigger_kokoro_build_for_pull_request(
-    kokoro_session, gh: github.GitHub, issue: dict, result
+    kokoro_session, gh: github.GitHub, issue: dict, result, update_labels: bool = True
 ) -> None:
     """Triggers the Kokoro job for a given pull request if possible.
 
@@ -91,7 +91,8 @@ def trigger_kokoro_build_for_pull_request(
         sha=sha,
         env_vars={"AUTORELEASE_PR": pull_request_url},
     )
-    gh.update_pull_labels(pull, add=["autorelease: triggered"])
+    if update_labels:
+        gh.update_pull_labels(pull, add=["autorelease: triggered"])
 
 
 def _parse_issue(pull_request_url: str) -> Tuple[str, int]:
@@ -128,7 +129,7 @@ def trigger_single(
         return report
 
     try:
-        trigger_kokoro_build_for_pull_request(kokoro_session, gh, issue, result)
+        trigger_kokoro_build_for_pull_request(kokoro_session, gh, issue, result, False)
     # Failing any one PR is fine, just record it in the log and continue.
     except Exception as exc:
         result.error = True
