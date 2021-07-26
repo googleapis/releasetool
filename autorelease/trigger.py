@@ -121,7 +121,7 @@ def trigger_single(
             f"Processing {issue['title']}: {issue['pull_request']['html_url']}"
         )
         report.add(result)
-    except:
+    except Exception:
         result = reporter.Result(pull_request_url, error=True)
         result.print(f"Error fetching pull request: {pull_request_url}")
         report.add(result)
