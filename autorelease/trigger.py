@@ -113,11 +113,19 @@ def trigger_single(
     else:
         kokoro_session = kokoro.make_adc_session()
 
-    repository, number = _parse_issue(pull_request_url)
-    issue = gh.get_issue(repository, number)
-    result = reporter.Result(f"{issue['title']}")
-    report.add(result)
-    result.print(f"Processing {issue['title']}: {issue['pull_request']['html_url']}")
+    try:
+        repository, number = _parse_issue(pull_request_url)
+        issue = gh.get_issue(repository, number)
+        result = reporter.Result(f"{issue['title']}")
+        result.print(
+            f"Processing {issue['title']}: {issue['pull_request']['html_url']}"
+        )
+        report.add(result)
+    except:
+        result = reporter.Result(pull_request_url, error=True)
+        result.print(f"Error fetching pull request: {pull_request_url}")
+        report.add(result)
+        return report
 
     try:
         trigger_kokoro_build_for_pull_request(kokoro_session, gh, issue, result)
