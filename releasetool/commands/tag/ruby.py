@@ -39,7 +39,9 @@ def determine_release_pr(ctx: TagContext) -> None:
     for n, pull in enumerate(pulls, 1):
         print(f"\t{n}: {pull['title']} ({pull['number']})")
 
-    pull_idx = click.prompt("\nWhich one do you want to tag and release?", type=int)
+    pull_idx = click.prompt(
+        "\nWhich one do you want to tag and release?", type=click.INT
+    )
 
     ctx.release_pr = pulls[pull_idx - 1]
 
