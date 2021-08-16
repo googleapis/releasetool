@@ -171,3 +171,97 @@ def test_trigger_kokoro_build_for_pull_request_skips_kokoro_if_already_triggered
     }
     trigger.trigger_kokoro_build_for_pull_request(Mock(), github, issue, Mock())
     trigger_build.assert_not_called()
+
+
+@patch("autorelease.kokoro.make_authorized_session")
+@patch("autorelease.github.GitHub.get_issue")
+@patch("autorelease.github.GitHub.get_url")
+@patch("autorelease.github.GitHub.update_pull_labels")
+@patch("autorelease.kokoro.trigger_build")
+def test_trigger_single(
+    trigger_build, update_pull_labels, get_url, get_issue, make_authorized_session
+):
+    kokoro_session = Mock()
+    make_authorized_session.return_value = kokoro_session
+    get_issue.return_value = {
+        "title": "chore: release 1.2.3",
+        "pull_request": {
+            "html_url": "https://github.com/googleapis/java-trace/pull/1234",
+            "url": "https://api.github.com/repos/googleapis/java-trace/pulls/1234",
+        },
+    }
+    get_url.return_value = {
+        "merged_at": "2021-07-20T09:00:00.123Z",
+        "base": {"repo": {"full_name": "googleapis/java-trace"}},
+        "html_url": "https://github.com/googleapis/java-trace/pull/1234",
+        "merge_commit_sha": "abcd1234",
+        "labels": [{"id": 12345, "name": "autorelease: tagged"}],
+    }
+
+    pull_request_url = "https://github.com/googleapis/java-trace/pull/1234"
+    reporter = trigger.trigger_single(
+        "fake-github-token", "fake-kokoro-credentials", pull_request_url
+    )
+
+    assert len(reporter.results) == 1
+    trigger_build.assert_called_with(
+        kokoro_session,
+        job_name="cloud-devrel/client-libraries/java/java-trace/release/stage",
+        sha="abcd1234",
+        env_vars={
+            "AUTORELEASE_PR": "https://github.com/googleapis/java-trace/pull/1234"
+        },
+    )
+    update_pull_labels.assert_not_called()
+
+
+@patch("autorelease.kokoro.make_authorized_session")
+@patch("autorelease.kokoro.trigger_build")
+def test_trigger_single_bad_url(trigger_build, make_authorized_session):
+    kokoro_session = Mock()
+    make_authorized_session.return_value = kokoro_session
+
+    pull_request_url = "https://github.com/googleapis/java-trace/issues/1234"
+    reporter = trigger.trigger_single(
+        "fake-github-token", "fake-kokoro-credentials", pull_request_url
+    )
+
+    assert len(reporter.results) == 1
+    trigger_build.assert_not_called()
+
+
+@patch("autorelease.kokoro.make_authorized_session")
+@patch("autorelease.github.GitHub.get_issue")
+@patch("autorelease.github.GitHub.get_url")
+@patch("autorelease.github.GitHub.update_pull_labels")
+@patch("autorelease.kokoro.trigger_build")
+def test_trigger_single_skips_already_triggered(
+    trigger_build, update_pull_labels, get_url, get_issue, make_authorized_session
+):
+    kokoro_session = Mock()
+    make_authorized_session.return_value = kokoro_session
+    get_issue.return_value = {
+        "title": "chore: release 1.2.3",
+        "pull_request": {
+            "html_url": "https://github.com/googleapis/java-trace/pull/1234",
+            "url": "https://api.github.com/repos/googleapis/java-trace/pulls/1234",
+        },
+    }
+    get_url.return_value = {
+        "merged_at": "2021-07-20T09:00:00.123Z",
+        "base": {"repo": {"full_name": "googleapis/java-trace"}},
+        "html_url": "https://github.com/googleapis/java-trace/pull/1234",
+        "merge_commit_sha": "abcd1234",
+        "labels": [
+            {"id": 12345, "name": "autorelease: tagged"},
+            {"id": 12346, "name": "autorelease: triggered"},
+        ],
+    }
+
+    pull_request_url = "https://github.com/googleapis/java-trace/pull/1234"
+    reporter = trigger.trigger_single(
+        "fake-github-token", "fake-kokoro-credentials", pull_request_url
+    )
+
+    assert len(reporter.results) == 1
+    trigger_build.assert_not_called()
