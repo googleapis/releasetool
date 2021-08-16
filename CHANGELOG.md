@@ -4,6 +4,19 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+## [1.7.0](https://www.github.com/googleapis/releasetool/compare/v1.6.2...v1.7.0) (2021-08-16)
+
+
+### Features
+
+* add command for triggering a single kokoro job by PR url ([#349](https://www.github.com/googleapis/releasetool/issues/349)) ([9fa3e06](https://www.github.com/googleapis/releasetool/commit/9fa3e0697c4ab110958e86007a04d2e59cc8c4ad))
+* **autorelease:** use ADC if no explicit service account specified ([#342](https://www.github.com/googleapis/releasetool/issues/342)) ([f9e6d6b](https://www.github.com/googleapis/releasetool/commit/f9e6d6b7817c537b59c2d018ba5fbd5823a61c5f))
+
+
+### Bug Fixes
+
+* fix path in setup.py for template files ([#351](https://www.github.com/googleapis/releasetool/issues/351)) ([970990f](https://www.github.com/googleapis/releasetool/commit/970990ff1028f9c234ec4043a19d95052ce266b5))
+
 ### [1.6.2](https://www.github.com/googleapis/releasetool/compare/v1.6.1...v1.6.2) (2021-06-29)
 
 
