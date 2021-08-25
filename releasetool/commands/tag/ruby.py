@@ -140,9 +140,28 @@ def kokoro_job_name(upstream_repo: str, package_name: str) -> Union[str, None]:
     Returns:
         The name of the Kokoro job to trigger or None if there is no job to trigger
     """
-    if "google-cloud-ruby" in upstream_repo:
-        return "cloud-devrel/client-libraries/google-cloud-ruby/release"
-    elif "google-api-ruby-client" in upstream_repo:
+
+    RUBY_CLIENT_REPOS = [
+        "common-protos-ruby",
+        "gapic-generator-ruby",
+        "google-cloud-ruby",
+        "ruby-spanner-activerecord",
+        "ruby-style",
+    ]
+
+    RUBY_CLOUD_REPOS = [
+        "appengine-ruby",
+        "functions-framework-ruby",
+        "serverless-exec-ruby",
+    ]
+
+    for name in RUBY_CLIENT_REPOS:
+        if name in upstream_repo:
+            return f"cloud-devrel/client-libraries/{name}/release"
+    for name in RUBY_CLOUD_REPOS:
+        if name in upstream_repo:
+            return f"cloud-devrel/ruby/{name}/release"
+    if "google-api-ruby-client" in upstream_repo:
         return f"cloud-devrel/client-libraries/google-api-ruby-client/release/{package_name}"
     else:
         return f"cloud-devrel/client-libraries/{package_name}/release"
