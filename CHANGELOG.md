@@ -4,6 +4,13 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+## [1.8.0](https://www.github.com/googleapis/releasetool/compare/v1.7.0...v1.8.0) (2021-08-25)
+
+
+### Features
+
+* **ruby:** Kokoro job mapping for additional Ruby repos ([#354](https://www.github.com/googleapis/releasetool/issues/354)) ([f3ee8c8](https://www.github.com/googleapis/releasetool/commit/f3ee8c877fac0f636e985794898d419e16d899fd))
+
 ## [1.7.0](https://www.github.com/googleapis/releasetool/compare/v1.6.2...v1.7.0) (2021-08-16)
 
 
