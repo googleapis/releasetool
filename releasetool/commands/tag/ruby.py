@@ -144,9 +144,12 @@ def kokoro_job_name(upstream_repo: str, package_name: str) -> Union[str, None]:
     RUBY_CLIENT_REPOS = [
         "common-protos-ruby",
         "gapic-generator-ruby",
+        "google-auth-library-ruby",
         "google-cloud-ruby",
+        "ruby-cloud-env",
         "ruby-spanner-activerecord",
         "ruby-style",
+        "signet",
     ]
 
     RUBY_CLOUD_REPOS = [
