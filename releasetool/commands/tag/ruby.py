@@ -27,6 +27,35 @@ import releasetool.commands.common
 from releasetool.commands.common import TagContext
 
 
+# Standard Ruby repos in the googleapis org
+RUBY_CLIENT_REPOS = [
+    "common-protos-ruby",
+    "gapic-generator-ruby",
+    "google-api-ruby-client",
+    "google-auth-library-ruby",
+    "google-cloud-ruby",
+    "ruby-cloud-env",
+    "ruby-spanner-activerecord",
+    "ruby-style",
+    "signet",
+]
+
+# Standard Ruby repos in the GoogleCloudPlatform org
+RUBY_CLOUD_REPOS = [
+    "appengine-ruby",
+    "functions-framework-ruby",
+    "serverless-exec-ruby",
+]
+
+# Standard Ruby monorepos with gems located in subdirectories
+RUBY_MONO_REPOS = [
+    "common-protos-ruby",
+    "gapic-generator-ruby",
+    "google-api-ruby-client",
+    "google-cloud-ruby",
+]
+
+
 def determine_release_pr(ctx: TagContext) -> None:
     click.secho(
         "> Let's figure out which pull request corresponds to your release.", fg="cyan"
@@ -82,13 +111,10 @@ def determine_package_name_and_version(ctx: TagContext) -> None:
 
 def get_release_notes(ctx: TagContext) -> None:
     click.secho("> Grabbing the release notes.", fg="cyan")
-    if (
-        "google-cloud-ruby" in ctx.upstream_repo
-        or "google-api-ruby-client" in ctx.upstream_repo
-    ):
-        changelog_file = f"{ctx.package_name}/CHANGELOG.md"
-    else:
-        changelog_file = "CHANGELOG.md"
+    changelog_file = "CHANGELOG.md"
+    for name in RUBY_MONO_REPOS:
+        if name in ctx.upstream_repo:
+            changelog_file = f"{ctx.package_name}/CHANGELOG.md"
     changelog = ctx.github.get_contents(
         ctx.upstream_repo, changelog_file, ref=ctx.release_pr["merge_commit_sha"]
     ).decode("utf-8")
@@ -141,22 +167,9 @@ def kokoro_job_name(upstream_repo: str, package_name: str) -> Union[str, None]:
         The name of the Kokoro job to trigger or None if there is no job to trigger
     """
 
-    RUBY_CLIENT_REPOS = [
-        "common-protos-ruby",
-        "gapic-generator-ruby",
-        "google-auth-library-ruby",
-        "google-cloud-ruby",
-        "ruby-cloud-env",
-        "ruby-spanner-activerecord",
-        "ruby-style",
-        "signet",
-    ]
-
-    RUBY_CLOUD_REPOS = [
-        "appengine-ruby",
-        "functions-framework-ruby",
-        "serverless-exec-ruby",
-    ]
+    # TODO(dazuma): Remove once this repo uses the standard release jobs
+    if "google-api-ruby-client" in upstream_repo:
+        return f"cloud-devrel/client-libraries/google-api-ruby-client/release/{package_name}"
 
     for name in RUBY_CLIENT_REPOS:
         if name in upstream_repo:
@@ -164,10 +177,8 @@ def kokoro_job_name(upstream_repo: str, package_name: str) -> Union[str, None]:
     for name in RUBY_CLOUD_REPOS:
         if name in upstream_repo:
             return f"cloud-devrel/ruby/{name}/release"
-    if "google-api-ruby-client" in upstream_repo:
-        return f"cloud-devrel/client-libraries/google-api-ruby-client/release/{package_name}"
-    else:
-        return f"cloud-devrel/client-libraries/{package_name}/release"
+
+    return f"cloud-devrel/client-libraries/{package_name}/release"
 
 
 def package_name(pull: dict) -> Union[str, None]:
