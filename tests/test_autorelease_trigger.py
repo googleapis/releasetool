@@ -173,6 +173,7 @@ def test_trigger_kokoro_build_for_pull_request_skips_kokoro_if_already_triggered
     trigger_build.assert_not_called()
 
 
+@patch("autorelease.trigger.LANGUAGE_ALLOWLIST", ["java"])
 @patch("autorelease.kokoro.make_authorized_session")
 @patch("autorelease.github.GitHub.get_issue")
 @patch("autorelease.github.GitHub.get_url")
