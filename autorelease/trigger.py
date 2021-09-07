@@ -20,7 +20,7 @@ from typing import Tuple
 
 from autorelease import common, github, kokoro, reporter
 
-LANGUAGE_ALLOWLIST = ["java", "nodejs"]
+LANGUAGE_ALLOWLIST = ["nodejs"]
 ORGANIZATIONS_TO_SCAN = ["googleapis", "GoogleCloudPlatform"]
 
 # Whenever we add new languages to the allowlist, update this value as
