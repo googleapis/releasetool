@@ -22,7 +22,6 @@ import releasetool.github
 
 LANGUAGE_ALLOWLIST = [
     "dotnet",
-    "nodejs",
     "php",
     "python_tool",
     "python",
