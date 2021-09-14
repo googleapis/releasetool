@@ -4,6 +4,16 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+### [1.8.1](https://www.github.com/googleapis/releasetool/compare/v1.8.0...v1.8.1) (2021-09-14)
+
+
+### Bug Fixes
+
+* handle installation id for GCP org ([#364](https://www.github.com/googleapis/releasetool/issues/364)) ([ee33b52](https://www.github.com/googleapis/releasetool/commit/ee33b52d535561f407bda2274c2f4e708bcd6e3f))
+* **ruby:** Fix Kokoro job mapping for several Ruby repos ([#357](https://www.github.com/googleapis/releasetool/issues/357)) ([22751cc](https://www.github.com/googleapis/releasetool/commit/22751cc095d226959c5068120fe34ae7a197e5aa))
+* **ruby:** Identify additional Ruby monorepos ([#360](https://www.github.com/googleapis/releasetool/issues/360)) ([7986ae4](https://www.github.com/googleapis/releasetool/commit/7986ae490269afeedae918d0a2476bfc39bf22b0))
+* stop handling java repos - they are migrated to release-please/release-trigger ([#362](https://www.github.com/googleapis/releasetool/issues/362)) ([0ce5788](https://www.github.com/googleapis/releasetool/commit/0ce578853ccfa61f5c59bec6229042fc704e56bb))
+
 ## [1.8.0](https://www.github.com/googleapis/releasetool/compare/v1.7.0...v1.8.0) (2021-08-25)
 
 
