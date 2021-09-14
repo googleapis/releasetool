@@ -16,7 +16,13 @@
 
 if [ -f "${KOKORO_GFILE_DIR}/secret_manager/releasetool-publish-reporter-app" ]; then
     export APP_ID_PATH="${KOKORO_GFILE_DIR}/secret_manager/releasetool-publish-reporter-app"
-    export INSTALLATION_ID_PATH="${KOKORO_GFILE_DIR}/secret_manager/releasetool-publish-reporter-googleapis-installation"
+    if [ -f "${KOKORO_GFILE_DIR}/secret_manager/releasetool-publish-reporter-googleapis-installation" ]; then
+        export INSTALLATION_ID_PATH="${KOKORO_GFILE_DIR}/secret_manager/releasetool-publish-reporter-googleapis-installation"    
+    elif [ -f "${KOKORO_GFILE_DIR}/secret_manager/releasetool-publish-reporter-googlecloudplatform-installation" ]; then
+        export INSTALLATION_ID_PATH="${KOKORO_GFILE_DIR}/secret_manager/releasetool-publish-reporter-googlecloudplatform-installation"
+    else
+        echo 'could not load GitHub installation id'    
+    fi
     export GITHUB_PRIVATE_KEY_PATH="${KOKORO_GFILE_DIR}/secret_manager/releasetool-publish-reporter-pem"
 else
     echo 'could not load GitHub installation credentials'
