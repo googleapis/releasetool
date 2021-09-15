@@ -29,7 +29,12 @@ CREATED_AFTER = "2021-04-01"
 
 
 def trigger_kokoro_build_for_pull_request(
-    kokoro_session, gh: github.GitHub, issue: dict, result, update_labels: bool = True
+    kokoro_session,
+    gh: github.GitHub,
+    issue: dict,
+    result,
+    update_labels: bool = True,
+    use_allowlist: bool = True,
 ) -> None:
     """Triggers the Kokoro job for a given pull request if possible.
 
@@ -65,7 +70,7 @@ def trigger_kokoro_build_for_pull_request(
 
     # As part of the migration to release-please tagging, cross-reference the
     # language against an allowlist to allow migrating language-by-language.
-    if lang not in LANGUAGE_ALLOWLIST:
+    if use_allowlist and lang not in LANGUAGE_ALLOWLIST:
         result.skipped = True
         result.print(f"Language {lang} not in allowlist, skipping.")
         return
@@ -129,7 +134,9 @@ def trigger_single(
         return report
 
     try:
-        trigger_kokoro_build_for_pull_request(kokoro_session, gh, issue, result, False)
+        trigger_kokoro_build_for_pull_request(
+            kokoro_session, gh, issue, result, False, False
+        )
     # Failing any one PR is fine, just record it in the log and continue.
     except Exception as exc:
         result.error = True
