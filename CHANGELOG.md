@@ -4,6 +4,14 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+### [1.8.2](https://www.github.com/googleapis/releasetool/compare/v1.8.1...v1.8.2) (2021-09-15)
+
+
+### Bug Fixes
+
+* **nodejs:** stop autorelease for nodejs ([#363](https://www.github.com/googleapis/releasetool/issues/363)) ([c35144b](https://www.github.com/googleapis/releasetool/commit/c35144b3b4c191a59c95c49468c23c38a846e671))
+* triggering a single release PR should not use the language allowlist ([#366](https://www.github.com/googleapis/releasetool/issues/366)) ([fcf0077](https://www.github.com/googleapis/releasetool/commit/fcf00770701876c8ef0662776dffcc532809d6c4))
+
 ### [1.8.1](https://www.github.com/googleapis/releasetool/compare/v1.8.0...v1.8.1) (2021-09-14)
 
 
