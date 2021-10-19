@@ -20,18 +20,25 @@ def test_kokoro_job_name():
     assert job_name == "cloud-devrel/client-libraries/some-package-name/release"
 
 
-def test_kokoro_job_name_cloud():
+def test_kokoro_job_name_gapic():
     job_name = kokoro_job_name(
         "googleapis/google-cloud-ruby", "google-cloud-video-intelligence"
     )
     assert job_name == "cloud-devrel/client-libraries/google-cloud-ruby/release"
 
 
+def test_kokoro_job_name_functions_framework():
+    job_name = kokoro_job_name(
+        "GoogleCloud/functions-framework-ruby", "functions_framework"
+    )
+    assert job_name == "cloud-devrel/ruby/functions-framework-ruby/release"
+
+
 def test_kokoro_job_name_apiary():
     job_name = kokoro_job_name("googleapis/google-api-ruby-client", "youtube")
     assert (
         job_name
-        == "cloud-devrel/client-libraries/google-api-ruby-client/release/youtube"
+        == "cloud-devrel/client-libraries/google-api-ruby-client/release"
     )
 
 
