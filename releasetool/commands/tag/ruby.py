@@ -167,10 +167,6 @@ def kokoro_job_name(upstream_repo: str, package_name: str) -> Union[str, None]:
         The name of the Kokoro job to trigger or None if there is no job to trigger
     """
 
-    # TODO(dazuma): Remove once this repo uses the standard release jobs
-    if "google-api-ruby-client" in upstream_repo:
-        return f"cloud-devrel/client-libraries/google-api-ruby-client/release/{package_name}"
-
     for name in RUBY_CLIENT_REPOS:
         if name in upstream_repo:
             return f"cloud-devrel/client-libraries/{name}/release"
