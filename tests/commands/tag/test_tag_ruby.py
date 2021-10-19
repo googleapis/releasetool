@@ -36,10 +36,7 @@ def test_kokoro_job_name_functions_framework():
 
 def test_kokoro_job_name_apiary():
     job_name = kokoro_job_name("googleapis/google-api-ruby-client", "youtube")
-    assert (
-        job_name
-        == "cloud-devrel/client-libraries/google-api-ruby-client/release"
-    )
+    assert job_name == "cloud-devrel/client-libraries/google-api-ruby-client/release"
 
 
 def test_package_name():
