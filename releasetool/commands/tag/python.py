@@ -14,7 +14,7 @@
 
 import getpass
 import re
-from typing import Union
+from typing import List, Union
 
 import click
 
@@ -119,6 +119,12 @@ def create_release(ctx: TagContext) -> None:
     )
 
 
+"""A list of repositories that have been migrated to use the new KOKORO VM
+   pool dedicated to releasing client libraries.
+"""
+release_pool_repos: List[str] = ["googleapis/python-apigee-connect"]
+
+
 def kokoro_job_name(upstream_repo: str, package_name: str) -> Union[str, None]:
     """Return the Kokoro job name.
 
@@ -129,7 +135,10 @@ def kokoro_job_name(upstream_repo: str, package_name: str) -> Union[str, None]:
     Returns:
         The name of the Kokoro job to trigger or None if there is no job to trigger
     """
-    return f"cloud-devrel/client-libraries/python/{upstream_repo}/release/release"
+    if upstream_repo in release_pool_repos:
+        return f"cloud-devrel/client-libraries/release/python/{upstream_repo}/release"
+    else:
+        return f"cloud-devrel/client-libraries/python/{upstream_repo}/release/release"
 
 
 def package_name(pull: dict) -> Union[str, None]:
