@@ -4,6 +4,13 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+### [1.8.3](https://www.github.com/googleapis/releasetool/compare/v1.8.2...v1.8.3) (2021-11-12)
+
+
+### Bug Fixes
+
+* **ruby:** Remove hack pointing at legacy release jobs for the Ruby Apiary clients repo ([#376](https://www.github.com/googleapis/releasetool/issues/376)) ([78d88ca](https://www.github.com/googleapis/releasetool/commit/78d88ca7d85194d437e16ee1ef9aea9b4e9d24ea))
+
 ### [1.8.2](https://www.github.com/googleapis/releasetool/compare/v1.8.1...v1.8.2) (2021-09-15)
 
 
