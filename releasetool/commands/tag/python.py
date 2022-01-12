@@ -53,7 +53,7 @@ def determine_release_tag(ctx: TagContext) -> None:
     title = ctx.release_pr["title"]
     match = re.match("chore\\(.*\\): release (\\d+\\.\\d+\\.\\d+.*)", title)
     if match is not None:
-        ctx.release_tag = match.group(1)
+        ctx.release_tag = f"v{match.group(1)}"
         return
 
     match = re.match("release-(.+)", head_ref)
