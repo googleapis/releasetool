@@ -49,6 +49,13 @@ def determine_release_tag(ctx: TagContext) -> None:
     click.secho("> Determining what the release tag should be.", fg="cyan")
     head_ref = ctx.release_pr["head"]["ref"]
 
+    # try release-please v13 pull requests
+    title = ctx.release_pr["title"]
+    match = re.match("chore\\(.*\\): release (\\d+\\.\\d+\\.\\d+.*)", title)
+    if match is not None:
+        ctx.release_tag = f"v{match.group(1)}"
+        return
+
     match = re.match("release-(.+)", head_ref)
 
     if match is not None:
