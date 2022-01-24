@@ -24,7 +24,7 @@ python3 -m releasetool publish-reporter-script > /tmp/publisher-script; source /
 
 # Move into the package, build the distribution and upload.
 cd github/releasetool
-TWINE_PASSWORD=$(cat "${KOKORO_GFILE_DIR}/secret_manager/google-cloud-pypi-token")
+TWINE_PASSWORD=$(cat "${KOKORO_KEYSTORE_DIR}/73713_google-cloud-pypi-token-keystore-1")
 
 # Ensure that we have the latest versions of Twine, Wheel, and Setuptools.
 python3 -m pip install --upgrade twine wheel setuptools
