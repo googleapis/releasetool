@@ -24,7 +24,6 @@ LANGUAGE_ALLOWLIST = [
     "dotnet",
     "php",
     "python_tool",
-    "python",
     "ruby",
 ]
 
