@@ -134,7 +134,7 @@ def get_release_notes(ctx: TagContext) -> None:
 
 def create_release(ctx: TagContext) -> None:
     click.secho("> Creating the release.")
-    click.secho(f"pkg={ctx.package_name} pr={ctx.release_pr["number"]}")
+    click.secho(f"pkg={ctx.package_name} pr={ctx.release_pr['number']}")
 
     ctx.github_release = ctx.github.create_release(
         repository=ctx.upstream_repo,
