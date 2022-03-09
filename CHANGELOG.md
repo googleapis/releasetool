@@ -4,6 +4,17 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+### [1.8.3](https://github.com/googleapis/releasetool/compare/v1.8.2...v1.8.3) (2022-03-09)
+
+
+### Bug Fixes
+
+* **debug:** add additional debug information for Ruby ([#391](https://github.com/googleapis/releasetool/issues/391)) ([80f4306](https://github.com/googleapis/releasetool/commit/80f43069f6dc40b58ded713f42c7fd4098921fe2))
+* handle release-please v13 pull requests ([#383](https://github.com/googleapis/releasetool/issues/383)) ([cf5b0c0](https://github.com/googleapis/releasetool/commit/cf5b0c0f4834b1b20093d81e8e0082a78258945c))
+* remove python from the allowlist ([#386](https://github.com/googleapis/releasetool/issues/386)) ([eea8422](https://github.com/googleapis/releasetool/commit/eea8422cec9dc2139e6feb2e2cc8901c2c232e05))
+* **ruby:** Remove hack pointing at legacy release jobs for the Ruby Apiary clients repo ([#376](https://github.com/googleapis/releasetool/issues/376)) ([78d88ca](https://github.com/googleapis/releasetool/commit/78d88ca7d85194d437e16ee1ef9aea9b4e9d24ea))
+* stop running autorelease tag for php and python_tool ([#388](https://github.com/googleapis/releasetool/issues/388)) ([0441687](https://github.com/googleapis/releasetool/commit/0441687d56b30e07016199aab2048bde9eeb417e))
+
 ### [1.8.2](https://www.github.com/googleapis/releasetool/compare/v1.8.1...v1.8.2) (2021-09-15)
 
 
