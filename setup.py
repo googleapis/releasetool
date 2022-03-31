@@ -21,7 +21,7 @@ release_status = 'Development Status :: 3 - Alpha'
 dependencies = [
     "requests",
     "attrs",
-    "click>=8.0.4, <8.1.0",
+    "click>=8.1.2, <8.2.0",
     "cryptography",
     "google-auth",
     "jinja2",
