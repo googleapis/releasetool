@@ -133,8 +133,15 @@ def get_release_notes(ctx: TagContext) -> None:
         changelog,
         re.DOTALL | re.MULTILINE,
     )
+    v13_match = re.search(
+        rf"^### {ctx.release_version} \(\d\d\d\d-\d\d-\d\d\)\n(?P<notes>.+?)(\n###\s|\Z)",
+        changelog,
+        re.DOTALL | re.MULTILINE,
+    )
     if match is not None:
         ctx.release_notes = match.group("notes").strip()
+    elif v13_match is not None:
+        ctx.release_notes = v13_match.group("notes").strip()
     else:
         ctx.release_notes = ""
 
