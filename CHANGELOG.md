@@ -4,6 +4,14 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+### [1.8.4](https://github.com/googleapis/releasetool/compare/v1.8.3...v1.8.4) (2022-04-14)
+
+
+### Bug Fixes
+
+* parse v13 release notes header from CHANGELOG.md ([21c2904](https://github.com/googleapis/releasetool/commit/21c290405f427bb7b6241c8e47ad90b3ca6e15ca))
+* **ruby:** try to parse release-please v13 branch names ([#396](https://github.com/googleapis/releasetool/issues/396)) ([21c2904](https://github.com/googleapis/releasetool/commit/21c290405f427bb7b6241c8e47ad90b3ca6e15ca))
+
 ### [1.8.3](https://github.com/googleapis/releasetool/compare/v1.8.2...v1.8.3) (2022-03-09)
 
 
