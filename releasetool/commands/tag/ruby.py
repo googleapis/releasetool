@@ -82,7 +82,7 @@ def determine_release_tag(ctx: TagContext) -> None:
     match = re.match(r"release-(.+)-v(\d+\.\d+\.\d+)", head_ref)
     rp13_match = re.match(r"release-please--branches--(.+)--components--(.+)", head_ref)
     title_match = re.match(
-        r"chore\(.+\): release (.+) v(\d+\.\d+\.\d+)", ctx.release_pr["title"]
+        r"chore\(.+\): release (.+) (\d+\.\d+\.\d+)", ctx.release_pr["title"]
     )
 
     if match is not None:
