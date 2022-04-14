@@ -80,14 +80,23 @@ def determine_release_tag(ctx: TagContext) -> None:
     head_ref = ctx.release_pr["head"]["ref"]
     click.secho(f"PR head ref is {head_ref}")
     match = re.match(r"release-(.+)-v(\d+\.\d+\.\d+)", head_ref)
+    rp13_match = re.match(r"release-please--branches--(.+)--components--(.+)", head_ref)
+    title_match = re.match(
+        r"chore\(.+\): release (.+) (\d+\.\d+\.\d+)", ctx.release_pr["title"]
+    )
 
     if match is not None:
         ctx.package_name = match.group(1)
         ctx.release_version = match.group(2)
         ctx.release_tag = f"{ctx.package_name}/v{ctx.release_version}"
-    else:
+    elif rp13_match is not None and title_match is not None:
+        ctx.package_name = title_match.group(1)
+        ctx.release_version = title_match.group(2)
+        ctx.release_tag = f"{ctx.package_name}/v{ctx.release_version}"
+
+    if ctx.release_tag is None:
         click.secho(
-            "I couldn't determine what the release tag should be from the PR's"
+            "I couldn't determine what the release tag should be from the PR's "
             f"head ref {head_ref}.",
             fg="red",
         )
@@ -124,8 +133,15 @@ def get_release_notes(ctx: TagContext) -> None:
         changelog,
         re.DOTALL | re.MULTILINE,
     )
+    v13_match = re.search(
+        rf"^### {ctx.release_version} \(\d\d\d\d-\d\d-\d\d\)\n(?P<notes>.+?)(\n###\s|\Z)",
+        changelog,
+        re.DOTALL | re.MULTILINE,
+    )
     if match is not None:
         ctx.release_notes = match.group("notes").strip()
+    elif v13_match is not None:
+        ctx.release_notes = v13_match.group("notes").strip()
     else:
         ctx.release_notes = ""
 
