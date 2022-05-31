@@ -1,6 +1,6 @@
 requests
 jinja2
 attrs
-protobuf>=3.20.1,<4.0.0
+protobuf>=3.19.4,<4.0.0
 google-auth
 git+https://github.com/googleapis/releasetool.git@master#egg=gcp-releasetool
