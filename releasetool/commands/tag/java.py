@@ -17,8 +17,8 @@ import re
 import subprocess
 import tempfile
 import click
-from typing import Union
 from typing import List
+from typing import Union
 
 import releasetool.circleci
 import releasetool.git
