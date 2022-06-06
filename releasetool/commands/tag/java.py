@@ -26,6 +26,8 @@ import releasetool.secrets
 import releasetool.commands.common
 from releasetool.commands.common import TagContext
 
+# Standard Java Framework repos in the GoogleCloudPlatform org
+java_framework_release_pool_repos: List[str] = ["google-cloud-spanner-hibernate"]
 
 def _parse_release_tag(output: str) -> str:
     match = re.search("creating release (v.*)", output)
@@ -45,6 +47,10 @@ def kokoro_job_name(upstream_repo: str, package_name: str) -> Union[str, None]:
         The name of the Kokoro job to trigger or None if there is no job to trigger
     """
     repo_short_name = upstream_repo.split("/")[-1]
+
+    if (repo_short_name in java_framework_release_pool_repos):
+        return f"cloud-java-frameworks/{repo_short_name}/stage"
+
     return f"cloud-devrel/client-libraries/java/{repo_short_name}/release/stage"
 
 
