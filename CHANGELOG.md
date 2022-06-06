@@ -4,6 +4,13 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+## [1.8.5](https://github.com/googleapis/releasetool/compare/v1.8.4...v1.8.5) (2022-06-06)
+
+
+### Bug Fixes
+
+* **deps:** pin protobuf to 3.x ([#401](https://github.com/googleapis/releasetool/issues/401)) ([c33052d](https://github.com/googleapis/releasetool/commit/c33052d882080a312ea3813d6bbf03301aec525b))
+
 ### [1.8.4](https://github.com/googleapis/releasetool/compare/v1.8.3...v1.8.4) (2022-04-14)
 
 
