@@ -52,7 +52,7 @@ def kokoro_job_name(upstream_repo: str, package_name: str) -> Union[str, None]:
     """
     repo_short_name = upstream_repo.split("/")[-1]
 
-    if (repo_short_name in java_framework_release_pool_repos):
+    if repo_short_name in java_framework_release_pool_repos:
         return f"cloud-java-frameworks/{repo_short_name}/stage"
 
     else:
