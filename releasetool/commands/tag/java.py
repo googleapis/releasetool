@@ -17,7 +17,7 @@ import re
 import subprocess
 import tempfile
 import click
-from typing import Union
+from typing import List, Union
 
 import releasetool.circleci
 import releasetool.git
@@ -34,6 +34,12 @@ def _parse_release_tag(output: str) -> str:
     return None
 
 
+"""A list of repositories that have a different kokoro job location.
+"""
+# Standard Java Framework repos in the GoogleCloudPlatform org
+java_framework_release_pool_repos: List[str] = ["google-cloud-spanner-hibernate"]
+
+
 def kokoro_job_name(upstream_repo: str, package_name: str) -> Union[str, None]:
     """Return the Kokoro job name.
 
@@ -45,7 +51,12 @@ def kokoro_job_name(upstream_repo: str, package_name: str) -> Union[str, None]:
         The name of the Kokoro job to trigger or None if there is no job to trigger
     """
     repo_short_name = upstream_repo.split("/")[-1]
-    return f"cloud-devrel/client-libraries/java/{repo_short_name}/release/stage"
+
+    if repo_short_name in java_framework_release_pool_repos:
+        return f"cloud-java-frameworks/{repo_short_name}/stage"
+
+    else:
+        return f"cloud-devrel/client-libraries/java/{repo_short_name}/release/stage"
 
 
 def package_name(pull: dict) -> Union[str, None]:
