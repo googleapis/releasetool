@@ -4,6 +4,13 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+## [1.8.6](https://github.com/googleapis/releasetool/compare/v1.8.5...v1.8.6) (2022-06-09)
+
+
+### Bug Fixes
+
+* Specifying kokoro release job location for google-cloud-spanner-hibernate ([#406](https://github.com/googleapis/releasetool/issues/406)) ([bd31541](https://github.com/googleapis/releasetool/commit/bd3154170b20a15f72f9cc6efb531fd77c9ae2cc))
+
 ## [1.8.5](https://github.com/googleapis/releasetool/compare/v1.8.4...v1.8.5) (2022-06-06)
 
 
