@@ -27,7 +27,7 @@ dependencies = [
     "jinja2",
     "keyring",
     "packaging",
-    "protobuf>=3.19.4, <4.0.0",
+    "protobuf>=3.19.4, <5.0.0",
     "pyjwt",
     "pyperclip",
     "python-dateutil",
