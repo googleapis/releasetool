@@ -4,6 +4,13 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+## [1.8.7](https://github.com/googleapis/releasetool/compare/v1.8.6...v1.8.7) (2022-08-30)
+
+
+### Bug Fixes
+
+* implement kokoro_job_name helper for dotnet ([#410](https://github.com/googleapis/releasetool/issues/410)) ([6cab0f8](https://github.com/googleapis/releasetool/commit/6cab0f81530db5b90608ca1ba0b13808e0648c30))
+
 ## [1.8.6](https://github.com/googleapis/releasetool/compare/v1.8.5...v1.8.6) (2022-06-09)
 
 
