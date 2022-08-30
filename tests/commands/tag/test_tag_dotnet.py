@@ -62,7 +62,7 @@ def test_release_line_regex_not_matching(line):
 
 def test_kokoro_job_name():
     job_name = kokoro_job_name("upstream-owner/upstream-repo", "some-package-name")
-    assert job_name is None
+    assert job_name == "cloud-sharp/upstream-repo/gcp_windows/autorelease"
 
 
 def test_package_name():

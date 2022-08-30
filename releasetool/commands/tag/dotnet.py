@@ -104,7 +104,8 @@ def kokoro_job_name(upstream_repo: str, package_name: str) -> Union[str, None]:
     Returns:
         The name of the Kokoro job to trigger or None if there is no job to trigger
     """
-    return None
+    repo_short_name = upstream_repo.split("/")[-1]
+    return f"cloud-sharp/{repo_short_name}/gcp_windows/autorelease"
 
 
 def package_name(pull: dict) -> Union[str, None]:
