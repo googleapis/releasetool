@@ -245,7 +245,7 @@ def test_trigger_package(
     trigger.trigger_kokoro_build_for_pull_request(kokoro_session, github, issue, Mock())
     trigger_build.assert_called_with(
         kokoro_session,
-        job_name="functions-framework/java/invoker/release",
+        job_name="functions-framework/java/java-function-invoker/release",
         sha="abcd111",
         env_vars={
             "AUTORELEASE_PR": "https://github.com/GoogleCloudPlatform/functions-framework-java/pull/111"

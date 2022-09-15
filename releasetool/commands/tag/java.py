@@ -56,10 +56,7 @@ def kokoro_job_name(upstream_repo: str, package_name: str) -> Union[str, None]:
         return f"cloud-java-frameworks/{repo_short_name}/stage"
 
     if repo_short_name == "functions-framework-java" and package_name in functions_framework_java_packages:
-        if package_name == "java-function-invoker":
-            return f"functions-framework/java/invoker/release"
-        else:
-            return f"functions-framework/java/{package_name}/release"
+        return f"functions-framework/java/{package_name}/release"
 
     else:
         return f"cloud-devrel/client-libraries/java/{repo_short_name}/release/stage"
