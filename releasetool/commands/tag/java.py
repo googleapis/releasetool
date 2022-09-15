@@ -38,7 +38,7 @@ def _parse_release_tag(output: str) -> str:
 """
 # Standard Java Framework repos in the GoogleCloudPlatform org
 java_framework_release_pool_repos: List[str] = ["google-cloud-spanner-hibernate"]
-functions_framework_java_packages: List[str] = ["functions-framework-api", "invoker", "function-maven-plugin"]
+functions_framework_java_packages: List[str] = ["functions-framework-api", "java-function-invoker", "function-maven-plugin"]
 
 def kokoro_job_name(upstream_repo: str, package_name: str) -> Union[str, None]:
     """Return the Kokoro job name.
@@ -56,13 +56,20 @@ def kokoro_job_name(upstream_repo: str, package_name: str) -> Union[str, None]:
         return f"cloud-java-frameworks/{repo_short_name}/stage"
 
     if repo_short_name == "functions-framework-java" and package_name in functions_framework_java_packages:
-        return f"functions-framework/java/{package_name}/release"
+        if package_name == "java-function-invoker":
+            return f"functions-framework/java/invoker/release"
+        else:
+            return f"functions-framework/java/{package_name}/release"
 
     else:
         return f"cloud-devrel/client-libraries/java/{repo_short_name}/release/stage"
 
 
 def package_name(pull: dict) -> Union[str, None]:
+    title = pull["title"]
+    match = re.search(".* release (.*) [0-9].*", title)
+    if match:
+        return match[1]
     return None
 
 

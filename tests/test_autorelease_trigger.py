@@ -216,6 +216,49 @@ def test_trigger_single(
     update_pull_labels.assert_not_called()
 
 
+@patch("autorelease.trigger.LANGUAGE_ALLOWLIST", ["java"])
+@patch("autorelease.kokoro.make_authorized_session")
+@patch("autorelease.github.GitHub.get_issue")
+@patch("autorelease.github.GitHub.get_url")
+@patch("autorelease.github.GitHub.update_pull_labels")
+@patch("autorelease.kokoro.trigger_build")
+def test_trigger_package(
+    trigger_build, update_pull_labels, get_url, get_issue, make_authorized_session
+):
+    kokoro_session = Mock()
+    make_authorized_session.return_value = kokoro_session
+    get_issue.return_value = {
+        "title": "chore(master): release java-function-invoker 1.1.2",
+        "pull_request": {
+            "html_url": "https://github.com/GoogleCloudPlatform/functions-framework-java/pull/111",
+            "url": "https://api.github.com/repos/GoogleCloudPlatform/functions-framework-java/pulls/111",
+        },
+    }
+    get_url.return_value = {
+        "merged_at": "2021-07-20T09:00:00.123Z",
+        "base": {"repo": {"full_name": "GoogleCloudPlatform/functions-framework-java"}},
+        "html_url": "https://github.com/GoogleCloudPlatform/functions-framework-java/pull/111",
+        "merge_commit_sha": "abcd111",
+        "labels": [{"id": 111, "name": "autorelease: tagged"}],
+    }
+
+    pull_request_url = "https://github.com/GoogleCloudPlatform/functions-framework-java/pull/111"
+    reporter = trigger.trigger_single(
+        "fake-github-token", "fake-kokoro-credentials", pull_request_url
+    )
+
+    assert len(reporter.results) == 1
+    trigger_build.assert_called_with(
+        kokoro_session,
+        job_name="functions-framework/java/invoker/release",
+        sha="abcd111",
+        env_vars={
+            "AUTORELEASE_PR": "https://github.com/GoogleCloudPlatform/functions-framework-java/pull/111"
+        },
+    )
+    update_pull_labels.assert_not_called()
+
+
 @patch("autorelease.kokoro.make_authorized_session")
 @patch("autorelease.kokoro.trigger_build")
 def test_trigger_single_bad_url(trigger_build, make_authorized_session):
