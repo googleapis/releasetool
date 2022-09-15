@@ -66,10 +66,11 @@ def kokoro_job_name(upstream_repo: str, package_name: str) -> Union[str, None]:
 
 
 def package_name(pull: dict) -> Union[str, None]:
-    title = pull["title"]
-    match = re.search(".* release (.*) [0-9].*", title)
-    if match:
-        return match[1]
+    if pull.__contains__("title"):
+        title = pull["title"]
+        match = re.search(".* release (.*) [0-9].*", title)
+        if match:
+            return match[1]
     return None
 
 

@@ -225,29 +225,24 @@ def test_trigger_single(
 def test_trigger_package(
     trigger_build, update_pull_labels, get_url, get_issue, make_authorized_session
 ):
+    github = Mock()
     kokoro_session = Mock()
-    make_authorized_session.return_value = kokoro_session
-    get_issue.return_value = {
-        "title": "chore(master): release java-function-invoker 1.1.2",
-        "pull_request": {
-            "html_url": "https://github.com/GoogleCloudPlatform/functions-framework-java/pull/111",
-            "url": "https://api.github.com/repos/GoogleCloudPlatform/functions-framework-java/pulls/111",
-        },
-    }
-    get_url.return_value = {
-        "merged_at": "2021-07-20T09:00:00.123Z",
+    github.get_url.return_value = {
+        "merged_at": "2021-01-01T09:00:00.000Z",
         "base": {"repo": {"full_name": "GoogleCloudPlatform/functions-framework-java"}},
         "html_url": "https://github.com/GoogleCloudPlatform/functions-framework-java/pull/111",
-        "merge_commit_sha": "abcd111",
         "labels": [{"id": 111, "name": "autorelease: tagged"}],
+        "merge_commit_sha": "abcd111",
+        "title": "chore(master): release java-function-invoker 1.1.2",
+    }
+    issue = {
+        "pull_request": {
+            "url": "https://api.github.com/repos/GoogleCloudPlatform/functions-framework-java/pulls/111"
+        },
+        "merged_at": "2021-01-01T09:00:00.000Z",
     }
 
-    pull_request_url = "https://github.com/GoogleCloudPlatform/functions-framework-java/pull/111"
-    reporter = trigger.trigger_single(
-        "fake-github-token", "fake-kokoro-credentials", pull_request_url
-    )
-
-    assert len(reporter.results) == 1
+    trigger.trigger_kokoro_build_for_pull_request(kokoro_session, github, issue, Mock())
     trigger_build.assert_called_with(
         kokoro_session,
         job_name="functions-framework/java/invoker/release",
@@ -256,7 +251,6 @@ def test_trigger_package(
             "AUTORELEASE_PR": "https://github.com/GoogleCloudPlatform/functions-framework-java/pull/111"
         },
     )
-    update_pull_labels.assert_not_called()
 
 
 @patch("autorelease.kokoro.make_authorized_session")
