@@ -38,7 +38,12 @@ def _parse_release_tag(output: str) -> str:
 """
 # Standard Java Framework repos in the GoogleCloudPlatform org
 java_framework_release_pool_repos: List[str] = ["google-cloud-spanner-hibernate"]
-functions_framework_java_packages: List[str] = ["functions-framework-api", "java-function-invoker", "function-maven-plugin"]
+functions_framework_java_packages: List[str] = [
+    "functions-framework-api",
+    "java-function-invoker",
+    "function-maven-plugin",
+]
+
 
 def kokoro_job_name(upstream_repo: str, package_name: str) -> Union[str, None]:
     """Return the Kokoro job name.
@@ -55,7 +60,10 @@ def kokoro_job_name(upstream_repo: str, package_name: str) -> Union[str, None]:
     if repo_short_name in java_framework_release_pool_repos:
         return f"cloud-java-frameworks/{repo_short_name}/stage"
 
-    if repo_short_name == "functions-framework-java" and package_name in functions_framework_java_packages:
+    if (
+        repo_short_name == "functions-framework-java"
+        and package_name in functions_framework_java_packages
+    ):
         return f"functions-framework/java/{package_name}/release"
 
     else:
