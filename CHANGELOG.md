@@ -4,6 +4,13 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+## [1.8.8](https://github.com/googleapis/releasetool/compare/v1.8.7...v1.8.8) (2022-09-16)
+
+
+### Bug Fixes
+
+* Configure kokoro jobs for functions-framework-java release  ([#414](https://github.com/googleapis/releasetool/issues/414)) ([f0b6328](https://github.com/googleapis/releasetool/commit/f0b6328560cf34c613a29088d1b8001f1b4c1670))
+
 ## [1.8.7](https://github.com/googleapis/releasetool/compare/v1.8.6...v1.8.7) (2022-08-30)
 
 
