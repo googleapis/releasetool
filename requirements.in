@@ -1,0 +1,9 @@
+requests
+jinja2
+attrs
+protobuf==3.20.2
+google-auth
+wheel
+setuptools
+twine
+

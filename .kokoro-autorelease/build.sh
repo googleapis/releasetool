@@ -29,5 +29,6 @@ export AUTORELEASE_KOKORO_CREDENTIALS=${KOKORO_KEYSTORE_DIR}/73713_kokoro_trigge
 npm i release-please
 npx release-please --version
 
-python3 -m pip install --quiet --user --upgrade -r requirements.txt
+python3 -m pip install --quiet --user --upgrade --require-hashes -r requirements.txt
+
 python3 -m autorelease --report sponge_log.xml ${AUTORELEASE_COMMAND}
