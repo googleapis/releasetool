@@ -4,6 +4,13 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+## [1.8.9](https://github.com/googleapis/releasetool/compare/v1.8.8...v1.8.9) (2022-09-30)
+
+
+### Bug Fixes
+
+* **build:** pin requirements ([b331495](https://github.com/googleapis/releasetool/commit/b3314957a0dc6170c951525bc698fb8734fcf788))
+
 ## [1.8.8](https://github.com/googleapis/releasetool/compare/v1.8.7...v1.8.8) (2022-09-16)
 
 
