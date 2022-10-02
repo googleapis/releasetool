@@ -16,15 +16,15 @@
 
 set -eo pipefail
 
+# Move into the package, build the distribution and upload.
+cd github/releasetool
+
 # Enable the publish build reporter
 # Note: this installs from source since we're in the releasetool repo. Other projects
 # will need to use python3 -m pip install gcp-releasetool
-python3 -m pip install github/releasetool --require-hashes -r github/releasetool/requirements.txt
-
+python3 -m pip install --require-hashes -r requirements.txt
 python3 -m releasetool publish-reporter-script > /tmp/publisher-script; source /tmp/publisher-script
 
-# Move into the package, build the distribution and upload.
-cd github/releasetool
 TWINE_PASSWORD=$(cat "${KOKORO_KEYSTORE_DIR}/73713_google-cloud-pypi-token-keystore-1")
 
 # Disable buffering, so that the logs stream through.
