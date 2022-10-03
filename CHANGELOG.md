@@ -4,6 +4,13 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+## [1.8.10](https://github.com/googleapis/releasetool/compare/v1.8.9...v1.8.10) (2022-10-03)
+
+
+### Bug Fixes
+
+* **build:** Pin deps for python3.6 ([#419](https://github.com/googleapis/releasetool/issues/419)) ([d25da4d](https://github.com/googleapis/releasetool/commit/d25da4d678721d922966c0b020d629483a34e9f3))
+
 ## [1.8.9](https://github.com/googleapis/releasetool/compare/v1.8.8...v1.8.9) (2022-09-30)
 
 
