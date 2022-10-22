@@ -38,7 +38,7 @@ RUBY_CLIENT_REPOS = [
     "ruby-spanner-activerecord",
     "ruby-style",
     "signet",
-    "ruby-spanner"
+    "ruby-spanner",
 ]
 
 # Standard Ruby repos in the GoogleCloudPlatform org
@@ -54,7 +54,7 @@ RUBY_MONO_REPOS = [
     "gapic-generator-ruby",
     "google-api-ruby-client",
     "google-cloud-ruby",
-    "ruby-spanner"
+    "ruby-spanner",
 ]
 
 
