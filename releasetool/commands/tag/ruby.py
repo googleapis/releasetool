@@ -35,10 +35,10 @@ RUBY_CLIENT_REPOS = [
     "google-auth-library-ruby",
     "google-cloud-ruby",
     "ruby-cloud-env",
+    "ruby-spanner",
     "ruby-spanner-activerecord",
     "ruby-style",
     "signet",
-    "ruby-spanner",
 ]
 
 # Standard Ruby repos in the GoogleCloudPlatform org
