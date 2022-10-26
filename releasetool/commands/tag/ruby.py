@@ -35,6 +35,7 @@ RUBY_CLIENT_REPOS = [
     "google-auth-library-ruby",
     "google-cloud-ruby",
     "ruby-cloud-env",
+    "ruby-spanner",
     "ruby-spanner-activerecord",
     "ruby-style",
     "signet",
@@ -53,6 +54,7 @@ RUBY_MONO_REPOS = [
     "gapic-generator-ruby",
     "google-api-ruby-client",
     "google-cloud-ruby",
+    "ruby-spanner",
 ]
 
 
