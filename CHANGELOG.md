@@ -4,6 +4,13 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+## [1.9.0](https://github.com/googleapis/releasetool/compare/v1.8.10...v1.9.0) (2022-10-26)
+
+
+### Features
+
+* **ruby:** Add new repo ruby-spanner to Ruby client and mono repos ([#450](https://github.com/googleapis/releasetool/issues/450)) ([1675bfa](https://github.com/googleapis/releasetool/commit/1675bfa53c8acf3af1d1421561f5a4299e180da5))
+
 ## [1.8.10](https://github.com/googleapis/releasetool/compare/v1.8.9...v1.8.10) (2022-10-03)
 
 
