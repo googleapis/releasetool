@@ -136,30 +136,19 @@ def test_trigger_kokoro_build_for_pull_request_skips_kokoro_if_no_job_name(
     trigger_build,
 ):
     github = Mock()
-    kokoro_session = Mock()
     github.get_url.return_value = {
         "merged_at": "2021-01-01T09:00:00.000Z",
-        "base": {"repo": {"full_name": "googleapis/google-cloud-php"}},
-        "html_url": "https://github.com/googleapis/google-cloud-php/pulls/5",
-        "labels": [{"id": 111, "name": "autorelease: tagged"}],
-        "merge_commit_sha": "abcd111",
-        "title": "chore(main): release 0.111.0 (#111)",
+        "base": {"repo": {"full_name": "googleapis/google-cloud-php-bigquery"}},
+        "html_url": "https://github.com/googleapis/google-cloud-php-bigquery/pulls/5",
     }
     issue = {
         "pull_request": {
-            "url": "https://api.github.com/googleapis/google-cloud-php/pull/5"
+            "url": "https://api.github.com/googleapis/google-cloud-php-bigquery/pull/5"
         },
         "merged_at": "2021-01-01T09:00:00.000Z",
     }
     trigger.trigger_kokoro_build_for_pull_request(Mock(), github, issue, Mock())
-    trigger_build.assert_called_with(
-        kokoro_session,
-        job_name="cloud-devrel/client-libraries/php/google-cloud-php/docs/docs",
-        sha="abcd111",
-        env_vars={
-            "AUTORELEASE_PR": "https://github.com/googleapis/google-cloud-php/pull/5"
-        },
-    )
+    trigger_build.assert_not_called()
 
 
 @patch("autorelease.trigger.LANGUAGE_ALLOWLIST", ["php"])
@@ -170,13 +159,13 @@ def test_trigger_kokoro_build_for_pull_request_skips_kokoro_if_already_triggered
     github = Mock()
     github.get_url.return_value = {
         "merged_at": "2021-01-01T09:00:00.000Z",
-        "base": {"repo": {"full_name": "googleapis/google-cloud-php"}},
-        "html_url": "https://github.com/googleapis/google-cloud-php/pulls/5",
+        "base": {"repo": {"full_name": "googleapis/google-cloud-php-bigquery"}},
+        "html_url": "https://github.com/googleapis/google-cloud-php-bigquery/pulls/5",
         "labels": [{"id": 12345, "name": "autorelease: triggered"}],
     }
     issue = {
         "pull_request": {
-            "url": "https://api.github.com/googleapis/google-cloud-php/pull/5"
+            "url": "https://api.github.com/googleapis/google-cloud-php-bigquery/pull/5"
         },
         "merged_at": "2021-01-01T09:00:00.000Z",
     }
