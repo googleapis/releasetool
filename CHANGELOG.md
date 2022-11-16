@@ -4,6 +4,13 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+## [1.10.0](https://github.com/googleapis/releasetool/compare/v1.9.1...v1.10.0) (2022-11-15)
+
+
+### Features
+
+* **php:** Enable release trigger for cloud rad kokoro job ([#458](https://github.com/googleapis/releasetool/issues/458)) ([66d6b67](https://github.com/googleapis/releasetool/commit/66d6b675eb19a24c7b18de2f11f5e4d06e67fa73))
+
 ## [1.9.1](https://github.com/googleapis/releasetool/compare/v1.9.0...v1.9.1) (2022-11-02)
 
 
