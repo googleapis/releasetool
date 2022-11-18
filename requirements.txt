@@ -307,7 +307,7 @@ pygments==2.13.0 \
     --hash=sha256:56a8508ae95f98e2b9bdf93a6be5ae3f7d8af858b43e02c5a2ff083726be40c1 \
     --hash=sha256:f643f331ab57ba3c9d89212ee4a2dabc6e94f117cf4eefde99a0574720d14c42
     # via readme-renderer
-PyJWT==2.6.0 \
+pyjwt==2.6.0 \
     --hash=sha256:69285c7e31fc44f68a1feb309e948e0df53259d579295e6cfe2b1792329f05fd \
     --hash=sha256:d83c3d892a77bbb74d3e1a2cfa90afaadb60945205d1095d9221f04466f64c14
     # via -r requirements.in
