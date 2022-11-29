@@ -4,6 +4,27 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+## [1.10.0](https://github.com/googleapis/releasetool/compare/v1.9.1...v1.10.0) (2022-11-15)
+
+
+### Features
+
+* **php:** Enable release trigger for cloud rad kokoro job ([#458](https://github.com/googleapis/releasetool/issues/458)) ([66d6b67](https://github.com/googleapis/releasetool/commit/66d6b675eb19a24c7b18de2f11f5e4d06e67fa73))
+
+## [1.9.1](https://github.com/googleapis/releasetool/compare/v1.9.0...v1.9.1) (2022-11-02)
+
+
+### Bug Fixes
+
+* **deps:** Update dependency cryptography to v38.0.3 [security] ([#455](https://github.com/googleapis/releasetool/issues/455)) ([375bc65](https://github.com/googleapis/releasetool/commit/375bc650a5a183537139f2e3f52a39a45cf90db2))
+
+## [1.9.0](https://github.com/googleapis/releasetool/compare/v1.8.10...v1.9.0) (2022-10-26)
+
+
+### Features
+
+* **ruby:** Add new repo ruby-spanner to Ruby client and mono repos ([#450](https://github.com/googleapis/releasetool/issues/450)) ([1675bfa](https://github.com/googleapis/releasetool/commit/1675bfa53c8acf3af1d1421561f5a4299e180da5))
+
 ## [1.8.10](https://github.com/googleapis/releasetool/compare/v1.8.9...v1.8.10) (2022-10-03)
 
 
