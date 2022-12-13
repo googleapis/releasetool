@@ -46,6 +46,13 @@ def test_kokoro_job_name_apiary():
     assert job_name == "cloud-devrel/client-libraries/google-api-ruby-client/release"
 
 
+def test_kokoro_job_name_adapter():
+    job_name = kokoro_job_name(
+        "googleapis/ruby-spanner-activerecord", "ruby-spanner-activerecord"
+    )
+    assert job_name == "cloud-devrel/client-libraries/ruby-spanner-activerecord/release"
+
+
 def test_package_name():
     name = package_name({"head": {"ref": "release-storage-v1.2.3"}})
     assert name == "storage"
