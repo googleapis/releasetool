@@ -187,11 +187,12 @@ def kokoro_job_name(upstream_repo: str, package_name: str) -> Union[str, None]:
         The name of the Kokoro job to trigger or None if there is no job to trigger
     """
 
+    repo_name = upstream_repo.split("/")[-1]
     for name in RUBY_CLIENT_REPOS:
-        if name in upstream_repo:
+        if name == repo_name:
             return f"cloud-devrel/client-libraries/{name}/release"
     for name in RUBY_CLOUD_REPOS:
-        if name in upstream_repo:
+        if name == repo_name:
             return f"cloud-devrel/ruby/{name}/release"
 
     return f"cloud-devrel/client-libraries/{package_name}/release"
