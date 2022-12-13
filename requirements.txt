@@ -153,7 +153,7 @@ importlib-metadata==4.8.3 \
     #   -r requirements.in
     #   keyring
     #   twine
-jaraco-classes==3.2.1 \
+jaraco-classes==3.2.3 \
     --hash=sha256:22ac35313cf4b145bf7b217cc51be2d98a3d2db1c8558a30ca259d9f0b9c0b7d \
     --hash=sha256:ed54b728af1937dc16b7236fbaf34ba561ba1ace572b03fffa5486ed363ecf34
     # via -r requirements.in
@@ -392,3 +392,6 @@ zipp==3.6.0 \
 # WARNING: The following packages were not pinned, but pip requires them to be
 # pinned when the requirements file includes hashes. Consider using the --allow-unsafe flag.
 # setuptools
+jaraco.classes==3.2.3 \
+    --hash=sha256:2353de3288bc6b82120752201c6b1c1a14b058267fa424ed5ce5984e3b922158 \
+    --hash=sha256:89559fa5c1d3c34eff6f631ad80bb21f378dbcbb35dd161fd2c6b93f5be2f98a
