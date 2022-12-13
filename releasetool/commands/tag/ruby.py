@@ -124,7 +124,7 @@ def get_release_notes(ctx: TagContext) -> None:
     click.secho("> Grabbing the release notes.", fg="cyan")
     changelog_file = "CHANGELOG.md"
     for name in RUBY_MONO_REPOS:
-        if name in ctx.upstream_repo:
+        if name == ctx.upstream_repo:
             changelog_file = f"{ctx.package_name}/CHANGELOG.md"
     changelog = ctx.github.get_contents(
         ctx.upstream_repo, changelog_file, ref=ctx.release_pr["merge_commit_sha"]
