@@ -4,6 +4,13 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+## [1.10.2](https://github.com/googleapis/releasetool/compare/v1.10.1...v1.10.2) (2022-12-16)
+
+
+### Bug Fixes
+
+* **java:** Specifying kokoro release job location for cloud java repositories ([#475](https://github.com/googleapis/releasetool/issues/475)) ([035e3ea](https://github.com/googleapis/releasetool/commit/035e3ea41d7867ab67e0dfde3425532aa625dc85))
+
 ## [1.10.1](https://github.com/googleapis/releasetool/compare/v1.10.0...v1.10.1) (2022-12-13)
 
 
