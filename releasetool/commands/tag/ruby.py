@@ -123,8 +123,9 @@ def determine_package_name_and_version(ctx: TagContext) -> None:
 def get_release_notes(ctx: TagContext) -> None:
     click.secho("> Grabbing the release notes.", fg="cyan")
     changelog_file = "CHANGELOG.md"
+    repo_name = ctx.upstream_repo.split("/")[-1]
     for name in RUBY_MONO_REPOS:
-        if name in ctx.upstream_repo:
+        if name == repo_name:
             changelog_file = f"{ctx.package_name}/CHANGELOG.md"
     changelog = ctx.github.get_contents(
         ctx.upstream_repo, changelog_file, ref=ctx.release_pr["merge_commit_sha"]
@@ -186,11 +187,12 @@ def kokoro_job_name(upstream_repo: str, package_name: str) -> Union[str, None]:
         The name of the Kokoro job to trigger or None if there is no job to trigger
     """
 
+    repo_name = upstream_repo.split("/")[-1]
     for name in RUBY_CLIENT_REPOS:
-        if name in upstream_repo:
+        if name == repo_name:
             return f"cloud-devrel/client-libraries/{name}/release"
     for name in RUBY_CLOUD_REPOS:
-        if name in upstream_repo:
+        if name == repo_name:
             return f"cloud-devrel/ruby/{name}/release"
 
     return f"cloud-devrel/client-libraries/{package_name}/release"
