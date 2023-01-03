@@ -257,9 +257,9 @@ packaging==21.3 \
     # via
     #   -r requirements.in
     #   bleach
-pkginfo==1.9.2 \
-    --hash=sha256:ac03e37e4d601aaee40f8087f63fc4a2a6c9814dda2c8fa6aab1b1829653bdfa \
-    --hash=sha256:d580059503f2f4549ad6e4c106d7437356dbd430e2c7df99ee1efe03d75f691e
+pkginfo==1.9.3 \
+    --hash=sha256:37e77722f0e16758e5f360098ced6bc5cfc19e5d3d410507a0c3a5d648df5b7c \
+    --hash=sha256:76eac3a1c370e1505a771ed98a7e33b4546fe3650fd719e6c57ebb4393c20768
     # via twine
 protobuf==3.19.6 \
     --hash=sha256:010be24d5a44be7b0613750ab40bc8b8cedc796db468eae6c779b395f50d1fa1 \
