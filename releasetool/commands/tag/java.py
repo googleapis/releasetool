@@ -37,7 +37,11 @@ def _parse_release_tag(output: str) -> str:
 """A list of repositories that have a different kokoro job location.
 """
 # Standard Java Framework repos in the GoogleCloudPlatform org
-java_framework_release_pool_repos: List[str] = ["google-cloud-spanner-hibernate"]
+java_framework_release_pool_repos: List[str] = [
+    "google-cloud-spanner-hibernate",
+    "spring-cloud-gcp",
+    "cloud-spanner-r2dbc",
+]
 functions_framework_java_packages: List[str] = [
     "functions-framework-api",
     "java-function-invoker",
