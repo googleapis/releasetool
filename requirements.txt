@@ -322,9 +322,9 @@ python-dateutil==2.8.2 \
     --hash=sha256:0123cacc1627ae19ddf3c27a5de5bd67ee4586fbdd6440d9748f8abb483d3e86 \
     --hash=sha256:961d03dc3453ebbc59dbdea9e4e11c5651520a876d0f4db161e8674aae935da9
     # via -r requirements.in
-readme-renderer==34.0 \
-    --hash=sha256:262510fe6aae81ed4e94d8b169077f325614c0b1a45916a80442c6576264a9c2 \
-    --hash=sha256:dfb4d17f21706d145f7473e0b61ca245ba58e810cf9b2209a48239677f82e5b0
+readme-renderer==37.3 \
+    --hash=sha256:cd653186dfc73055656f090f227f5cb22a046d7f71a841dfa305f55c9a513273 \
+    --hash=sha256:f67a16caedfa71eef48a31b39708637a6f4664c4394801a7b0d6432d13907343
     # via
     #   -r requirements.in
     #   twine
