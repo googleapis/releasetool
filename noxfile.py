@@ -15,13 +15,13 @@
 import nox
 
 
-@nox.session(python='3.6')
+@nox.session(python='3.8')
 def blacken(session):
     session.install('black')
     session.run('black', 'autorelease', 'releasetool', 'tests')
 
 
-@nox.session(python='3.6')
+@nox.session(python='3.8')
 def lint(session):
     session.install('mypy==0.812', 'flake8', 'black')
     session.run('pip', 'install', '-e', '.')
@@ -34,7 +34,7 @@ def lint(session):
         'releasetool')
 
 
-@nox.session(python='3.6')
+@nox.session(python='3.8')
 def test(session):
     session.install('pytest')
     session.run('pip', 'install', '-e', '.')
