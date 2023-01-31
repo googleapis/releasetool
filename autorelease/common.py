@@ -66,6 +66,8 @@ def guess_language(gh: GitHub, repo_full_name: str) -> str:
         # what was declared in the old repos.json.
         "GoogleCloudPlatform/cloud-code-samples": "dotnet",
         "googleapis/doc-templates": "python",
+        # special case for cndb testing protos, set to java instead of proto.
+        "googleapis/cndb-client-testing-protos": "java",
     }
     special_case = special_cases.get(repo_full_name)
     if special_case:
