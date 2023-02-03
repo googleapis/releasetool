@@ -50,6 +50,16 @@ def process_issue(
     # doesn't contain all of the PR info.
     pull = gh.get_url(issue["pull_request"]["url"])
 
+    # Determine language.
+    lang = common.guess_language(gh, pull["base"]["repo"]["full_name"])
+
+    # As part of the migration to release-please tagging, cross-reference the
+    # language against an allowlist to allow migrating language-by-language.
+    if lang not in LANGUAGE_ALLOWLIST:
+        result.skipped = True
+        result.print(f"Language {lang} not in allowlist, skipping.")
+        return
+
     # Before doing any processing, check to make sure the PR was actually merged.
     # "closed" PRs can be merged or just closed without merging.
     if not pull.get("merged_at"):
@@ -59,16 +69,6 @@ def process_issue(
         gh.update_pull_labels(
             pull, add=["autorelease: closed"], remove=["autorelease: pending"]
         )
-        return
-
-    # Determine language.
-    lang = common.guess_language(gh, pull["base"]["repo"]["full_name"])
-
-    # As part of the migration to release-please tagging, cross-reference the
-    # language against an allowlist to allow migrating language-by-language.
-    if lang not in LANGUAGE_ALLOWLIST:
-        result.skipped = True
-        result.print(f"Language {lang} not in allowlist, skipping.")
         return
 
     # Run releasetool tag for the PR.
