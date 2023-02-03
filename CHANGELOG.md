@@ -4,6 +4,13 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+## [1.10.4](https://github.com/googleapis/releasetool/compare/v1.10.3...v1.10.4) (2023-02-03)
+
+
+### Bug Fixes
+
+* Skip entire tag workflow for languages not in the allowlist ([#495](https://github.com/googleapis/releasetool/issues/495)) ([118f203](https://github.com/googleapis/releasetool/commit/118f2032f811e8152b4d165c7ecf2c34190dd2d0))
+
 ## [1.10.3](https://github.com/googleapis/releasetool/compare/v1.10.2...v1.10.3) (2023-01-31)
 
 
