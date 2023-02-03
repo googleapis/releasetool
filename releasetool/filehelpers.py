@@ -33,7 +33,6 @@ def open_editor(filename: str, return_contents: bool = False) -> Optional[str]:
 def open_editor_with_content(
     filename: str, contents: str, return_contents: bool = False
 ) -> Optional[str]:
-
     with open(filename, "w") as fh:
         fh.write(contents)
 

@@ -65,6 +65,7 @@ def test_run_releasetool_tag_delegates(tag_mock):
     assert ctx == context
 
 
+@patch("autorelease.tag.LANGUAGE_ALLOWLIST", ["java"])
 @patch("autorelease.tag.run_releasetool_tag")
 def test_process_issue_skips_non_merged(run_releasetool_tag):
     github = Mock()
