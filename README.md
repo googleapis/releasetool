@@ -9,7 +9,7 @@ in such a way that it could easily be used for other languages.
 ## Installation
 
 **Requirements:**
-- Python 3.6+
+- Python 3.8+
 - pip
 
 We recommend following [this guide](https://docs.python-guide.org/starting/installation/#installation-guides) for installing both Python 3 and pip. 
