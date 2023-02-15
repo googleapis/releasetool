@@ -103,7 +103,9 @@ def get_installation_access_token(
     }
 
     private_key_bytes = private_key_str.encode()
-    private_key = default_backend().load_pem_private_key(private_key_bytes, None)
+    private_key = default_backend().load_pem_private_key(
+        private_key_bytes, None, unsafe_skip_rsa_key_validation=False
+    )
     app_jwt = jwt.encode(payload, private_key, algorithm="RS256")
 
     headers = {
