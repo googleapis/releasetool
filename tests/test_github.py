@@ -13,7 +13,6 @@
 # limitations under the License.
 
 
-from unittest import mock
 from releasetool import github
 import pathlib
 import requests_mock
