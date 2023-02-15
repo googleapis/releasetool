@@ -4,6 +4,13 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+## [1.10.5](https://github.com/googleapis/releasetool/compare/v1.10.4...v1.10.5) (2023-02-15)
+
+
+### Bug Fixes
+
+* **deps:** Bump cryptography from 38.0.4 to 39.0.1 ([#497](https://github.com/googleapis/releasetool/issues/497)) ([b36d07d](https://github.com/googleapis/releasetool/commit/b36d07df2cef3123ec61a52fe093d30c1c98adb1))
+
 ## [1.10.4](https://github.com/googleapis/releasetool/compare/v1.10.3...v1.10.4) (2023-02-03)
 
 
