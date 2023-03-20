@@ -29,6 +29,9 @@ message BuildRequest {
   // revision is latest when the build actually executes.
   optional ScmRevision scm_revision = 3;
 
+  // Use this for multi scm jobs
+  optional MultiScmRevision multi_scm_revision = 9;
+
   // The input file/directory paths for a kokoro build, they should be
   // accessible by GoogleFile. Those files will be downloaded to src directory
   // and available before build step starts.
@@ -59,6 +62,11 @@ message ScmRevision {
   oneof scmrevision {
     GithubScmRevision github_scm_revision = 4;
   }
+}
+
+// Represents a specific revision for multi-scm.
+message MultiScmRevision {
+  repeated GithubScmRevision github_scm_revision = 4;
 }
 
 // Represents a specific revision in GitHub repository.
