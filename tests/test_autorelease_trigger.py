@@ -212,7 +212,7 @@ def test_trigger_single(
         env_vars={
             "AUTORELEASE_PR": "https://github.com/googleapis/java-trace/pull/1234"
         },
-        multi_scm=False,
+        multi_scm_name=None,
     )
     update_pull_labels.assert_not_called()
 
@@ -256,7 +256,7 @@ def test_trigger_single_multi_scm(
         env_vars={
             "AUTORELEASE_PR": "https://github.com/googleapis/java-trace/pull/1234"
         },
-        multi_scm=True,
+        multi_scm_name="java-trace",
     )
     update_pull_labels.assert_not_called()
 
@@ -295,7 +295,7 @@ def test_trigger_package(
         env_vars={
             "AUTORELEASE_PR": "https://github.com/GoogleCloudPlatform/functions-framework-java/pull/111"
         },
-        multi_scm=False,
+        multi_scm_name=None,
     )
 
 
@@ -387,5 +387,5 @@ def test_trigger_multi_scm(
         env_vars={
             "AUTORELEASE_PR": "https://github.com/GoogleCloudPlatform/functions-framework-java/pull/111"
         },
-        multi_scm=True,
+        multi_scm_name="functions-framework-java",
     )

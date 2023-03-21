@@ -89,6 +89,11 @@ def trigger_kokoro_build_for_pull_request(
 
     sha = pull["merge_commit_sha"]
 
+    # if using a multi_scm project, use the repo base name as the scm name
+    multi_scm_name = (
+        pull["base"]["repo"]["full_name"].split("/")[-1] if multi_scm else None
+    )
+
     # Trigger Kokoro release build
     result.print(f"Triggering {kokoro_job_name} using {sha}")
     kokoro.trigger_build(
@@ -96,7 +101,7 @@ def trigger_kokoro_build_for_pull_request(
         job_name=kokoro_job_name,
         sha=sha,
         env_vars={"AUTORELEASE_PR": pull_request_url},
-        multi_scm=multi_scm,
+        multi_scm_name=multi_scm_name,
     )
     if update_labels:
         gh.update_pull_labels(pull, add=["autorelease: triggered"])

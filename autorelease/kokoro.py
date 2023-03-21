@@ -15,6 +15,7 @@
 """This module talks to Kokoro via Pub/Sub messages to devrel-prod.googleplex.com."""
 
 import base64
+from typing import Optional
 
 from google.auth.transport import requests
 from google.oauth2 import service_account
@@ -43,15 +44,17 @@ def _send_pubsub_message(
 
 
 def _make_build_request(
-    job_name: str, sha: str, env_vars: dict = None, multi_scm: bool = False
+    job_name: str, sha: str, env_vars: dict = None, multi_scm_name: Optional[str] = None
 ) -> str:
     request = kokoro_api_pb2.BuildRequest(
         full_job_name=job_name,
     )
-    if multi_scm:
-        request.scm_revision.github_scm_revision.commit_sha = sha
+    if multi_scm_name:
+        request.multi_scm_revision.github_scm_revision.add(
+            name=multi_scm_name, commit_sha=sha
+        )
     else:
-        request.multi_scm_revision.github_scm_revision.add(commit_sha=sha)
+        request.scm_revision.github_scm_revision.commit_sha = sha
 
     if env_vars:
         for key, value in env_vars.items():
@@ -99,9 +102,9 @@ def trigger_build(
     job_name: str,
     sha: str,
     env_vars: dict = None,
-    multi_scm: bool = False,
+    multi_scm_name: Optional[str] = None,
 ):
     build_request = _make_build_request(
-        job_name, sha, env_vars=env_vars, multi_scm=multi_scm
+        job_name, sha, env_vars=env_vars, multi_scm_name=multi_scm_name
     )
     _send_pubsub_message(session, _DEVREL_PROD_KOKORO_TOPIC, build_request)
