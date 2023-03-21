@@ -42,13 +42,16 @@ def _send_pubsub_message(
     return resp
 
 
-def _make_build_request(job_name: str, sha: str, env_vars: dict = None) -> str:
+def _make_build_request(
+    job_name: str, sha: str, env_vars: dict = None, multi_scm: bool = False
+) -> str:
     request = kokoro_api_pb2.BuildRequest(
         full_job_name=job_name,
-        scm_revision=kokoro_api_pb2.ScmRevision(
-            github_scm_revision=kokoro_api_pb2.GithubScmRevision(commit_sha=sha)
-        ),
     )
+    if multi_scm:
+        request.scm_revision.github_scm_revision.commit_sha = sha
+    else:
+        request.multi_scm_revision.github_scm_revision.add(commit_sha=sha)
 
     if env_vars:
         for key, value in env_vars.items():
@@ -92,7 +95,13 @@ def make_adc_session() -> requests.AuthorizedSession:
 
 
 def trigger_build(
-    session: requests.AuthorizedSession, job_name: str, sha: str, env_vars: dict = None
+    session: requests.AuthorizedSession,
+    job_name: str,
+    sha: str,
+    env_vars: dict = None,
+    multi_scm: bool = False,
 ):
-    build_request = _make_build_request(job_name, sha, env_vars=env_vars)
+    build_request = _make_build_request(
+        job_name, sha, env_vars=env_vars, multi_scm=multi_scm
+    )
     _send_pubsub_message(session, _DEVREL_PROD_KOKORO_TOPIC, build_request)

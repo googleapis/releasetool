@@ -48,6 +48,7 @@ def main():
     )
     parser.add_argument("--pull", default=None)
     parser.add_argument("command")
+    parser.add_argument("--multi-scm", action="store_true")
 
     args = parser.parse_args()
 
@@ -77,7 +78,10 @@ def main():
         if not args.pull:
             raise Exception("missing required arg --pull")
         report = trigger.trigger_single(
-            args.github_token, args.kokoro_credentials, args.pull
+            args.github_token,
+            args.kokoro_credentials,
+            args.pull,
+            multi_scm=args.multi_scm,
         )
 
         if args.report:

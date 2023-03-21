@@ -35,6 +35,7 @@ def trigger_kokoro_build_for_pull_request(
     result,
     update_labels: bool = True,
     use_allowlist: bool = True,
+    multi_scm: bool = False,
 ) -> None:
     """Triggers the Kokoro job for a given pull request if possible.
 
@@ -95,6 +96,7 @@ def trigger_kokoro_build_for_pull_request(
         job_name=kokoro_job_name,
         sha=sha,
         env_vars={"AUTORELEASE_PR": pull_request_url},
+        multi_scm=multi_scm,
     )
     if update_labels:
         gh.update_pull_labels(pull, add=["autorelease: triggered"])
@@ -108,7 +110,10 @@ def _parse_issue(pull_request_url: str) -> Tuple[str, int]:
 
 
 def trigger_single(
-    github_token: str, kokoro_credentials: str, pull_request_url: str
+    github_token: str,
+    kokoro_credentials: str,
+    pull_request_url: str,
+    multi_scm: bool = False,
 ) -> reporter.Reporter:
     report = reporter.Reporter("autorelease.trigger")
     # TODO(busunkim): Use proxy once KMS setup is complete.
@@ -135,7 +140,7 @@ def trigger_single(
 
     try:
         trigger_kokoro_build_for_pull_request(
-            kokoro_session, gh, issue, result, False, False
+            kokoro_session, gh, issue, result, False, False, multi_scm=multi_scm
         )
     # Failing any one PR is fine, just record it in the log and continue.
     except Exception as exc:
