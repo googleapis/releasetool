@@ -212,7 +212,7 @@ def test_trigger_single(
         env_vars={
             "AUTORELEASE_PR": "https://github.com/googleapis/java-trace/pull/1234"
         },
-        multi_scm_name=None,
+        multi_scm_name="",
     )
     update_pull_labels.assert_not_called()
 
@@ -245,7 +245,10 @@ def test_trigger_single_multi_scm(
 
     pull_request_url = "https://github.com/googleapis/java-trace/pull/1234"
     reporter = trigger.trigger_single(
-        "fake-github-token", "fake-kokoro-credentials", pull_request_url, multi_scm=True
+        "fake-github-token",
+        "fake-kokoro-credentials",
+        pull_request_url,
+        multi_scm_name="java-trace",
     )
 
     assert len(reporter.results) == 1
@@ -295,7 +298,7 @@ def test_trigger_package(
         env_vars={
             "AUTORELEASE_PR": "https://github.com/GoogleCloudPlatform/functions-framework-java/pull/111"
         },
-        multi_scm_name=None,
+        multi_scm_name="",
     )
 
 
@@ -378,7 +381,7 @@ def test_trigger_multi_scm(
     }
 
     trigger.trigger_kokoro_build_for_pull_request(
-        kokoro_session, github, issue, Mock(), multi_scm=True
+        kokoro_session, github, issue, Mock(), multi_scm_name="functions-framework-java"
     )
     trigger_build.assert_called_with(
         kokoro_session,

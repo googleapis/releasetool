@@ -35,7 +35,7 @@ def trigger_kokoro_build_for_pull_request(
     result,
     update_labels: bool = True,
     use_allowlist: bool = True,
-    multi_scm: bool = False,
+    multi_scm_name: str = "",
 ) -> None:
     """Triggers the Kokoro job for a given pull request if possible.
 
@@ -89,11 +89,6 @@ def trigger_kokoro_build_for_pull_request(
 
     sha = pull["merge_commit_sha"]
 
-    # if using a multi_scm project, use the repo base name as the scm name
-    multi_scm_name = (
-        pull["base"]["repo"]["full_name"].split("/")[-1] if multi_scm else None
-    )
-
     # Trigger Kokoro release build
     result.print(f"Triggering {kokoro_job_name} using {sha}")
     kokoro.trigger_build(
@@ -118,8 +113,18 @@ def trigger_single(
     github_token: str,
     kokoro_credentials: str,
     pull_request_url: str,
-    multi_scm: bool = False,
+    multi_scm_name: str = "",
 ) -> reporter.Reporter:
+    """Trigger a Kokoro job based on a release PR URL.
+
+    Arguments:
+        github_token: API token for authenticating against the GitHub API
+        kokoro_credentials: API token for using the Kokoro API
+        pull_request_url: GitHub URL to the pull request
+        multi_scm_name: Optional. If provided, trigger the Kokoro job as
+            a multi_scm job.
+
+    """
     report = reporter.Reporter("autorelease.trigger")
     # TODO(busunkim): Use proxy once KMS setup is complete.
     gh = github.GitHub(github_token, use_proxy=False)
@@ -145,7 +150,13 @@ def trigger_single(
 
     try:
         trigger_kokoro_build_for_pull_request(
-            kokoro_session, gh, issue, result, False, False, multi_scm=multi_scm
+            kokoro_session,
+            gh,
+            issue,
+            result,
+            False,
+            False,
+            multi_scm_name=multi_scm_name,
         )
     # Failing any one PR is fine, just record it in the log and continue.
     except Exception as exc:
