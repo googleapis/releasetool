@@ -12,21 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import Union
+from releasetool.commands.tag.go import kokoro_job_name, package_name
 
 
-def kokoro_job_name(upstream_repo: str, package_name: str) -> Union[str, None]:
-    """Return the Kokoro job name.
-
-    Args:
-        upstream_repo (str): The GitHub repo in the form of `<owner>/<repo>`
-        package_name (str): The name of package to release
-
-    Returns:
-        The name of the Kokoro job to trigger or None if there is no job to trigger
-    """
-    return f"cloud-devrel/client-libraries/go/{upstream_repo.rsplit('/', 1)[-1]}/release"
+def test_kokoro_job_name():
+    job_name = kokoro_job_name("upstream-owner/upstream-repo", "some-package-name")
+    assert (
+        job_name
+        == "cloud-devrel/client-libraries/go/upstream-repo/release"
+    )
 
 
-def package_name(pull: dict) -> Union[str, None]:
-    return None
+def test_package_name():
+    name = package_name({"head": {"ref": "release-storage-v1.2.3"}})
+    assert name is None
