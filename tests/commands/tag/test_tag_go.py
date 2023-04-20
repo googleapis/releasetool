@@ -17,10 +17,7 @@ from releasetool.commands.tag.go import kokoro_job_name, package_name
 
 def test_kokoro_job_name():
     job_name = kokoro_job_name("upstream-owner/upstream-repo", "some-package-name")
-    assert (
-        job_name
-        == "cloud-devrel/client-libraries/go/upstream-repo/release"
-    )
+    assert job_name == "cloud-devrel/client-libraries/go/upstream-repo/release"
 
 
 def test_package_name():

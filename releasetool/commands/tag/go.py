@@ -25,7 +25,9 @@ def kokoro_job_name(upstream_repo: str, package_name: str) -> Union[str, None]:
     Returns:
         The name of the Kokoro job to trigger or None if there is no job to trigger
     """
-    return f"cloud-devrel/client-libraries/go/{upstream_repo.rsplit('/', 1)[-1]}/release"
+    return (
+        f"cloud-devrel/client-libraries/go/{upstream_repo.rsplit('/', 1)[-1]}/release"
+    )
 
 
 def package_name(pull: dict) -> Union[str, None]:
