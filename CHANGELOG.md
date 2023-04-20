@@ -4,6 +4,13 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+## [1.11.0](https://github.com/googleapis/releasetool/compare/v1.10.5...v1.11.0) (2023-03-24)
+
+
+### Features
+
+* Add multi_scm option for build proto ([#502](https://github.com/googleapis/releasetool/issues/502)) ([3d6d907](https://github.com/googleapis/releasetool/commit/3d6d90775e7fb1a3102e1dd54667cac70e0ddbb5))
+
 ## [1.10.5](https://github.com/googleapis/releasetool/compare/v1.10.4...v1.10.5) (2023-02-15)
 
 

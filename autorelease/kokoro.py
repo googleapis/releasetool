@@ -42,13 +42,21 @@ def _send_pubsub_message(
     return resp
 
 
-def _make_build_request(job_name: str, sha: str, env_vars: dict = None) -> str:
+def _make_build_request(
+    job_name: str, sha: str, env_vars: dict = None, multi_scm_name: str = ""
+) -> str:
     request = kokoro_api_pb2.BuildRequest(
         full_job_name=job_name,
-        scm_revision=kokoro_api_pb2.ScmRevision(
-            github_scm_revision=kokoro_api_pb2.GithubScmRevision(commit_sha=sha)
-        ),
     )
+
+    # If the job is configured to use multiple SCMs, then we need to send
+    # the scm_name field as part of the request
+    if multi_scm_name:
+        request.multi_scm_revision.github_scm_revision.add(
+            name=multi_scm_name, commit_sha=sha
+        )
+    else:
+        request.scm_revision.github_scm_revision.commit_sha = sha
 
     if env_vars:
         for key, value in env_vars.items():
@@ -92,7 +100,13 @@ def make_adc_session() -> requests.AuthorizedSession:
 
 
 def trigger_build(
-    session: requests.AuthorizedSession, job_name: str, sha: str, env_vars: dict = None
+    session: requests.AuthorizedSession,
+    job_name: str,
+    sha: str,
+    env_vars: dict = None,
+    multi_scm_name: str = "",
 ):
-    build_request = _make_build_request(job_name, sha, env_vars=env_vars)
+    build_request = _make_build_request(
+        job_name, sha, env_vars=env_vars, multi_scm_name=multi_scm_name
+    )
     _send_pubsub_message(session, _DEVREL_PROD_KOKORO_TOPIC, build_request)
