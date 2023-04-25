@@ -4,6 +4,13 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+## [1.12.0](https://github.com/googleapis/releasetool/compare/v1.11.0...v1.12.0) (2023-04-25)
+
+
+### Features
+
+* Add support for triggering go release jobs ([#504](https://github.com/googleapis/releasetool/issues/504)) ([db7dba1](https://github.com/googleapis/releasetool/commit/db7dba1455d96a85c294b2a894ae3d65826b9f4c))
+
 ## [1.11.0](https://github.com/googleapis/releasetool/compare/v1.10.5...v1.11.0) (2023-03-24)
 
 
