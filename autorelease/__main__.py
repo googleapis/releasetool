@@ -47,6 +47,8 @@ def main():
         "--kokoro-credentials", default=os.environ.get("AUTORELEASE_KOKORO_CREDENTIALS")
     )
     parser.add_argument("--pull", default=None)
+    parser.add_argument("--release", default=None)
+    parser.add_argument("--lang", default=None)
     parser.add_argument("command")
     parser.add_argument("--multi-scm-name")
 
@@ -75,14 +77,25 @@ def main():
         else:
             return
     elif args.command == "trigger-single":
+        if args.release:
+            if not args.lang:
+                raise Exception("missing required arg --lang")
+            report = trigger.trigger_for_release(
+                args.github_token,
+                args.kokoro_credentials,
+                args.release,
+                trigger.to_pysafe_language_name(args.lang),
+                args.multi_scm_name,
+            )
         if not args.pull:
             raise Exception("missing required arg --pull")
-        report = trigger.trigger_single(
-            args.github_token,
-            args.kokoro_credentials,
-            args.pull,
-            multi_scm_name=args.multi_scm_name,
-        )
+        else:
+            report = trigger.trigger_single(
+                args.github_token,
+                args.kokoro_credentials,
+                args.pull,
+                multi_scm_name=args.multi_scm_name,
+            )
 
         if args.report:
             report.write(args.report)
