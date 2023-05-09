@@ -28,11 +28,33 @@ ORGANIZATIONS_TO_SCAN = ["googleapis", "GoogleCloudPlatform"]
 CREATED_AFTER = "2021-04-01"
 
 
+def to_pysafe_language_name(lang: str) -> str:
+    """Translates language name to a language name that can be used as a Python
+    identifier.  Leaves unknown languages unchanged.
+    """
+    if "c++" == lang.lower():
+        return "cpp"
+    return lang
+
+
+class BadGithubUrlError(RuntimeError):
+    pass
+
+
+def _repo_name_from_github_url(url: str) -> Tuple[str, str]:
+    """Returns (owner, repo) for any github url."""
+    match = re.match(r".*github.com/([^/]+)/([^/]+)", url)
+    if match and match[1] and match[2]:
+        return (match[1], match[2])
+    else:
+        raise BadGithubUrlError(f"Failed to parse {url} as a github url.")
+
+
 def trigger_kokoro_build_for_pull_request(
     kokoro_session,
     gh: github.GitHub,
     issue: dict,
-    result,
+    result: reporter.Result,
     update_labels: bool = True,
     use_allowlist: bool = True,
     multi_scm_name: str = "",
@@ -107,6 +129,56 @@ def _parse_issue(pull_request_url: str) -> Tuple[str, int]:
     if match:
         return match[1], match[2]
     raise Exception(f"bad url format: {pull_request_url}")
+
+
+def trigger_for_release(
+    github_token: str,
+    kokoro_credentials: str,
+    release_url: str,
+    pysafe_lang: str,
+    multi_scm_name: str = "",
+) -> reporter.Reporter:
+    """Trigger a Kokoro job based on a release PR URL.
+
+    Arguments:
+        github_token: API token for authenticating against the GitHub API
+        kokoro_credentials: API token for using the Kokoro API
+        release_url: Url of the release.  Host name should be api.github.com.
+        pysafe_lang: The name of the programming language.
+        multi_scm_name: Optional. If provided, trigger the Kokoro job as
+            a multi_scm job.
+
+    """
+    report = reporter.Reporter("autorelease.trigger")
+    gh = github.GitHub(github_token, use_proxy=False)
+
+    if kokoro_credentials:
+        kokoro_session = kokoro.make_authorized_session(kokoro_credentials)
+    else:
+        kokoro_session = kokoro.make_adc_session()
+
+    language_module = importlib.import_module(f"releasetool.commands.tag.{pysafe_lang}")
+    owner, repo = _repo_name_from_github_url(release_url)
+    kokoro_job_name = language_module.kokoro_job_name(f"{owner}/{repo}", None)
+    result = reporter.Result(release_url)
+    if kokoro_job_name is None:
+        result.skipped = True
+        result.print(f"No Kokoro job for {release_url}, skipping.")
+        report.add(result)
+        return report
+    release = gh.get_url(release_url)
+    sha = release["sha"]
+    result.print(f"Triggering {kokoro_job_name} using {sha}")
+    kokoro.trigger_build(
+        kokoro_session,
+        job_name=kokoro_job_name,
+        sha=sha,
+        env_vars={},
+        multi_scm_name=multi_scm_name,
+    )
+
+    report.add(result)
+    return report
 
 
 def trigger_single(
