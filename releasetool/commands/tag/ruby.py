@@ -46,6 +46,7 @@ RUBY_CLOUD_REPOS = [
     "appengine-ruby",
     "functions-framework-ruby",
     "serverless-exec-ruby",
+    "google-cloudevents-ruby",
 ]
 
 # Standard Ruby monorepos with gems located in subdirectories

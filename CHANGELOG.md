@@ -4,6 +4,13 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+## [1.13.0](https://github.com/googleapis/releasetool/compare/v1.12.0...v1.13.0) (2023-05-08)
+
+
+### Features
+
+* **ruby:** Support the googleapis/google-cloudevents-ruby repo ([#507](https://github.com/googleapis/releasetool/issues/507)) ([f9dd48e](https://github.com/googleapis/releasetool/commit/f9dd48ee5a8f828d0a7b856f8a8d4ef228a07386))
+
 ## [1.12.0](https://github.com/googleapis/releasetool/compare/v1.11.0...v1.12.0) (2023-04-25)
 
 
