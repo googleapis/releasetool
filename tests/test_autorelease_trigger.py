@@ -216,19 +216,20 @@ def test_trigger_single(
     )
     update_pull_labels.assert_not_called()
 
+
 @patch("autorelease.kokoro.make_authorized_session")
 @patch("autorelease.github.GitHub.get_url")
 @patch("autorelease.kokoro.trigger_build")
-def test_trigger_for_release(
-    trigger_build, get_url, make_authorized_session
-):
+def test_trigger_for_release(trigger_build, get_url, make_authorized_session):
     kokoro_session = Mock()
     make_authorized_session.return_value = kokoro_session
     get_url.return_value = {
         "sha": "abcd1234",
     }
 
-    release_url = "https://api.github.com/googleapis/google-cloud-cpp/releases/tag/v2.9.1"
+    release_url = (
+        "https://api.github.com/googleapis/google-cloud-cpp/releases/tag/v2.9.1"
+    )
     reporter = trigger.trigger_for_release(
         "fake-github-token", "fake-kokoro-credentials", release_url, "cpp"
     )
@@ -241,7 +242,6 @@ def test_trigger_for_release(
         env_vars={},
         multi_scm_name="",
     )
-
 
 
 @patch("autorelease.trigger.LANGUAGE_ALLOWLIST", ["java"])
