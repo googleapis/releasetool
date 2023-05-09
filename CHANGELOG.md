@@ -4,6 +4,13 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+## [1.14.0](https://github.com/googleapis/releasetool/compare/v1.13.0...v1.14.0) (2023-05-09)
+
+
+### Features
+
+* Cpp support ([#506](https://github.com/googleapis/releasetool/issues/506)) ([499ae54](https://github.com/googleapis/releasetool/commit/499ae54162045cf844a96956a639e4f4110bd0b4))
+
 ## [1.13.0](https://github.com/googleapis/releasetool/compare/v1.12.0...v1.13.0) (2023-05-08)
 
 
