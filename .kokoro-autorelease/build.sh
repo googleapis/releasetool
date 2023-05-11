@@ -25,6 +25,9 @@ export PYTHONUNBUFFERED=1
 # The key for triggering Kokoro jobs is a Keystore resource, so it'll be here.
 export AUTORELEASE_KOKORO_CREDENTIALS=${KOKORO_KEYSTORE_DIR}/73713_kokoro_trigger_credentials
 
+# set the credentials from Keystore
+export GITHUB_TOKEN=$(cat "${KOKORO_GFILE_DIR}/yoshi-automation-token.txt")
+
 # install release-please binary to do tagging
 npm i release-please
 npx release-please --version

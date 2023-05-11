@@ -22,23 +22,6 @@ from autorelease import tag, trigger
 _KEYSTORE_GITHUB_TOKEN_LOCATION = "73713_yoshi-automation-github-key"
 
 
-def _determine_github_token(github_token):
-    """Automatically use the GitHub token provided by Keystore if needed."""
-    if github_token is not None:
-        return github_token
-
-    if "KOKORO_KEYSTORE_DIR" in os.environ:
-        filename = os.path.join(
-            os.environ["KOKORO_KEYSTORE_DIR"], _KEYSTORE_GITHUB_TOKEN_LOCATION
-        )
-
-        if os.path.exists(filename):
-            with open(filename, "r", encoding="utf-8") as fh:
-                return fh.read().strip()
-
-    return None
-
-
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--report")
@@ -50,8 +33,6 @@ def main():
     parser.add_argument("command")
 
     args = parser.parse_args()
-
-    args.github_token = _determine_github_token(args.github_token)
 
     if args.command == "tag":
         report = tag.main(args.github_token, args.kokoro_credentials)
