@@ -64,9 +64,10 @@ class GitHub:
         self.session.headers.update(
             {
                 "Accept": "application/vnd.github.v3+json",
-                "Authorization": f"Bearer {token}",
             }
         )
+        if token:
+            self.session.headers.update({"Authorization": f"Bearer {token}"})
 
         if use_proxy:
             self.GITHUB_ROOT = _MAGIC_GITHUB_PROXY_ROOT
@@ -92,7 +93,7 @@ class GitHub:
     def list_org_issues(
         self, org: str, state: str = None, labels: str = None, created_after: str = None
     ) -> Generator[dict, None, None]:
-        url = f"{self.GITHUB_ROOT}/search/issues?q=org:{quote(org)}+state:{quote(state)}+archived:false"
+        url = f"{self.GITHUB_ROOT}/search/issues?q=org:{quote(org)}+state:{quote(state)}+archived:false+is:pr"
         if labels:
             # Note: GitHub query API expects label to be enclosed in quotes:
             quotedLabels = '"' + labels + '"'
