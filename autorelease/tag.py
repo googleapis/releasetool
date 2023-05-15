@@ -22,7 +22,6 @@ import releasetool.github
 
 LANGUAGE_ALLOWLIST = [
     "dotnet",
-    "ruby",
 ]
 
 
