@@ -17,7 +17,7 @@ pyjwt==2.4.0
 pyperclip
 python-dateutil
 readme-renderer==34.0
-requests==2.27.1
+requests==2.31.0
 rfc3986==1.5.0
 setuptools
 twine==3.8.0
