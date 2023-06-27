@@ -4,6 +4,18 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+## [1.15.0](https://github.com/googleapis/releasetool/compare/v1.14.0...v1.15.0) (2023-06-27)
+
+
+### Features
+
+* Remove Ruby from Kokoro tagger ([#511](https://github.com/googleapis/releasetool/issues/511)) ([57acf88](https://github.com/googleapis/releasetool/commit/57acf88d49053d67ceb79317e68287f691d45482))
+
+
+### Bug Fixes
+
+* Update kokoro release job name for google-cloudevents-ruby ([#515](https://github.com/googleapis/releasetool/issues/515)) ([9e98088](https://github.com/googleapis/releasetool/commit/9e980883df4397fa9517911545de5de514876c61))
+
 ## [1.14.0](https://github.com/googleapis/releasetool/compare/v1.13.0...v1.14.0) (2023-05-09)
 
 
