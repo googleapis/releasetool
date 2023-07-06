@@ -35,11 +35,12 @@ RUBY_CLIENT_REPOS = [
     "google-auth-library-ruby",
     "google-cloud-ruby",
     "google-cloudevents-ruby",
+    "opentelemetry-operations-ruby",
     "ruby-cloud-env",
     "ruby-spanner",
     "ruby-spanner-activerecord",
     "ruby-style",
-    "signet",
+    "signet"
 ]
 
 # Standard Ruby repos in the GoogleCloudPlatform org
@@ -52,10 +53,11 @@ RUBY_CLOUD_REPOS = [
 # Standard Ruby monorepos with gems located in subdirectories
 RUBY_MONO_REPOS = [
     "common-protos-ruby",
+    "opentelemetry-operations-ruby",
     "gapic-generator-ruby",
     "google-api-ruby-client",
     "google-cloud-ruby",
-    "ruby-spanner",
+    "ruby-spanner"
 ]
 
 
