@@ -17,8 +17,11 @@ from releasetool.commands.tag.php import kokoro_job_name, package_name
 
 def test_kokoro_job_name():
     job_name = kokoro_job_name("upstream-owner/upstream-repo", "some-package-name")
-    assert job_name is None
+    assert job_name == "cloud-devrel/client-libraries/php/upstream-owner/upstream-repo/release"
 
+def test_kokoro_job_name():
+    job_name = kokoro_job_name("upstream-owner/google-cloud-php", "some-package-name")
+    assert job_name == "cloud-devrel/client-libraries/php/google-cloud-php/docs/docs"
 
 def test_package_name():
     name = package_name({"head": {"ref": "release-storage-v1.2.3"}})
