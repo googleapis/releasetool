@@ -20,10 +20,9 @@ def kokoro_job_name(upstream_repo: str, package_name: str) -> Union[str, None]:
     repo_short_name = upstream_repo.split("/")[-1]
 
     if repo_short_name == "google-cloud-php":
-        return "cloud-devrel/client-libraries/php/google-cloud-php/docs/docs"
-
+        return "cloud-devrel/client-libraries/php/google-cloud-php/docs"
     else:
-        return None
+        return f"cloud-devrel/client-libraries/php/{upstream_repo}/release"
 
 
 def package_name(pull: dict) -> Union[str, None]:
