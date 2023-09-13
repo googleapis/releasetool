@@ -4,6 +4,13 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+## [1.16.0](https://github.com/googleapis/releasetool/compare/v1.15.0...v1.16.0) (2023-07-14)
+
+
+### Features
+
+* Add new Ruby OpenTelemetry repo ([02b6653](https://github.com/googleapis/releasetool/commit/02b6653bbf0238c6f192c86ebb9fa079276d94aa))
+
 ## [1.15.0](https://github.com/googleapis/releasetool/compare/v1.14.0...v1.15.0) (2023-06-27)
 
 
