@@ -42,6 +42,8 @@ java_framework_release_pool_repos: List[str] = [
     "spring-cloud-gcp",
     "cloud-spanner-r2dbc",
 ]
+# App engine plugin repos in the GoogleCloudPlatform org
+java_appengine_plugins_repos: List[str] = ["appengine-plugins"]
 functions_framework_java_packages: List[str] = [
     "functions-framework-api",
     "java-function-invoker",
@@ -63,6 +65,9 @@ def kokoro_job_name(upstream_repo: str, package_name: str) -> Union[str, None]:
 
     if repo_short_name in java_framework_release_pool_repos:
         return f"cloud-java-frameworks/{repo_short_name}/stage"
+
+    if repo_short_name in java_appengine_plugins_repos:
+        return "appengine-plugins-core/gcp_ubuntu/stage"
 
     if (
         repo_short_name == "functions-framework-java"
