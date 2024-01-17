@@ -4,6 +4,14 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+## [1.17.0](https://github.com/googleapis/releasetool/compare/v1.16.0...v1.17.0) (2024-01-17)
+
+
+### Features
+
+* Add appengine-plugins to repo list ([#530](https://github.com/googleapis/releasetool/issues/530)) ([ae19e0e](https://github.com/googleapis/releasetool/commit/ae19e0e11d4d060599992b326af4a7ef21b7baf5))
+* Update PHP tags ([#518](https://github.com/googleapis/releasetool/issues/518)) ([cdc159b](https://github.com/googleapis/releasetool/commit/cdc159ba86c22be9d6eba64a1b69f14200bcd4eb))
+
 ## [1.16.0](https://github.com/googleapis/releasetool/compare/v1.15.0...v1.16.0) (2023-07-14)
 
 
