@@ -29,3 +29,4 @@ requests==2.23.0
 click==8.0.4
 cryptography==39.0.0
 protobuf==3.19.6
+importlib-metadata==4.8.3

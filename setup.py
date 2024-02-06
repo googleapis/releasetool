@@ -31,6 +31,7 @@ dependencies = [
     "pyjwt>=2.0.0",
     "pyperclip>=1.8.0",
     "python-dateutil>=2.8.1",
+    "importlib-metadata>=1.0.0; python_version<'3.8'",
 ]
 
 packages = setuptools.find_packages()
