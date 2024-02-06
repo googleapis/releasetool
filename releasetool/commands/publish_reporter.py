@@ -15,7 +15,7 @@
 """Used by publish CI jobs to report status back to GitHub."""
 
 import os
-import pkgutil
+import importlib
 import re
 from typing import cast, Tuple, Union
 from requests import HTTPError
@@ -172,5 +172,5 @@ def finish(
 
 
 def script():
-    resource = pkgutil.get_data("releasetool.commands", "publish_reporter.sh")
+    resource = importlib.resources.read_binary("releasetool.commands", "publish_reporter.sh")
     print(resource.decode("utf-8"), flush=True)
