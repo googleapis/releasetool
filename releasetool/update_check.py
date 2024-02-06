@@ -56,7 +56,6 @@ def check_for_updates(package_name: str, print=print) -> None:
 
     current_version = packaging.version.Version(
         metadata.distribution(package_name).version
-
     )
 
     pypi_version = packaging.version.Version(_get_pypi_version(package_name))

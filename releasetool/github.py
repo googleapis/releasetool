@@ -24,13 +24,13 @@ import jwt
 import requests
 
 import cryptography
+
 CRYPTOGRAPHY_VERSION = cryptography.__version__
 
 if int(CRYPTOGRAPHY_VERSION[0:2]) < 42:
     from cryptography.hazmat.backends import default_backend
 else:
     from cryptography.hazmat.primitives import serialization
-
 
 
 _GITHUB_ROOT: str = "https://api.github.com"
