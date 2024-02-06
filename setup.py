@@ -31,7 +31,6 @@ dependencies = [
     "pyjwt>=2.0.0",
     "pyperclip>=1.8.0",
     "python-dateutil>=2.8.1",
-    "importlib-metadata>=1.0.0; python_version<'3.8'",
 ]
 
 packages = setuptools.find_packages()
@@ -53,7 +52,6 @@ setuptools.setup(
         'Intended Audience :: Developers',
         'License :: OSI Approved :: Apache Software License',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
@@ -64,7 +62,7 @@ setuptools.setup(
     ],
     platforms='Posix; MacOS X; Windows',
     packages=packages,
-    python_requires='>=3.7',
+    python_requires='>=3.8',
     install_requires=dependencies,
     include_package_data=True,
     zip_safe=False,

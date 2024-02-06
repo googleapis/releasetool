@@ -14,15 +14,11 @@
 
 import time
 import pathlib
-import sys
 
 import packaging.version
 import requests
 
-if sys.version_info < (3, 8):
-    import importlib_metadata as metadata
-else:
-    import importlib.metadata as metadata
+import importlib.metadata as metadata
 
 
 def _get_pypi_version(package_name: str) -> str:
