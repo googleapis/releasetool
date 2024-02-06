@@ -40,7 +40,6 @@ def lint(session):
 
 @nox.session(python=ALL_PYTHON)
 def test(session):
-    session.install('pytest')
     # Use a constraints file for the specific python runtime version.
     # We do this to make sure that we're testing against the lowest
     # supported version of a dependency.
