@@ -28,7 +28,7 @@ def blacken(session):
 @nox.session(python='3.8')
 def lint(session):
     session.install('mypy==0.812', 'flake8', 'black')
-    session.run('pip', 'install', '-e', '.')
+    session.install('-e', '.')
     session.run('black', '--check', 'autorelease', 'releasetool', 'tests')
     session.run('flake8', 'autorelease', 'releasetool', 'tests')
     session.run(
@@ -43,7 +43,7 @@ def test(session):
     # Use a constraints file for the specific python runtime version.
     # We do this to make sure that we're testing against the lowest
     # supported version of a dependency.
-    session.run('pip', 'install', "-r", f"{CURRENT_DIRECTORY}/requirements-dev.txt")
+    session.install("-r", f"{CURRENT_DIRECTORY}/requirements-dev.txt")
     constraints_file = f"{CURRENT_DIRECTORY}/testing/constraints-{session.python}.txt"
-    session.run('pip', 'install', '-e', '.', "-r", constraints_file)
+    session.install('-e', '.', "-r", constraints_file)
     session.run('pytest', 'tests', *session.posargs)
