@@ -172,5 +172,7 @@ def finish(
 
 
 def script():
-    resource = importlib.resources.read_binary("releasetool.commands", "publish_reporter.sh")
+    resource = importlib.resources.read_binary(
+        "releasetool.commands", "publish_reporter.sh"
+    )
     print(resource.decode("utf-8"), flush=True)
