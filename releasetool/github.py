@@ -23,10 +23,8 @@ from typing import cast, List, Sequence, Union
 import jwt
 import requests
 
-import cryptography
 from cryptography.hazmat.primitives import serialization
 
-CRYPTOGRAPHY_VERSION = cryptography.__version__
 
 _GITHUB_ROOT: str = "https://api.github.com"
 _GITHUB_UI_ROOT: str = "https://github.com"
