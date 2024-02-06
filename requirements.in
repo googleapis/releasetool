@@ -19,7 +19,6 @@ python-dateutil>=2.8.1
 readme-renderer==34.0
 requests>=2.23.0
 rfc3986==1.5.0
-setuptools
 twine==3.8.0
 wheel
 zipp==3.6.0
