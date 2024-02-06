@@ -21,12 +21,6 @@ cd github/releasetool
 # Disable buffering, so that the logs stream through.
 export PYTHONUNBUFFERED=1
 
-# Ensure install works with requirements.txt
-python3 -m pip install --require-hashes -r requirements.txt
-
-# Install deps for development
-python3 -m pip install --require-hashes -r requirements-dev.txt
-
 # Run tests
 nox -s lint test
 
