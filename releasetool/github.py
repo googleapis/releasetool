@@ -22,7 +22,15 @@ from typing import cast, List, Sequence, Union
 
 import jwt
 import requests
-from cryptography.hazmat.backends import default_backend
+
+import cryptography
+CRYPTOGRAPHY_VERSION = cryptography.__version__
+
+if int(CRYPTOGRAPHY_VERSION[0:2]) < 42:
+    from cryptography.hazmat.backends import default_backend
+else:
+    from cryptography.hazmat.primitives import serialization
+
 
 
 _GITHUB_ROOT: str = "https://api.github.com"
@@ -103,9 +111,14 @@ def get_installation_access_token(
     }
 
     private_key_bytes = private_key_str.encode()
-    private_key = default_backend().load_pem_private_key(
-        private_key_bytes, None, unsafe_skip_rsa_key_validation=False
-    )
+    if int(CRYPTOGRAPHY_VERSION[0:2]) < 42:
+        private_key = default_backend().load_pem_private_key(
+            private_key_bytes, None, unsafe_skip_rsa_key_validation=False
+        )
+    else:
+        private_key = serialization.load_pem_private_key(
+            private_key_bytes, None, unsafe_skip_rsa_key_validation=False
+        )
     app_jwt = jwt.encode(payload, private_key, algorithm="RS256")
 
     headers = {

@@ -13,7 +13,11 @@
 # limitations under the License.
 
 import nox
+import pathlib
 
+CURRENT_DIRECTORY = pathlib.Path(__file__).parent.absolute()
+
+ALL_PYTHON = ["3.7", "3.8", "3.9", "3.10", "3.11", "3.12"]
 
 @nox.session(python='3.8')
 def blacken(session):
@@ -34,9 +38,11 @@ def lint(session):
         'releasetool')
 
 
-@nox.session(python='3.8')
+@nox.session(python=ALL_PYTHON)
 def test(session):
     session.install('pytest')
-    session.run('pip', 'install', '-e', '.')
+    constraints_file = f"{CURRENT_DIRECTORY}/testing/constraints-{session.python}.txt"
+    print(constraints_file)
+    session.run('pip', 'install', '-e', '.', "-r", constraints_file)
     session.run('pip', 'install', 'requests_mock')
     session.run('pytest', 'tests', *session.posargs)
