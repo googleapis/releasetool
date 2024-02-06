@@ -43,7 +43,7 @@ def test(session):
     # Use a constraints file for the specific python runtime version.
     # We do this to make sure that we're testing against the lowest
     # supported version of a dependency.
+    session.run('pip', 'install', "-r", f"{CURRENT_DIRECTORY}/requirements-dev.txt")
     constraints_file = f"{CURRENT_DIRECTORY}/testing/constraints-{session.python}.txt"
     session.run('pip', 'install', '-e', '.', "-r", constraints_file)
-    session.run('pip', 'install', 'requests_mock')
     session.run('pytest', 'tests', *session.posargs)
