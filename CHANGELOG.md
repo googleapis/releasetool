@@ -4,7 +4,7 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
-## [2.0.0](https://github.com/googleapis/releasetool/compare/v1.17.0...v2.0.0) (2024-02-07)
+## [2.0.0rc1](https://github.com/googleapis/releasetool/compare/v1.17.0...v2.0.0rc1) (2024-02-07)
 
 
 ### ⚠ BREAKING CHANGES
