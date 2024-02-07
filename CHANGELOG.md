@@ -4,6 +4,27 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+## [2.0.0](https://github.com/googleapis/releasetool/compare/v1.17.0...v2.0.0) (2024-02-07)
+
+
+### ⚠ BREAKING CHANGES
+
+* Require cryptography 42.x.x
+
+### Features
+
+* Add support for python 3.12 ([18ad023](https://github.com/googleapis/releasetool/commit/18ad023ac61aca23419bec57253b76ee3057e9ff))
+
+
+### Bug Fixes
+
+* Add minimum requirements for gcp-releasetool ([18ad023](https://github.com/googleapis/releasetool/commit/18ad023ac61aca23419bec57253b76ee3057e9ff))
+* Drop usage of `pkg_resources` ([18ad023](https://github.com/googleapis/releasetool/commit/18ad023ac61aca23419bec57253b76ee3057e9ff))
+* Drop usage of `pkgutil` ([18ad023](https://github.com/googleapis/releasetool/commit/18ad023ac61aca23419bec57253b76ee3057e9ff))
+* Require cryptography 42.x.x ([18ad023](https://github.com/googleapis/releasetool/commit/18ad023ac61aca23419bec57253b76ee3057e9ff))
+* Require python 3.8+ ([18ad023](https://github.com/googleapis/releasetool/commit/18ad023ac61aca23419bec57253b76ee3057e9ff))
+* Update dependencies in requirements.txt and requirements-dev.txt ([18ad023](https://github.com/googleapis/releasetool/commit/18ad023ac61aca23419bec57253b76ee3057e9ff))
+
 ## [1.17.0](https://github.com/googleapis/releasetool/compare/v1.16.0...v1.17.0) (2024-01-17)
 
 
