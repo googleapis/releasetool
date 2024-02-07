@@ -15,9 +15,10 @@
 import time
 import pathlib
 
-import pkg_resources
 import packaging.version
 import requests
+
+import importlib.metadata as metadata
 
 
 def _get_pypi_version(package_name: str) -> str:
@@ -50,7 +51,7 @@ def check_for_updates(package_name: str, print=print) -> None:
         return
 
     current_version = packaging.version.Version(
-        pkg_resources.get_distribution(package_name).version
+        metadata.distribution(package_name).version
     )
 
     pypi_version = packaging.version.Version(_get_pypi_version(package_name))
