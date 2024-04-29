@@ -22,7 +22,7 @@ def test_kokoro_job_name():
         == "cloud-devrel/client-libraries/php/upstream-owner/upstream-repo/release"
     )
     job_name = kokoro_job_name("upstream-owner/google-cloud-php", "some-package-name")
-    assert job_name == "cloud-devrel/client-libraries/php/google-cloud-php/docs"
+    assert job_name == "cloud-devrel/client-libraries/php/google-cloud-php/docs/docs"
 
 
 def test_package_name():
