@@ -170,7 +170,7 @@ def release_exists(ctx: TagContext) -> bool:
 
 def publish_via_kokoro(ctx: TagContext) -> None:
     kokoro_url = "https://fusion2.corp.google.com/ci;prev=s/kokoro/prod"
-    ctx.fusion_url = f"${kokoro_url}:${parse.quote_plus(ctx.kokoro_job_name)}"
+    ctx.fusion_url = f"{kokoro_url}:{parse.quote_plus(ctx.kokoro_job_name)}"
 
     if ctx.interactive:
         pyperclip.copy(ctx.release_tag)
