@@ -37,6 +37,7 @@ RUBY_CLIENT_REPOS = [
     "google-cloudevents-ruby",
     "opentelemetry-operations-ruby",
     "ruby-cloud-env",
+    "ruby-core-libraries",
     "ruby-spanner",
     "ruby-spanner-activerecord",
     "ruby-style",
@@ -57,6 +58,7 @@ RUBY_MONO_REPOS = [
     "gapic-generator-ruby",
     "google-api-ruby-client",
     "google-cloud-ruby",
+    "ruby-core-libraries",
     "ruby-spanner",
 ]
 
