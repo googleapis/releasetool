@@ -4,6 +4,18 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+## [2.1.0](https://github.com/googleapis/releasetool/compare/v2.0.1...v2.1.0) (2024-08-02)
+
+
+### Features
+
+* Support ruby-core-libraries repository ([#552](https://github.com/googleapis/releasetool/issues/552)) ([b1b3160](https://github.com/googleapis/releasetool/commit/b1b316003bca3ef85ab42ecf246dff41af1f96b4))
+
+
+### Bug Fixes
+
+* Avoid tag failures for .NET on empty PR bodies ([4b95fa6](https://github.com/googleapis/releasetool/commit/4b95fa6598be2b04f11cd43c918a5c6cd87b8999))
+
 ## [2.0.1](https://github.com/googleapis/releasetool/compare/v2.0.0...v2.0.1) (2024-04-29)
 
 
