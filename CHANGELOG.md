@@ -4,6 +4,13 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+## [2.1.1](https://github.com/googleapis/releasetool/compare/v2.1.0...v2.1.1) (2024-09-10)
+
+
+### Bug Fixes
+
+* Fix building fusion URL ([#545](https://github.com/googleapis/releasetool/issues/545)) ([1e6a375](https://github.com/googleapis/releasetool/commit/1e6a375442945be5bcb32b81f017100ad8735ba3))
+
 ## [2.1.0](https://github.com/googleapis/releasetool/compare/v2.0.1...v2.1.0) (2024-08-02)
 
 
