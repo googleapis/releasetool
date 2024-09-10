@@ -50,7 +50,7 @@ def create_releases(ctx: TagContext) -> None:
 
     commitish = ctx.release_pr["merge_commit_sha"]
     title = ctx.release_pr["title"]
-    body_lines = ctx.release_pr["body"].splitlines()
+    body_lines = (ctx.release_pr["body"] or "").splitlines()
     all_lines = [title] + body_lines
     pr_comment = ""
     for line in all_lines:
