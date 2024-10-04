@@ -86,8 +86,7 @@ def create_releases(ctx: TagContext) -> None:
     # Kokoro to build against.
     ctx.release_tag = commitish
 
-    repo_short_name = ctx.upstream_repo.split("/")[-1]
-    ctx.kokoro_job_name = f"cloud-sharp/{repo_short_name}/gcp_windows/autorelease"
+    ctx.kokoro_job_name = kokoro_job_name(ctx.upstream_repo, "")
     ctx.github.update_pull_labels(
         ctx.release_pr, add=["autorelease: tagged"], remove=["autorelease: pending"]
     )
@@ -105,7 +104,10 @@ def kokoro_job_name(upstream_repo: str, package_name: str) -> Union[str, None]:
         The name of the Kokoro job to trigger or None if there is no job to trigger
     """
     repo_short_name = upstream_repo.split("/")[-1]
-    return f"cloud-sharp/{repo_short_name}/gcp_windows/autorelease"
+    if repo_short_name == "dotnet-spanner-entity-framework":
+        return f"cloud-libraries-dotnet/{repo_short_name}/gcp_windows_docker/autorelease"
+    else:
+        return f"cloud-sharp/{repo_short_name}/gcp_windows/autorelease"
 
 
 def package_name(pull: dict) -> Union[str, None]:
