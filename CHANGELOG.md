@@ -4,6 +4,13 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+## [2.2.0](https://github.com/googleapis/releasetool/compare/v2.1.1...v2.2.0) (2024-10-07)
+
+
+### Features
+
+* Releasetool supports .NET new CI infrastructure ([09a94cd](https://github.com/googleapis/releasetool/commit/09a94cd1f67d332ab0ceb15ed16f5991a56bfc34))
+
 ## [2.1.1](https://github.com/googleapis/releasetool/compare/v2.1.0...v2.1.1) (2024-09-10)
 
 
