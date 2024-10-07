@@ -105,7 +105,9 @@ def kokoro_job_name(upstream_repo: str, package_name: str) -> Union[str, None]:
     """
     repo_short_name = upstream_repo.split("/")[-1]
     if repo_short_name == "dotnet-spanner-entity-framework":
-        return f"cloud-libraries-dotnet/{repo_short_name}/gcp_windows_docker/autorelease"
+        return (
+            f"cloud-libraries-dotnet/{repo_short_name}/gcp_windows_docker/autorelease"
+        )
     else:
         return f"cloud-sharp/{repo_short_name}/gcp_windows/autorelease"
 
