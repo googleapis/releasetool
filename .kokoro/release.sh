@@ -25,7 +25,7 @@ cd github/releasetool
 python3 -m pip install --require-hashes -r requirements.txt
 python3 -m releasetool publish-reporter-script > /tmp/publisher-script; source /tmp/publisher-script
 
-TWINE_PASSWORD=$(cat "${KOKORO_KEYSTORE_DIR}/73713_google-cloud-pypi-token-keystore-2")
+TWINE_PASSWORD=$(cat "${KOKORO_KEYSTORE_DIR}/73713_google-cloud-pypi-token-keystore-3")
 
 # Disable buffering, so that the logs stream through.
 export PYTHONUNBUFFERED=1
