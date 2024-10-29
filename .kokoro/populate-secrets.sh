@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright 2020 Google LLC.
+# Copyright 2024 Google LLC.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,6 +19,11 @@ function now { date +"%Y-%m-%d %H:%M:%S" | tr -d '\n' ;}
 function msg { println "$*" >&2 ;}
 function println { printf '%s\n' "$(now) $*" ;}
 
+# Override to declare the GCP project that holds the secrets to fetch
+if [[ -z "${SECRET_MANAGER_PROJECT_ID}" ]]; then
+  msg "SECRET_MANAGER_PROJECT_ID is not set in environment variables, using default"
+  SECRET_MANAGER_PROJECT_ID="cloud-devrel-kokoro-resources"
+fi
 
 # Populates requested secrets set in SECRET_MANAGER_KEYS from service account:
 # kokoro-trampoline@cloud-devrel-kokoro-resources.iam.gserviceaccount.com
@@ -32,7 +37,7 @@ do
     --volume=${KOKORO_GFILE_DIR}:${KOKORO_GFILE_DIR} \
     gcr.io/google.com/cloudsdktool/cloud-sdk \
     secrets versions access latest \
-    --project cloud-devrel-kokoro-resources \
+    --project "${SECRET_MANAGER_PROJECT_ID}" \
     --secret ${key} > \
     "${SECRET_LOCATION}/${key}"
   if [[ $? == 0 ]]; then
