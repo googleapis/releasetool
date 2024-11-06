@@ -15,10 +15,7 @@
 
 set -eo pipefail
 
-pwd
-ls -al
-ls -al ${KOKORO_ARTIFACTS_DIR}
-cd ${KOKORO_ARTIFACTS_DIR}/github/releasetool
+pushd github/releasetool
 
 # Docker images currently uses 3.7.4
 
