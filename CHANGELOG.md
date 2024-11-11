@@ -4,6 +4,13 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+## [2.3.0](https://github.com/googleapis/releasetool/compare/v2.2.0...v2.3.0) (2024-11-11)
+
+
+### Features
+
+* **autorelease:** Automatically assume multiScm for node and python ([#567](https://github.com/googleapis/releasetool/issues/567)) ([cc1e66d](https://github.com/googleapis/releasetool/commit/cc1e66d349b623394c5897826948e8e66caaf734))
+
 ## [2.2.0](https://github.com/googleapis/releasetool/compare/v2.1.1...v2.2.0) (2024-10-07)
 
 
