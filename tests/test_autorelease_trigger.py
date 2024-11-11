@@ -48,12 +48,21 @@ def test_processes_issues(
     make_authorized_session, list_org_issues, trigger_kokoro_build_for_pull_request
 ):
     pr1 = {
-        "base": {"ref": "abc123", "repo": {"full_name": "googleapis/java-asset"}},
+        "base": {
+            "ref": "abc123",
+            "repo": {"full_name": "googleapis/java-asset", "name": "java-asset"},
+        },
         "pull_request": {"html_url": "https://github.com/googleapis/java-asset"},
         "title": "chore: release 1.2.3",
     }
     pr2 = {
-        "base": {"ref": "def456", "repo": {"full_name": "googleapis/nodejs-container"}},
+        "base": {
+            "ref": "def456",
+            "repo": {
+                "full_name": "googleapis/nodejs-container",
+                "name": "nodejs-container",
+            },
+        },
         "pull_request": {"html_url": "https://github.com/nodejs/java-container"},
         "title": "chore: release 1.0.0",
     }
@@ -80,7 +89,7 @@ def test_trigger_kokoro_build_for_pull_request_skips_non_merged(trigger_build):
     github.update_pull_labels = Mock()
     github.get_url.return_value = {
         "merged_at": None,
-        "base": {"repo": {"full_name": "googleapis/java-asset"}},
+        "base": {"repo": {"full_name": "googleapis/java-asset", "name": "java-asset"}},
     }
     issue = {
         "pull_request": {"url": "https://api.github.com/googleapis/java-asset/pull/5"}
@@ -97,7 +106,7 @@ def test_trigger_kokoro_build_for_pull_request_triggers_kokoro(trigger_build):
     github.get_url.return_value = {
         "merged_at": "2021-01-01T09:00:00.000Z",
         "merge_commit_sha": "abcd1234",
-        "base": {"repo": {"full_name": "googleapis/java-asset"}},
+        "base": {"repo": {"full_name": "googleapis/java-asset", "name": "java-asset"}},
         "html_url": "https://github.com/googleapis/java-asset/pulls/5",
     }
     issue = {
@@ -119,7 +128,7 @@ def test_trigger_kokoro_build_for_pull_request_skips_kokoro_if_not_in_allowlist(
     github.get_url.return_value = {
         "merged_at": "2021-01-01T09:00:00.000Z",
         "merge_commit_sha": "abcd1234",
-        "base": {"repo": {"full_name": "googleapis/java-asset"}},
+        "base": {"repo": {"full_name": "googleapis/java-asset", "name": "java-asset"}},
         "html_url": "https://github.com/googleapis/java-asset/pulls/5",
     }
     issue = {
@@ -138,7 +147,12 @@ def test_trigger_kokoro_build_for_pull_request_skips_kokoro_if_already_triggered
     github = Mock()
     github.get_url.return_value = {
         "merged_at": "2021-01-01T09:00:00.000Z",
-        "base": {"repo": {"full_name": "googleapis/google-cloud-php-bigquery"}},
+        "base": {
+            "repo": {
+                "full_name": "googleapis/google-cloud-php-bigquery",
+                "name": "google-cloud-php-bigquery",
+            }
+        },
         "html_url": "https://github.com/googleapis/google-cloud-php-bigquery/pulls/5",
         "labels": [{"id": 12345, "name": "autorelease: triggered"}],
     }
@@ -166,13 +180,57 @@ def test_trigger_single(
     get_issue.return_value = {
         "title": "chore: release 1.2.3",
         "pull_request": {
+            "html_url": "https://github.com/googleapis/php-trace/pull/1234",
+            "url": "https://api.github.com/repos/googleapis/php-trace/pulls/1234",
+        },
+    }
+    get_url.return_value = {
+        "merged_at": "2021-07-20T09:00:00.123Z",
+        "base": {"repo": {"full_name": "googleapis/php-trace", "name": "php-trace"}},
+        "html_url": "https://github.com/googleapis/php-trace/pull/1234",
+        "merge_commit_sha": "abcd1234",
+        "labels": [{"id": 12345, "name": "autorelease: tagged"}],
+    }
+
+    pull_request_url = "https://github.com/googleapis/php-trace/pull/1234"
+    reporter = trigger.trigger_single(
+        "fake-github-token", "fake-kokoro-credentials", pull_request_url
+    )
+
+    assert len(reporter.results) == 1
+    trigger_build.assert_called_with(
+        kokoro_session,
+        job_name="cloud-devrel/client-libraries/php/googleapis/php-trace/release",
+        sha="abcd1234",
+        env_vars={
+            "AUTORELEASE_PR": "https://github.com/googleapis/php-trace/pull/1234"
+        },
+        multi_scm_name="",
+    )
+    update_pull_labels.assert_not_called()
+
+
+@patch("autorelease.trigger.LANGUAGE_ALLOWLIST", ["java"])
+@patch("autorelease.kokoro.make_authorized_session")
+@patch("autorelease.github.GitHub.get_issue")
+@patch("autorelease.github.GitHub.get_url")
+@patch("autorelease.github.GitHub.update_pull_labels")
+@patch("autorelease.kokoro.trigger_build")
+def test_trigger_single_default_multi_scm(
+    trigger_build, update_pull_labels, get_url, get_issue, make_authorized_session
+):
+    kokoro_session = Mock()
+    make_authorized_session.return_value = kokoro_session
+    get_issue.return_value = {
+        "title": "chore: release 1.2.3",
+        "pull_request": {
             "html_url": "https://github.com/googleapis/java-trace/pull/1234",
             "url": "https://api.github.com/repos/googleapis/java-trace/pulls/1234",
         },
     }
     get_url.return_value = {
         "merged_at": "2021-07-20T09:00:00.123Z",
-        "base": {"repo": {"full_name": "googleapis/java-trace"}},
+        "base": {"repo": {"full_name": "googleapis/java-trace", "name": "java-trace"}},
         "html_url": "https://github.com/googleapis/java-trace/pull/1234",
         "merge_commit_sha": "abcd1234",
         "labels": [{"id": 12345, "name": "autorelease: tagged"}],
@@ -191,7 +249,7 @@ def test_trigger_single(
         env_vars={
             "AUTORELEASE_PR": "https://github.com/googleapis/java-trace/pull/1234"
         },
-        multi_scm_name="",
+        multi_scm_name="java-trace",
     )
     update_pull_labels.assert_not_called()
 
@@ -243,7 +301,7 @@ def test_trigger_single_multi_scm(
     }
     get_url.return_value = {
         "merged_at": "2021-07-20T09:00:00.123Z",
-        "base": {"repo": {"full_name": "googleapis/java-trace"}},
+        "base": {"repo": {"full_name": "googleapis/java-trace", "name": "java-trace"}},
         "html_url": "https://github.com/googleapis/java-trace/pull/1234",
         "merge_commit_sha": "abcd1234",
         "labels": [{"id": 12345, "name": "autorelease: tagged"}],
@@ -283,7 +341,12 @@ def test_trigger_package(
     kokoro_session = Mock()
     github.get_url.return_value = {
         "merged_at": "2021-01-01T09:00:00.000Z",
-        "base": {"repo": {"full_name": "GoogleCloudPlatform/functions-framework-java"}},
+        "base": {
+            "repo": {
+                "full_name": "GoogleCloudPlatform/functions-framework-java",
+                "name": "functions-framework-java",
+            }
+        },
         "html_url": "https://github.com/GoogleCloudPlatform/functions-framework-java/pull/111",
         "labels": [{"id": 111, "name": "autorelease: tagged"}],
         "merge_commit_sha": "abcd111",
@@ -304,7 +367,7 @@ def test_trigger_package(
         env_vars={
             "AUTORELEASE_PR": "https://github.com/GoogleCloudPlatform/functions-framework-java/pull/111"
         },
-        multi_scm_name="",
+        multi_scm_name="functions-framework-java",
     )
 
 
@@ -342,7 +405,7 @@ def test_trigger_single_skips_already_triggered(
     }
     get_url.return_value = {
         "merged_at": "2021-07-20T09:00:00.123Z",
-        "base": {"repo": {"full_name": "googleapis/java-trace"}},
+        "base": {"repo": {"full_name": "googleapis/java-trace", "name": "java-trace"}},
         "html_url": "https://github.com/googleapis/java-trace/pull/1234",
         "merge_commit_sha": "abcd1234",
         "labels": [
@@ -373,7 +436,12 @@ def test_trigger_multi_scm(
     kokoro_session = Mock()
     github.get_url.return_value = {
         "merged_at": "2021-01-01T09:00:00.000Z",
-        "base": {"repo": {"full_name": "GoogleCloudPlatform/functions-framework-java"}},
+        "base": {
+            "repo": {
+                "full_name": "GoogleCloudPlatform/functions-framework-java",
+                "name": "functions-framework-java",
+            }
+        },
         "html_url": "https://github.com/GoogleCloudPlatform/functions-framework-java/pull/111",
         "labels": [{"id": 111, "name": "autorelease: tagged"}],
         "merge_commit_sha": "abcd111",

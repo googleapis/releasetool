@@ -22,6 +22,7 @@ from autorelease import common, github, kokoro, reporter
 
 LANGUAGE_ALLOWLIST = []
 ORGANIZATIONS_TO_SCAN = ["googleapis", "GoogleCloudPlatform"]
+LANGUAGES_ON_MULTI_SCM = ["java", "python", "nodejs"]
 
 # Whenever we add new languages to the allowlist, update this value as
 # well to prevent trying to release old versions.
@@ -98,6 +99,11 @@ def trigger_kokoro_build_for_pull_request(
         result.print(f"Language {lang} not in allowlist, skipping.")
         return
 
+    # For languages migrated to release configs that always use multiScm, default the
+    # scmName to the repository name
+    if not multi_scm_name and lang in LANGUAGES_ON_MULTI_SCM:
+        multi_scm_name = pull["base"]["repo"]["name"]
+
     language_module = importlib.import_module(f"releasetool.commands.tag.{lang}")
     package_name = language_module.package_name(pull)
     kokoro_job_name = language_module.kokoro_job_name(
@@ -159,6 +165,12 @@ def trigger_for_release(
 
     language_module = importlib.import_module(f"releasetool.commands.tag.{pysafe_lang}")
     owner, repo = _repo_name_from_github_url(release_url)
+
+    # For languages migrated to release configs that always use multiScm, default the
+    # scmName to the repository name
+    if not multi_scm_name and pysafe_lang in LANGUAGES_ON_MULTI_SCM:
+        multi_scm_name = repo
+
     kokoro_job_name = language_module.kokoro_job_name(f"{owner}/{repo}", None)
     result = reporter.Result(release_url)
     if kokoro_job_name is None:
