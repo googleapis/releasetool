@@ -22,7 +22,7 @@ from autorelease import common, github, kokoro, reporter
 
 LANGUAGE_ALLOWLIST = []
 ORGANIZATIONS_TO_SCAN = ["googleapis", "GoogleCloudPlatform"]
-LANGUAGES_ON_MULTI_SCM = ["java", "python", "nodejs"]
+LANGUAGES_ON_MULTI_SCM = ["python", "nodejs"]
 
 # Whenever we add new languages to the allowlist, update this value as
 # well to prevent trying to release old versions.
