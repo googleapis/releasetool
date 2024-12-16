@@ -51,6 +51,7 @@ def main():
     parser.add_argument("--lang", default=None)
     parser.add_argument("command")
     parser.add_argument("--multi-scm-name")
+    parser.add_argument("--multi-scm-type", default="github")
 
     args = parser.parse_args()
 
@@ -86,6 +87,7 @@ def main():
                 args.release,
                 trigger.to_pysafe_language_name(args.lang),
                 args.multi_scm_name,
+                args.multi_scm_type,
             )
         if not args.pull:
             raise Exception("missing required arg --pull")
@@ -95,6 +97,7 @@ def main():
                 args.kokoro_credentials,
                 args.pull,
                 multi_scm_name=args.multi_scm_name,
+                multi_scm_type=args.multi_scm_type,
             )
 
         if args.report:

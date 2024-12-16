@@ -16,6 +16,9 @@
 // This has been heavily modified from the upstream source to just contain
 // the fields we need.
 // Source: https://cs.corp.google.com/piper///depot/google3/devtools/kokoro/api/proto/kokoro_api.proto
+// How to generate protos/kokoro_api_pb2.py:
+// 1. Download appropriate protoc from https://github.com/protocolbuffers/protobuf/releases
+// 2. Run `/tmp/protoc-21.6/bin/protoc --python_out=. protos/kokoro_api.proto`
 
 syntax = "proto2";
 
@@ -66,6 +69,7 @@ message ScmRevision {
 
 // Represents a specific revision for multi-scm.
 message MultiScmRevision {
+  repeated GitOnBorgScmRevision git_on_borg_scm_revision = 2;
   repeated GithubScmRevision github_scm_revision = 4;
 }
 
@@ -94,4 +98,31 @@ message GithubScmRevision {
   optional string repository = 6;
 
   // next index: 7
+}
+
+// Represents a specific revision in a Git-on-Borg repository.
+message GitOnBorgScmRevision {
+  // Name of the scm that this revision belongs to. This name should be the same
+  // as multi_scm.git_on_borg_scm.name
+  // If name is provided, repo_url is ignored.
+  optional string name = 3;
+
+  // The SHA1 hash identifying a revision. In the build request from user, this
+  // can be a commit or a branch (e.g. 'master'). In the build status response,
+  // this will be a commit sha.
+  optional string sha1 = 1;
+
+  // The URL for the change in Git on borg repository. This field will be
+  // populated in the build result, and will be ignored if it is specified in
+  // the query. Previously called repository_url.
+  optional string revision_url = 5;
+
+  // This is optional for builds manually triggered by the users. For the builds
+  // automatically triggered by Kokoro, it should be the branch to which the
+  // sha1 is belongs to.
+  optional string branch = 4;
+
+  reserved 2;
+
+  // next index: 8
 }
