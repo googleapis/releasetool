@@ -16,6 +16,7 @@
 
 import importlib
 import re
+import traceback
 from typing import Tuple
 
 from autorelease import common, github, kokoro, reporter
@@ -59,6 +60,7 @@ def trigger_kokoro_build_for_pull_request(
     update_labels: bool = True,
     use_allowlist: bool = True,
     multi_scm_name: str = "",
+    multi_scm_type: str = "github",
 ) -> None:
     """Triggers the Kokoro job for a given pull request if possible.
 
@@ -87,6 +89,7 @@ def trigger_kokoro_build_for_pull_request(
         "name" in label and label["name"] == "autorelease: triggered"
         for label in pull["labels"]
     ):
+        result.print("The labels include autorelease: triggered'")
         return
 
     # Determine language.
@@ -125,6 +128,7 @@ def trigger_kokoro_build_for_pull_request(
         sha=sha,
         env_vars={"AUTORELEASE_PR": pull_request_url},
         multi_scm_name=multi_scm_name,
+        multi_scm_type=multi_scm_type,
     )
     if update_labels:
         gh.update_pull_labels(pull, add=["autorelease: triggered"])
@@ -143,6 +147,7 @@ def trigger_for_release(
     release_url: str,
     pysafe_lang: str,
     multi_scm_name: str = "",
+    multi_scm_type: str = "github",
 ) -> reporter.Reporter:
     """Trigger a Kokoro job based on a release PR URL.
 
@@ -187,17 +192,18 @@ def trigger_for_release(
         sha=sha,
         env_vars={},
         multi_scm_name=multi_scm_name,
+        multi_scm_type=multi_scm_type,
     )
 
     report.add(result)
     return report
-
 
 def trigger_single(
     github_token: str,
     kokoro_credentials: str,
     pull_request_url: str,
     multi_scm_name: str = "",
+    multi_scm_type: str = "github",
 ) -> reporter.Reporter:
     """Trigger a Kokoro job based on a release PR URL.
 
@@ -241,11 +247,13 @@ def trigger_single(
             False,
             False,
             multi_scm_name=multi_scm_name,
+            multi_scm_type=multi_scm_type,
         )
     # Failing any one PR is fine, just record it in the log and continue.
     except Exception as exc:
         result.error = True
         result.print(f"{exc!r}")
+        traceback.print_exc()
 
     return report
 
