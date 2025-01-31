@@ -4,6 +4,13 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+## [2.4.0](https://github.com/googleapis/releasetool/compare/v2.3.0...v2.4.0) (2025-01-31)
+
+
+### Features
+
+* Support releasing .NET from the Cloud SDK Windows Kokoro Instance. ([#574](https://github.com/googleapis/releasetool/issues/574)) ([957f616](https://github.com/googleapis/releasetool/commit/957f616eb7410af1411c3428698ac300f04ea28f))
+
 ## [2.3.0](https://github.com/googleapis/releasetool/compare/v2.2.0...v2.3.0) (2024-11-11)
 
 
