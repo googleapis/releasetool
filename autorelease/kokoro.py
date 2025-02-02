@@ -36,6 +36,7 @@ def _send_pubsub_message(
 
     publish_request = {"messages": [{"data": encoded_data.decode("utf-8")}]}
 
+    print(f"Sending message: {data}")
     resp = session.post(url, json=publish_request)
     resp.raise_for_status()
 
@@ -43,7 +44,8 @@ def _send_pubsub_message(
 
 
 def _make_build_request(
-    job_name: str, sha: str, env_vars: dict = None, multi_scm_name: str = ""
+    job_name: str, sha: str, env_vars: dict = None, multi_scm_name: str = "",
+    multi_scm_type: str = "github"
 ) -> str:
     request = kokoro_api_pb2.BuildRequest(
         full_job_name=job_name,
@@ -52,9 +54,14 @@ def _make_build_request(
     # If the job is configured to use multiple SCMs, then we need to send
     # the scm_name field as part of the request
     if multi_scm_name:
-        request.multi_scm_revision.github_scm_revision.add(
-            name=multi_scm_name, commit_sha=sha
-        )
+        if multi_scm_type == 'git-on-borg':
+            request.multi_scm_revision.git_on_borg_scm_revision.add(
+                name=multi_scm_name, sha1=sha
+            )
+        else:
+            request.multi_scm_revision.github_scm_revision.add(
+                name=multi_scm_name, commit_sha=sha
+            )
     else:
         request.scm_revision.github_scm_revision.commit_sha = sha
 
@@ -105,8 +112,10 @@ def trigger_build(
     sha: str,
     env_vars: dict = None,
     multi_scm_name: str = "",
+    multi_scm_type: str = "github"
 ):
     build_request = _make_build_request(
-        job_name, sha, env_vars=env_vars, multi_scm_name=multi_scm_name
+        job_name, sha, env_vars=env_vars, multi_scm_name=multi_scm_name,
+        multi_scm_type=multi_scm_type
     )
     _send_pubsub_message(session, _DEVREL_PROD_KOKORO_TOPIC, build_request)
