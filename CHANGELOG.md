@@ -4,6 +4,13 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+## [2.5.0](https://github.com/googleapis/releasetool/compare/v2.4.0...v2.5.0) (2025-02-03)
+
+
+### Features
+
+* **dotnet:** Support Release Please PR titles ([2404b18](https://github.com/googleapis/releasetool/commit/2404b18c46a92a5c92f4e6f46ba40afb6185d0af))
+
 ## [2.4.0](https://github.com/googleapis/releasetool/compare/v2.3.0...v2.4.0) (2025-01-31)
 
 
