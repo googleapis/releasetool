@@ -47,8 +47,8 @@ def test_release_line_regex_matching(line, package, version):
     """
     match = re.search(RELEASE_LINE_PATTERN, line)
     assert match is not None
-    assert match.group(1) == package
-    assert match.group(2) == version
+    assert match.group(2) == package
+    assert match.group(4) == version
 
 
 @pytest.mark.parametrize("line", non_release_triggering_lines)

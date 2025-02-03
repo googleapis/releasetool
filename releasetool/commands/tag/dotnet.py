@@ -24,7 +24,13 @@ import releasetool.secrets
 import releasetool.commands.common
 from releasetool.commands.common import TagContext
 
-RELEASE_LINE_PATTERN = r"^(?:- )?Release ([^ ]*) version (\d+\.\d+.\d+(-[^ ]*)?)$"
+# We need to match the PR titles we use in google-cloud-dotnet
+# Release Google.Maps.Places.V1 version 1.0.0-beta12
+# We need to match the PR titles set by Release Please
+# chore(main): release Google.CloudEvents.Protobuf 1.7.0-alpha01
+RELEASE_LINE_PATTERN = (
+    r"^((?:- )?R|chore\(main\): r)elease ([^ ]*)( version)? (\d+\.\d+.\d+(-[^ ]*)?)$"
+)
 
 
 def determine_release_pr(ctx: TagContext) -> None:
@@ -56,8 +62,8 @@ def create_releases(ctx: TagContext) -> None:
     for line in all_lines:
         match = re.search(RELEASE_LINE_PATTERN, line)
         if match is not None:
-            package = match.group(1)
-            version = match.group(2)
+            package = match.group(2)
+            version = match.group(4)
             tag = package + "-" + version
             ctx.github.create_release(
                 repository=ctx.upstream_repo,
