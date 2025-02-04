@@ -24,6 +24,12 @@ LANGUAGE_ALLOWLIST = [
     "dotnet",
 ]
 
+# This is only used in the autorelease/tag workflows.
+# Direct, explicit triggering on repos in this list is still possible.
+REPO_DENYLIST = [
+    "googleapis/google-cloudevents-dotnet",
+]
+
 
 ORGANIZATIONS_TO_SCAN = ["googleapis", "GoogleCloudPlatform"]
 
@@ -48,9 +54,10 @@ def process_issue(
     # is necessary because github gives us back an issue object, but it
     # doesn't contain all of the PR info.
     pull = gh.get_url(issue["pull_request"]["url"])
+    repo_full_name = pull["base"]["repo"]["full_name"]
 
     # Determine language.
-    lang = common.guess_language(gh, pull["base"]["repo"]["full_name"])
+    lang = common.guess_language(gh, repo_full_name)
 
     # As part of the migration to release-please tagging, cross-reference the
     # language against an allowlist to allow migrating language-by-language.
@@ -58,6 +65,13 @@ def process_issue(
         result.skipped = True
         result.print(f"Language {lang} not in allowlist, skipping.")
         return
+    # As part of the migration to release-please tagging, cross-reference the
+    # repository against a denylist to allow migrating repo-by-repo.
+    for denied_repo in REPO_DENYLIST:
+        if denied_repo == repo_full_name:
+            result.skipped = True
+            result.print(f"Repo {denied_repo} in denylist, skipping.")
+            return
 
     # Before doing any processing, check to make sure the PR was actually merged.
     # "closed" PRs can be merged or just closed without merging.
