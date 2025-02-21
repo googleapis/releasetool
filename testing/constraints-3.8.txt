@@ -27,6 +27,6 @@ pyperclip==1.8.0
 python-dateutil==2.8.1
 requests==2.32.2
 click==8.0.4
-cryptography==43.0.1
+cryptography==44.0.1
 protobuf==4.21.6
 importlib-metadata==4.8.3
