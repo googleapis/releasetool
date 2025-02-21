@@ -28,6 +28,7 @@ LANGUAGE_ALLOWLIST = [
 # Direct, explicit triggering on repos in this list is still possible.
 REPO_DENYLIST = [
     "googleapis/google-cloudevents-dotnet",
+    "googleapis/dotnet-spanner-entity-framework",
 ]
 
 
