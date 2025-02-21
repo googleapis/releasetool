@@ -4,6 +4,13 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+## [2.6.0](https://github.com/googleapis/releasetool/compare/v2.5.0...v2.6.0) (2025-02-21)
+
+
+### Features
+
+* Support per repo denylist for tagging. ([edf7e29](https://github.com/googleapis/releasetool/commit/edf7e29d1aa14b463a050a5aeaeac84eab810c4a))
+
 ## [2.5.0](https://github.com/googleapis/releasetool/compare/v2.4.0...v2.5.0) (2025-02-03)
 
 
