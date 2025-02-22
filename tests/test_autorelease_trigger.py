@@ -206,6 +206,7 @@ def test_trigger_single(
             "AUTORELEASE_PR": "https://github.com/googleapis/php-trace/pull/1234"
         },
         multi_scm_name="",
+        multi_scm_type="github",
     )
     update_pull_labels.assert_not_called()
 
@@ -250,6 +251,7 @@ def test_trigger_single_default_multi_scm(
             "AUTORELEASE_PR": "https://github.com/googleapis/java-trace/pull/1234"
         },
         multi_scm_name="java-trace",
+        multi_scm_type="github",
     )
     update_pull_labels.assert_not_called()
 
@@ -278,6 +280,7 @@ def test_trigger_for_release(trigger_build, get_url, make_authorized_session):
         sha="abcd1234",
         env_vars={},
         multi_scm_name="",
+        multi_scm_type="github",
     )
 
 
@@ -324,6 +327,7 @@ def test_trigger_single_multi_scm(
             "AUTORELEASE_PR": "https://github.com/googleapis/java-trace/pull/1234"
         },
         multi_scm_name="java-trace",
+        multi_scm_type="github",
     )
     update_pull_labels.assert_not_called()
 
@@ -368,6 +372,7 @@ def test_trigger_package(
             "AUTORELEASE_PR": "https://github.com/GoogleCloudPlatform/functions-framework-java/pull/111"
         },
         multi_scm_name="functions-framework-java",
+        multi_scm_type="github",
     )
 
 
@@ -465,4 +470,5 @@ def test_trigger_multi_scm(
             "AUTORELEASE_PR": "https://github.com/GoogleCloudPlatform/functions-framework-java/pull/111"
         },
         multi_scm_name="functions-framework-java",
+        multi_scm_type="github",
     )
