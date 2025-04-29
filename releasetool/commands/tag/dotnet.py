@@ -96,7 +96,10 @@ def create_releases(ctx: TagContext) -> None:
     ctx.github.update_pull_labels(
         ctx.release_pr, add=["autorelease: tagged"], remove=["autorelease: pending"]
     )
-    releasetool.commands.common.publish_via_kokoro(ctx)
+
+    # Google.Cloud.AiPlatform.* libraries are being released through a different process
+    if "Google.Cloud.AIPlatform" not in pr_comment:
+        releasetool.commands.common.publish_via_kokoro(ctx)
 
 
 def kokoro_job_name(upstream_repo: str, package_name: str) -> Union[str, None]:
