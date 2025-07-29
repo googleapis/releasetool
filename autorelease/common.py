@@ -68,6 +68,9 @@ def guess_language(gh: GitHub, repo_full_name: str) -> str:
         "googleapis/doc-templates": "python",
         # special case for cndb testing protos, set to java instead of proto.
         "googleapis/cndb-client-testing-protos": "java",
+        # special case for cloud-bigtable-ecosystem where the released
+        # components are not in the most prevalent language
+        "GoogleCloudPlatform/cloud-bigtable-ecosystem": "java",
     }
     special_case = special_cases.get(repo_full_name)
     if special_case:
