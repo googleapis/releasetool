@@ -4,6 +4,13 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+## [2.6.1](https://github.com/googleapis/releasetool/compare/v2.6.0...v2.6.1) (2025-07-29)
+
+
+### Bug Fixes
+
+* Add special case for release languages ([#590](https://github.com/googleapis/releasetool/issues/590)) ([410f495](https://github.com/googleapis/releasetool/commit/410f495b8ac20d5cc6aeb84f13110a675a649b10))
+
 ## [2.6.0](https://github.com/googleapis/releasetool/compare/v2.5.0...v2.6.0) (2025-02-21)
 
 
