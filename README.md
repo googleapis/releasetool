@@ -1,4 +1,9 @@
-# Releasetool (for client libraries)
+# ⛔️ DEPRECATED : Releasetool (for client libraries)
+
+This tool is deprecated and will no longer receive updates in the near
+future. Release triggering has migrated internally.
+
+---
 
 This tool helps create releases for cloud client libraries.
 
