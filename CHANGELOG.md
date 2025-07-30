@@ -4,6 +4,13 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+## [2.6.2](https://github.com/googleapis/releasetool/compare/v2.6.1...v2.6.2) (2025-07-30)
+
+
+### Documentation
+
+* Mark releasetool as deprecated ([#592](https://github.com/googleapis/releasetool/issues/592)) ([e657745](https://github.com/googleapis/releasetool/commit/e6577457f02c51ad9c1c1ced2ca2443051f74e9f))
+
 ## [2.6.1](https://github.com/googleapis/releasetool/compare/v2.6.0...v2.6.1) (2025-07-29)
 
 
