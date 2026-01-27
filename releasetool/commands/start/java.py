@@ -107,9 +107,7 @@ class ArtifactVersions:
     released: Version = None
 
     def __init__(self, version_line=str):
-        (self.module, released_version_str, current_version_str) = version_line.split(
-            ":"
-        )
+        self.module, released_version_str, current_version_str = version_line.split(":")
         self.current = Version(current_version_str)
         self.released = Version(released_version_str)
 

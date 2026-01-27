@@ -25,7 +25,6 @@ import requests
 
 from cryptography.hazmat.primitives import serialization
 
-
 _GITHUB_ROOT: str = "https://api.github.com"
 _GITHUB_UI_ROOT: str = "https://github.com"
 # TODO: remove references to magic proxy, once we have confirmed the JWT-based
@@ -107,7 +106,7 @@ def get_installation_access_token(
     private_key = serialization.load_pem_private_key(
         private_key_bytes, None, unsafe_skip_rsa_key_validation=False
     )
-    app_jwt = jwt.encode(payload, private_key, algorithm="RS256")
+    app_jwt = jwt.encode(payload, private_key, algorithm="RS256")  # type: ignore[arg-type]
 
     headers = {
         "Authorization": "Bearer {}".format(app_jwt),
