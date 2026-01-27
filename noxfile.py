@@ -17,15 +17,15 @@ import pathlib
 
 CURRENT_DIRECTORY = pathlib.Path(__file__).parent.absolute()
 
-ALL_PYTHON = ["3.9", "3.10", "3.11", "3.12"]
+ALL_PYTHON = ["3.10", "3.11", "3.12"]
 
-@nox.session(python='3.8')
+@nox.session(python='3.10')
 def blacken(session):
     session.install('black')
     session.run('black', 'autorelease', 'releasetool', 'tests')
 
 
-@nox.session(python='3.8')
+@nox.session(python='3.10')
 def lint(session):
     session.install('mypy==0.812', 'flake8', 'black')
     session.install('-e', '.')
