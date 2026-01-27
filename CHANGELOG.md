@@ -4,6 +4,18 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+## [2.6.2](https://github.com/googleapis/releasetool/compare/v2.6.1...v2.6.2) (2026-01-27)
+
+
+### Dependencies
+
+* Update protobuf to 6.33.4 ([#598](https://github.com/googleapis/releasetool/issues/598)) ([80d9185](https://github.com/googleapis/releasetool/commit/80d9185865bcbdc39ae527ba4649dbc5cac44ca8))
+
+
+### Documentation
+
+* Mark releasetool as deprecated ([#592](https://github.com/googleapis/releasetool/issues/592)) ([e657745](https://github.com/googleapis/releasetool/commit/e6577457f02c51ad9c1c1ced2ca2443051f74e9f))
+
 ## [2.6.1](https://github.com/googleapis/releasetool/compare/v2.6.0...v2.6.1) (2025-07-29)
 
 
