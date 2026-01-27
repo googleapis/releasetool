@@ -27,7 +27,6 @@ from dateutil import tz
 import releasetool.filehelpers
 import releasetool.git
 
-
 _CHANGELOG_FILENAME = "CHANGES.md"
 
 _CHANGELOG_TEMPLATE = """\

@@ -20,16 +20,11 @@ from autorelease import common, github, kokoro, reporter
 from releasetool.commands.common import TagContext
 import releasetool.github
 
-LANGUAGE_ALLOWLIST = [
-    "dotnet",
-]
+LANGUAGE_ALLOWLIST = []
 
 # This is only used in the autorelease/tag workflows.
 # Direct, explicit triggering on repos in this list is still possible.
-REPO_DENYLIST = [
-    "googleapis/google-cloudevents-dotnet",
-    "googleapis/dotnet-spanner-entity-framework",
-]
+REPO_DENYLIST = []
 
 
 ORGANIZATIONS_TO_SCAN = ["googleapis", "GoogleCloudPlatform"]

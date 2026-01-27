@@ -29,7 +29,6 @@ import releasetool.github
 import releasetool.secrets
 import releasetool.commands.common
 
-
 _CHANGELOG_TEMPLATE = """\
 # Changelog
 

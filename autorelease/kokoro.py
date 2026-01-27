@@ -22,7 +22,6 @@ import google.auth
 
 from protos import kokoro_api_pb2
 
-
 _DEVREL_PROD_KOKORO_TOPIC = (
     "projects/google.com:devrel-library-tracker-prod/topics/kokoro"
 )
