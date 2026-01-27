@@ -21,7 +21,6 @@ import string
 from autorelease import github
 from autorelease.common import _determine_language, guess_language
 
-
 if not os.environ.get("GITHUB_TOKEN"):
     pytest.skip(
         "skipping tests that require a valid github token", allow_module_level=True
@@ -61,13 +60,11 @@ def test_determine_language():
         languages.add((language, name))
     for language, name in sorted(languages):
         test_name = repo_name_to_test_name(name)
-        print(
-            f"""def {test_name}():
+        print(f"""def {test_name}():
     gh = github.GitHub(os.environ["GITHUB_TOKEN"])
     assert {repr(language)} == guess_language(gh, {repr(name)})
 
-"""
-        )
+""")
 
 
 def test_guess_google_cloud_platform_cpp_docs_samples():

@@ -26,7 +26,6 @@ import releasetool.secrets
 import releasetool.commands.common
 from releasetool.commands.common import TagContext
 
-
 # Standard Ruby repos in the googleapis org
 RUBY_CLIENT_REPOS = [
     "common-protos-ruby",

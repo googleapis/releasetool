@@ -25,7 +25,6 @@ import requests
 
 from cryptography.hazmat.primitives import serialization
 
-
 _GITHUB_ROOT: str = "https://api.github.com"
 _GITHUB_UI_ROOT: str = "https://github.com"
 # TODO: remove references to magic proxy, once we have confirmed the JWT-based

@@ -21,7 +21,6 @@ from releasetool.commands.tag.dotnet import (
     package_name,
 )
 
-
 release_triggering_lines = [
     ("Release Google.LongRunning version 1.2.3", "Google.LongRunning", "1.2.3"),
     (
