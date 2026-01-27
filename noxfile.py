@@ -27,7 +27,7 @@ def blacken(session):
 
 @nox.session(python='3.10')
 def lint(session):
-    session.install('mypy==0.812', 'flake8', 'black')
+    session.install('mypy==1.8.0', 'flake8', 'black')
     session.install('-e', '.')
     session.run('black', '--check', 'autorelease', 'releasetool', 'tests')
     session.run('flake8', 'autorelease', 'releasetool', 'tests')
@@ -35,6 +35,7 @@ def lint(session):
         'mypy',
         '--no-strict-optional',
         '--ignore-missing-imports',
+        '--disable-error-code', 'import-untyped',
         'releasetool')
 
 
