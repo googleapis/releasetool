@@ -4,6 +4,13 @@
 
 [1]: https://pypi.org/project/gcp-releasetool/#history
 
+## [2.6.3](https://github.com/googleapis/releasetool/compare/v2.6.2...v2.6.3) (2026-05-07)
+
+
+### Bug Fixes
+
+* Test local release-please configuration ([#605](https://github.com/googleapis/releasetool/issues/605)) ([2dd50a7](https://github.com/googleapis/releasetool/commit/2dd50a7bc99581b47e1a6f2d38c76983788cc8d3))
+
 ## [2.6.2](https://github.com/googleapis/releasetool/compare/v2.6.1...v2.6.2) (2026-01-27)
 
 
